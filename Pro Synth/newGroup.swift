@@ -45,6 +45,8 @@ protocol newGroupDelegate {
 class newGroup: NSViewController {
     
     var delegate:newGroupDelegate?
+    @IBOutlet weak var create: NSButton!
+    @IBOutlet weak var cancel: NSButton!
 
     @IBOutlet weak var name: NSTextField!
 
@@ -67,11 +69,17 @@ class newGroup: NSViewController {
 //!         viewDidLoad()
 //!===================================================================================
 //!         Leírás: Nézetbeállítások elvégzése, lépték beállítása, alapérték beállítás
+//!                 Escape és enter gombok hozzáadása
 //////////////////////////////////////////////////////////////////////////////////////
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
+        create.keyEquivalent = "\u{0d}"
+        cancel.keyEquivalent = "\u{1b}"
     }
     
+
+    
+
 }

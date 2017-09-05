@@ -976,21 +976,21 @@
                                 <rect key="frame" x="0.0" y="252" width="694" height="478"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="w5B-JP-wLF">
-                                    <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="694" height="478"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D2P-fG-r88">
-                                            <rect key="frame" x="0.0" y="0.0" width="664" height="448"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </view>
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="Xks-Kz-gam">
-                                    <rect key="frame" x="0.0" y="463" width="679" height="15"/>
+                                    <rect key="frame" x="0.0" y="462" width="694" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="VNw-SQ-YfE">
-                                    <rect key="frame" x="679" y="0.0" width="15" height="463"/>
+                                    <rect key="frame" x="678" y="0.0" width="16" height="478"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -1466,6 +1466,8 @@ Gw
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="cancel" destination="bSI-Mp-7e1" id="j4z-QF-q6I"/>
+                        <outlet property="create" destination="jhD-HF-Ooe" id="qqP-3b-czm"/>
                         <outlet property="name" destination="Y0n-Zt-Kzg" id="xre-sB-FiH"/>
                     </connections>
                 </viewController>
