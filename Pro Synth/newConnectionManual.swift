@@ -73,7 +73,7 @@ class newConnectionManual: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-
+        
     }
     
     override func viewDidAppear() {
@@ -83,6 +83,8 @@ class newConnectionManual: NSViewController {
         node2Selector.removeAllItems()
         node1Selector.addItems(withTitles: nodeString)
         node2Selector.addItems(withTitles: nodeString)
+        
+        name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem])"
     }
     
     @IBAction func busTypeDefined(_ sender: NSButton) {

@@ -75,11 +75,13 @@ class newGroup: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
+
+    }
+    
+    override func viewDidAppear() {
         create.keyEquivalent = "\u{0d}"
         cancel.keyEquivalent = "\u{1b}"
     }
-    
-
     
 
 }

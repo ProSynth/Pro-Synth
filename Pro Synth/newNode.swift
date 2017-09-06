@@ -64,6 +64,8 @@ class newNode: NSViewController {
     @IBOutlet weak var group: NSPopUpButton!
     @IBOutlet weak var opTypePredef: NSButton!
     @IBOutlet weak var autoGroupAlloc: NSButton!
+    @IBOutlet weak var create: NSButton!
+    @IBOutlet weak var cancel: NSButton!
 
     
 //////////////////////////////////////////////////////////////////////////////////////
@@ -72,12 +74,14 @@ class newNode: NSViewController {
 //!         viewDidLoad()
 //!===================================================================================
 //!         Leírás: Nézetbeállítások elvégzése, lépték beállítása, alapérték beállítás
+//!                 Alapértelmezett gombokhoz enter és eesc hozzárendelés
 //////////////////////////////////////////////////////////////////////////////////////
     
     override func viewDidLoad() {
         super.viewDidLoad()
         weightStepper.increment = 1
         weightText.stringValue = String(weightStepper.intValue)
+
     }
 
     
@@ -92,7 +96,8 @@ class newNode: NSViewController {
             group.selectItem(at: defaultGroupId)
         }
         selectionIndex = group.indexOfSelectedItem
-        
+        create.keyEquivalent = "\u{0d}"
+        cancel.keyEquivalent = "\u{1b}"
     }
 
 //////////////////////////////////////////////////////////////////////////////////////

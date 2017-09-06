@@ -1184,7 +1184,8 @@ Gw
                     </view>
                     <connections>
                         <outlet property="autoGroupAlloc" destination="xvn-FI-2h3" id="h7P-WT-r9Y"/>
-                        <outlet property="create" destination="kQw-d8-yhL" id="0i1-Vr-P7D"/>
+                        <outlet property="cancel" destination="GRH-IB-uoC" id="E2i-xs-aSn"/>
+                        <outlet property="create" destination="kQw-d8-yhL" id="PAB-Ox-bPN"/>
                         <outlet property="group" destination="d9U-v0-dUw" id="uMs-mE-MFC"/>
                         <outlet property="name" destination="2Tc-S0-lIR" id="MO0-gD-Gcc"/>
                         <outlet property="opType" destination="q2b-zf-Yy8" id="B2a-Rt-tEz"/>
