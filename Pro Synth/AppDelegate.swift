@@ -16,7 +16,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var addNodeFromMenu: NSMenuItem!
     @IBOutlet weak var addEdgeFromMenu: NSMenuItem!
 
+
     @IBAction func graphMenuClicked(_ sender: Any) {
+        print("Klikkeltek rá")
         if addNodeMenuEnabled == true {
             addNodeFromMenu.isEnabled = true
         }
@@ -52,7 +54,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
-
-
+    
+    public func setNodeEnable() {
+        addNodeFromMenu.isEnabled = true
+    }
+    
+    public func setEdgeEnable() {
+        addEdgeFromMenu.isEnabled = true
+    }
 }
 

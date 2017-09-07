@@ -157,7 +157,7 @@ class graphViewController: NSViewController {
 
         addNode.isEnabled = false
         addEdge.isEnabled = false
-        
+
         graphOutlineView.register(forDraggedTypes: [NSPasteboardTypeString])
     }
     
@@ -172,7 +172,8 @@ class graphViewController: NSViewController {
         group.children.append(Node(name: name, weight: weight) as GraphElement)
         
         addEdge.isEnabled = true
-        addEdgeMenuEnabled = true
+        let appDelegate = NSApplication.shared().delegate as! AppDelegate
+        appDelegate.setEdgeEnable()
         return
     }
     
@@ -181,7 +182,11 @@ class graphViewController: NSViewController {
         if groups.count > 0 {
             addNode.isEnabled = true
             addNodeMenuEnabled = true
+            
+            let appDelegate = NSApplication.shared().delegate as! AppDelegate
+            appDelegate.setNodeEnable()
         }
+
     }
     
 
