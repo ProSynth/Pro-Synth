@@ -341,7 +341,7 @@
                             </menuItem>
                             <menuItem title="Graph" id="aUF-d1-5bR">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Graph" id="bYY-XU-CE1">
+                                <menu key="submenu" title="Graph" autoenablesItems="NO" id="bYY-XU-CE1">
                                     <items>
                                         <menuItem title="Add node" id="KKg-5z-xlq">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -353,8 +353,10 @@
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="L2F-a8-Fxa"/>
-                                        <menuItem title="Add group" id="lgC-2A-Iaz">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Add group" keyEquivalent="g" id="lgC-2A-Iaz">
+                                            <connections>
+                                                <action selector="addGroupFromMenu:" target="Voe-Tx-rLC" id="bqk-8p-fuR"/>
+                                            </connections>
                                         </menuItem>
                                     </items>
                                 </menu>
@@ -692,7 +694,11 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Pro_Synth" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Pro_Synth" customModuleProvider="target">
+                    <connections>
+                        <outlet property="addGroupFromMenu" destination="lgC-2A-Iaz" id="r1U-wC-8g9"/>
+                    </connections>
+                </customObject>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-39" y="-144"/>
@@ -976,21 +982,21 @@
                                 <rect key="frame" x="0.0" y="252" width="694" height="478"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="w5B-JP-wLF">
-                                    <rect key="frame" x="0.0" y="0.0" width="694" height="478"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D2P-fG-r88">
-                                            <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="664" height="448"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </view>
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="Xks-Kz-gam">
-                                    <rect key="frame" x="0.0" y="462" width="694" height="16"/>
+                                    <rect key="frame" x="0.0" y="463" width="679" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="VNw-SQ-YfE">
-                                    <rect key="frame" x="678" y="0.0" width="16" height="478"/>
+                                    <rect key="frame" x="679" y="0.0" width="15" height="463"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>

@@ -102,6 +102,14 @@ class graphViewController: NSViewController {
         self.presentViewControllerAsSheet(newGroup!)
     }
     
+    public func launchNewGroupSheet(notification: NSNotification) {
+        self.presentViewControllerAsSheet(newGroup!)
+    }
+    
+    func newGroupMenu(){
+        self.presentViewControllerAsSheet(newGroup!)
+    }
+    
     @IBAction func addEdge(_ sender: NSMenuItem) {
         nodeString.removeAll()
         nodePath.removeAll()
@@ -137,10 +145,11 @@ class graphViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("click"), object: nil)
         newNode?.delegate = self
         newGroup?.delegate = self
         newConnectionManual?.delegate = self
+        
 
         addNode.isEnabled = false
         addEdge.isEnabled = false
