@@ -13,6 +13,8 @@ import Cocoa
 var groupString = [String] ()
 var nodeString = [String] ()
 var nodePath = [IndexPath] ()
+var addNodeMenuEnabled : Bool = false
+var addEdgeMenuEnabled : Bool = false
 
 
 
@@ -145,7 +147,9 @@ class graphViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("click"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
         newNode?.delegate = self
         newGroup?.delegate = self
         newConnectionManual?.delegate = self
@@ -168,7 +172,7 @@ class graphViewController: NSViewController {
         group.children.append(Node(name: name, weight: weight) as GraphElement)
         
         addEdge.isEnabled = true
-        
+        addEdgeMenuEnabled = true
         return
     }
     
@@ -176,6 +180,7 @@ class graphViewController: NSViewController {
         groups.append(Group(name: name) as GraphElement)
         if groups.count > 0 {
             addNode.isEnabled = true
+            addNodeMenuEnabled = true
         }
     }
     

@@ -183,7 +183,8 @@
                                                             <action selector="performFindPanelAction:" target="Ady-hI-5gd" id="WD3-Gg-5AJ"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Find Next" tag="2" keyEquivalent="g" id="q09-fT-Sye">
+                                                    <menuItem title="Find Next" tag="2" id="q09-fT-Sye">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
                                                         <connections>
                                                             <action selector="performFindPanelAction:" target="Ady-hI-5gd" id="NDo-RZ-v9R"/>
                                                         </connections>
@@ -193,7 +194,8 @@
                                                             <action selector="performFindPanelAction:" target="Ady-hI-5gd" id="HOh-sY-3ay"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Use Selection for Find" tag="7" keyEquivalent="e" id="buJ-ug-pKt">
+                                                    <menuItem title="Use Selection for Find" tag="7" id="buJ-ug-pKt">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
                                                         <connections>
                                                             <action selector="performFindPanelAction:" target="Ady-hI-5gd" id="U76-nv-p5D"/>
                                                         </connections>
@@ -343,14 +345,16 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Graph" autoenablesItems="NO" id="bYY-XU-CE1">
                                     <items>
-                                        <menuItem title="Add node" id="KKg-5z-xlq">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Add node" keyEquivalent="n" id="KKg-5z-xlq">
+                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                             <connections>
                                                 <action selector="addNodeFromMenu:" target="Voe-Tx-rLC" id="wKX-cI-83S"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Add connection" id="nQc-W6-Qu4">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Add connection" keyEquivalent="e" id="nQc-W6-Qu4">
+                                            <connections>
+                                                <action selector="addEdgeFromMenu:" target="Voe-Tx-rLC" id="PMy-ow-qO5"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="L2F-a8-Fxa"/>
                                         <menuItem title="Add group" keyEquivalent="g" id="lgC-2A-Iaz">
@@ -360,6 +364,9 @@
                                         </menuItem>
                                     </items>
                                 </menu>
+                                <connections>
+                                    <action selector="graphMenuClicked:" target="Voe-Tx-rLC" id="cz4-a9-Ziu"/>
+                                </connections>
                             </menuItem>
                             <menuItem title="Synthesize" id="wpr-3q-Mcd">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -696,7 +703,9 @@
                 </application>
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Pro_Synth" customModuleProvider="target">
                     <connections>
+                        <outlet property="addEdgeFromMenu" destination="nQc-W6-Qu4" id="Nec-ef-6u8"/>
                         <outlet property="addGroupFromMenu" destination="lgC-2A-Iaz" id="r1U-wC-8g9"/>
+                        <outlet property="addNodeFromMenu" destination="KKg-5z-xlq" id="EEJ-xK-Erd"/>
                     </connections>
                 </customObject>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -982,21 +991,21 @@
                                 <rect key="frame" x="0.0" y="252" width="694" height="478"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="w5B-JP-wLF">
-                                    <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="694" height="478"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D2P-fG-r88">
-                                            <rect key="frame" x="0.0" y="0.0" width="664" height="448"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </view>
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="Xks-Kz-gam">
-                                    <rect key="frame" x="0.0" y="463" width="679" height="15"/>
+                                    <rect key="frame" x="0.0" y="462" width="694" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="VNw-SQ-YfE">
-                                    <rect key="frame" x="679" y="0.0" width="15" height="463"/>
+                                    <rect key="frame" x="678" y="0.0" width="16" height="478"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
