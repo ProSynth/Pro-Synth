@@ -73,7 +73,8 @@ class newConnectionManual: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-        
+        weightStepper.increment = 1
+        weightText.stringValue = String(weightStepper.intValue)
     }
     
     override func viewDidAppear() {
@@ -84,7 +85,10 @@ class newConnectionManual: NSViewController {
         node1Selector.addItems(withTitles: nodeString)
         node2Selector.addItems(withTitles: nodeString)
         
-        name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem])"
+        name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem]) connection"
+    }
+    @IBAction func nodeIsChanged(_ sender: NSPopUpButton) {
+        name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem]) connection"
     }
     
     @IBAction func busTypeDefined(_ sender: NSButton) {
@@ -110,15 +114,28 @@ class newConnectionManual: NSViewController {
         case NSOffState:
             name.isEnabled = false
             nameLabel.isEnabled = false
+            name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem]) connection"
             break
         default:
             return
         }
     }
+    @IBAction func updateTextField(_ sender: NSStepper) {
+        weightText.stringValue = String(weightStepper.intValue)
+    }
     
     @IBAction func create(_ sender: NSButton) {
         
         delegate?.createConnectionFromData(name: name.stringValue, weight: weightStepper.integerValue, type: .none, node1Index: nodePath[node1Selector.indexOfSelectedItem], node2Index: nodePath[node2Selector.indexOfSelectedItem])
+        weightText.stringValue = "0"
+        weightStepper.integerValue = 0
         self.dismissViewController(self)
+    }
+}
+
+extension newConnectionManual: NSTextFieldDelegate {
+    override func controlTextDidChange(_ obj: Notification) {
+        //print(weightText.integerValue)
+        weightStepper.integerValue = weightText.integerValue
     }
 }

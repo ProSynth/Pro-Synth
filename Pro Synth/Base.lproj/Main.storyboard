@@ -1251,6 +1251,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <action selector="nodeIsChanged:" target="Wel-P2-gcp" id="vJg-Qr-IMm"/>
+                                            </connections>
                                         </popUpButton>
                                         <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cqj-0C-Ohs">
                                             <rect key="frame" x="167" y="184" width="204" height="26"/>
@@ -1266,6 +1269,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <action selector="nodeIsChanged:" target="Wel-P2-gcp" id="52K-uK-Chm"/>
+                                            </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uQZ-Af-WgM">
                                             <rect key="frame" x="112" y="159" width="51" height="17"/>
@@ -1290,6 +1296,9 @@ Gw
                                             <rect key="frame" x="352" y="154" width="19" height="27"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="8ij-h0-Qv5"/>
+                                            <connections>
+                                                <action selector="updateTextField:" target="Wel-P2-gcp" id="YYK-NY-Ba2"/>
+                                            </connections>
                                         </stepper>
                                         <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lXx-Hi-oUR">
                                             <rect key="frame" x="167" y="48" width="106" height="18"/>
