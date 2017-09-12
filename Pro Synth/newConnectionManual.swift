@@ -69,6 +69,8 @@ class newConnectionManual: NSViewController {
     @IBOutlet weak var name: NSTextField!
     @IBOutlet weak var nameLabel: NSTextField!
     
+    @IBOutlet weak var cancel: NSButton!
+    @IBOutlet weak var create: NSButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,6 +86,9 @@ class newConnectionManual: NSViewController {
         node2Selector.removeAllItems()
         node1Selector.addItems(withTitles: nodeString)
         node2Selector.addItems(withTitles: nodeString)
+        
+        create.keyEquivalent = "\u{0d}"
+        cancel.keyEquivalent = "\u{1b}"
         
         name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem]) connection"
     }
@@ -135,7 +140,6 @@ class newConnectionManual: NSViewController {
 
 extension newConnectionManual: NSTextFieldDelegate {
     override func controlTextDidChange(_ obj: Notification) {
-        //print(weightText.integerValue)
         weightStepper.integerValue = weightText.integerValue
     }
 }

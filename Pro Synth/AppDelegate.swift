@@ -27,6 +27,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @IBAction func importGraph(_ sender: NSMenuItem) {
+        let myFiledialog = NSOpenPanel()
+        myFiledialog.prompt = "Import graph"
+        //myFiledialog.worksWhenModal = true
+        myFiledialog.allowsMultipleSelection = false
+        myFiledialog.canChooseDirectories = false
+        myFiledialog.canChooseFiles = true
+        myFiledialog.allowedFileTypes = ["xml"]
+        myFiledialog.beginSheetModal(for: NSApplication.shared().mainWindow!, completionHandler: { num in
+            if num == NSModalResponseOK {
+                let path = myFiledialog.url
+                print(path!)
+            } else {
+                print("nothing chosen")
+            }
+        })
+    }
+
     @IBAction func addNodeFromMenu(_ sender: NSMenuItem) {
         NotificationCenter.default.post(name: Notification.Name("hotKeyNode"), object: self)
 
@@ -55,12 +73,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
     
-    public func setNodeEnable() {
-        addNodeFromMenu.isEnabled = true
+    public func setNodeEnable(enable: Bool) {
+        addNodeFromMenu.isEnabled = enable
     }
     
-    public func setEdgeEnable() {
-        addEdgeFromMenu.isEnabled = true
+    public func setEdgeEnable(enable: Bool) {
+        addEdgeFromMenu.isEnabled = enable
     }
 }
 

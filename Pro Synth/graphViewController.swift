@@ -53,6 +53,7 @@ class graphViewController: NSViewController {
     @IBOutlet weak var addGroup: NSMenuItem!
     
     var num: Int = 0
+    @IBOutlet weak var noGraph: NSTextField!
 
     
     @IBOutlet var graphTreeController: NSTreeController!
@@ -141,6 +142,23 @@ class graphViewController: NSViewController {
         default:
             return
         }
+        
+        // Letiltjuk a gráfelemek hozzáadását, ha már nincsenek megfelelő pntok vagy csoportok
+        let appDelegate = NSApplication.shared().delegate as! AppDelegate
+        if groups.count == 0 {
+            noGraph.isHidden = false
+            addNode.isEnabled = false
+            addEdge.isEnabled = false
+            
+            appDelegate.setNodeEnable(enable: false)
+            appDelegate.setEdgeEnable(enable: false)
+        } else if groups[0].children.count<2 {
+            addEdge.isEnabled = false
+            
+            appDelegate.setEdgeEnable(enable: false)
+        }
+        
+        
     }
     
 
@@ -173,18 +191,21 @@ class graphViewController: NSViewController {
         
         addEdge.isEnabled = true
         let appDelegate = NSApplication.shared().delegate as! AppDelegate
-        appDelegate.setEdgeEnable()
+        appDelegate.setEdgeEnable(enable: true)
         return
     }
     
     func addGroupWithData(name: String)  {
         groups.append(Group(name: name) as GraphElement)
+        
         if groups.count > 0 {
             addNode.isEnabled = true
             addNodeMenuEnabled = true
             
             let appDelegate = NSApplication.shared().delegate as! AppDelegate
-            appDelegate.setNodeEnable()
+            appDelegate.setNodeEnable(enable: true)
+            
+            noGraph.isHidden = true
         }
 
     }
@@ -217,6 +238,14 @@ extension graphViewController: newConnectionDelegate {
         
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////
+//!         Graphimport
+//!===================================================================================
+//!         Leírás: Itt lesz a gráf importálás szekció
+//!
+//!
+//////////////////////////////////////////////////////////////////////////////////////
 
 
 extension graphViewController: NSOutlineViewDataSource {
