@@ -1039,21 +1039,21 @@
                                 <rect key="frame" x="0.0" y="252" width="694" height="478"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="w5B-JP-wLF">
-                                    <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="694" height="478"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D2P-fG-r88">
-                                            <rect key="frame" x="0.0" y="0.0" width="664" height="448"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="679" height="463"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </view>
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="Xks-Kz-gam">
-                                    <rect key="frame" x="0.0" y="463" width="679" height="15"/>
+                                    <rect key="frame" x="0.0" y="462" width="694" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="VNw-SQ-YfE">
-                                    <rect key="frame" x="679" y="0.0" width="15" height="463"/>
+                                    <rect key="frame" x="678" y="0.0" width="16" height="478"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -1075,10 +1075,30 @@
         <!--Attributes-->
         <scene sceneID="Nuy-tR-hTx">
             <objects>
-                <viewController title="Attributes" id="XZD-5M-daB" sceneMemberID="viewController">
+                <viewController title="Attributes" id="XZD-5M-daB" customClass="attributeViewController" customModule="Pro_Synth" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="8Mp-gX-e0t">
                         <rect key="frame" x="0.0" y="0.0" width="271" height="758"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J5M-QG-mhj">
+                                <rect key="frame" x="86" y="716" width="165" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="JrE-JD-M04">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JTr-Zh-D5i">
+                                <rect key="frame" x="49" y="718" width="31" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Title" id="BYu-Ok-7Ts">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
                     </view>
                 </viewController>
                 <customObject id="QOc-6B-C69" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

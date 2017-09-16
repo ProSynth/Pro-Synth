@@ -34,11 +34,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         myFiledialog.allowsMultipleSelection = false
         myFiledialog.canChooseDirectories = false
         myFiledialog.canChooseFiles = true
-        myFiledialog.allowedFileTypes = ["xml"]
+        myFiledialog.allowedFileTypes = ["dot"]
         myFiledialog.beginSheetModal(for: NSApplication.shared().mainWindow!, completionHandler: { num in
             if num == NSModalResponseOK {
-                let path = myFiledialog.url
-                print(path!)
+                importGraphPath = myFiledialog.url
+                NotificationCenter.default.post(name: Notification.Name("importGraphMethod"), object: self)
             } else {
                 print("nothing chosen")
             }

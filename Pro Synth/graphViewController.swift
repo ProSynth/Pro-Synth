@@ -16,14 +16,15 @@ var nodePath = [IndexPath] ()
 var addNodeMenuEnabled : Bool = false
 var addEdgeMenuEnabled : Bool = false
 
-
+var importGraphPath : URL?
 
 var defaultGroupId: Int = -1
 
 
 class graphViewController: NSViewController {
     
-
+    var url : NSURL = NSURL(string:"")!
+    var parser : XMLParser = XMLParser()
     
     lazy var newNode : newNode? = {
         return self.storyboard!.instantiateController(withIdentifier: "newNode")
@@ -165,9 +166,15 @@ class graphViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        /* Parser próba */
+        parser = XMLParser(contentsOf: url as URL)!
+        parser.delegate = self
+        parser.parse()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
         newNode?.delegate = self
         newGroup?.delegate = self
         newConnectionManual?.delegate = self
@@ -211,10 +218,62 @@ class graphViewController: NSViewController {
     }
     
 
+    func importMethod() {
+        do {
+
+            let data = try NSString(contentsOfFile: (importGraphPath?.path)!,
+                                    encoding: String.Encoding.utf8.rawValue)
+            
+            var abc  = [String] ()
+            abc = data.components(separatedBy: "\n")
+            for i in 0..<abc.count {
+                print(i,". a sorban. Adat:",abc[i])
+            }
+            
+            if abc[0].range(of: "digraph") != nil {
+                print("Ez egy gráf lesz")
+                addGroupWithData(name: "A gráf")
+                for element in 1..<abc.count {
+                    if (abc[element].range(of: "->") != nil) && (abc[element].range(of: "label") != nil) {
+                        print("Ez egy él")
+                        var edgeArray = abc[element].components(separatedBy: " ")
+                        let node1 = Int(edgeArray[0])
+                        let node2 = Int(edgeArray[2])
+                        var name = edgeArray[4].components(separatedBy: "\"")
+                        addEdgeWithData(name: name[1], weight: 0, type: .none, node1: groups[0].children[node1!] as! Node, node2: groups[0].children[node2!] as! Node)
+                    } else if (abc[element].range(of: "label") != nil) {
+                        print("Ez egy pont")
+                        if let match = abc[element].range(of: "(?<=\")[^:]+", options: .regularExpression) {
+                            addNodeWithData(name: abc[element].substring(with: match), weight: 5, type: .none, group: groups[0] as! Group)
+                        }
+                        
+                    }
+                }
+            }
+            
+            print("Fájl vége")
+        } catch {
+            print("Hiba van")
+        }
+    }
     
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Extensions!!!!
 
 extension graphViewController: newNodeDelegate {
     func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int) {
@@ -351,4 +410,26 @@ extension graphViewController: NSOutlineViewDelegate {
         //print(selectedItem?.name as Any)
         
     }
+}
+
+extension graphViewController: XMLParserDelegate {
+    
+    
+    
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+        //Kezdő xml sor
+    }
+    
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        //Közbenső xml sor
+    }
+    
+    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        //Záró xml sor
+    }
+    
+    
+    
+    
+    
 }

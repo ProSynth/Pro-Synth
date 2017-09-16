@@ -22,6 +22,7 @@
 		3F2924B61F45B21E00F3130E /* Kép1.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F2924B51F45B21E00F3130E /* Kép1.png */; };
 		3F2924BD1F45B3E300F3130E /* welcomeCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2924BB1F45B3E300F3130E /* welcomeCollectionViewItem.swift */; };
 		3F2924BE1F45B3E300F3130E /* welcomeCollectionViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F2924BC1F45B3E300F3130E /* welcomeCollectionViewItem.xib */; };
+		3F4D62DD1F6D2EF200621182 /* attributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4D62DC1F6D2EF200621182 /* attributeViewController.swift */; };
 		3F890A811F51F79900BBDBFD /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F890A801F51F79900BBDBFD /* Edge.swift */; };
 		3F890A831F51F80000BBDBFD /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F890A821F51F80000BBDBFD /* Group.swift */; };
 		3F921CE81F5A11C2004FD276 /* newGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F921CE71F5A11C2004FD276 /* newGroup.swift */; };
@@ -69,6 +70,7 @@
 		3F2924B51F45B21E00F3130E /* Kép1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Kép1.png"; sourceTree = "<group>"; };
 		3F2924BB1F45B3E300F3130E /* welcomeCollectionViewItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = welcomeCollectionViewItem.swift; sourceTree = "<group>"; };
 		3F2924BC1F45B3E300F3130E /* welcomeCollectionViewItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = welcomeCollectionViewItem.xib; sourceTree = "<group>"; };
+		3F4D62DC1F6D2EF200621182 /* attributeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = attributeViewController.swift; sourceTree = "<group>"; };
 		3F890A801F51F79900BBDBFD /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Edge.swift; sourceTree = "<group>"; };
 		3F890A821F51F80000BBDBFD /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		3F921CE71F5A11C2004FD276 /* newGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = newGroup.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				7BDB22571F581BF200D785DD /* newNode.swift */,
 				3F921CE71F5A11C2004FD276 /* newGroup.swift */,
 				7B671D0C1F5E96B300EED265 /* newConnectionManual.swift */,
+				3F4D62DC1F6D2EF200621182 /* attributeViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F4D62DD1F6D2EF200621182 /* attributeViewController.swift in Sources */,
 				3F890A831F51F80000BBDBFD /* Group.swift in Sources */,
 				3F2924BD1F45B3E300F3130E /* welcomeCollectionViewItem.swift in Sources */,
 				3F921CE81F5A11C2004FD276 /* newGroup.swift in Sources */,
