@@ -41,6 +41,8 @@ class Node: GraphElement {
         super.init(name: name)
     }
     
-    
+    func getWeight() -> Int {
+        return self.weight
+    }
 
 }

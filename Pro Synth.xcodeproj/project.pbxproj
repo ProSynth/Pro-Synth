@@ -23,6 +23,9 @@
 		3F2924BD1F45B3E300F3130E /* welcomeCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2924BB1F45B3E300F3130E /* welcomeCollectionViewItem.swift */; };
 		3F2924BE1F45B3E300F3130E /* welcomeCollectionViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F2924BC1F45B3E300F3130E /* welcomeCollectionViewItem.xib */; };
 		3F4D62DD1F6D2EF200621182 /* attributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4D62DC1F6D2EF200621182 /* attributeViewController.swift */; };
+		3F5FFF771F6DCB2C00D5AF06 /* noSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5FFF761F6DCB2C00D5AF06 /* noSelectionViewController.swift */; };
+		3F5FFF791F6DD0B000D5AF06 /* nodeAttributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5FFF781F6DD0B000D5AF06 /* nodeAttributeViewController.swift */; };
+		3F5FFF7B1F6E8FDF00D5AF06 /* nodeGlobalAttributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5FFF7A1F6E8FDF00D5AF06 /* nodeGlobalAttributeViewController.swift */; };
 		3F890A811F51F79900BBDBFD /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F890A801F51F79900BBDBFD /* Edge.swift */; };
 		3F890A831F51F80000BBDBFD /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F890A821F51F80000BBDBFD /* Group.swift */; };
 		3F921CE81F5A11C2004FD276 /* newGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F921CE71F5A11C2004FD276 /* newGroup.swift */; };
@@ -71,6 +74,9 @@
 		3F2924BB1F45B3E300F3130E /* welcomeCollectionViewItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = welcomeCollectionViewItem.swift; sourceTree = "<group>"; };
 		3F2924BC1F45B3E300F3130E /* welcomeCollectionViewItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = welcomeCollectionViewItem.xib; sourceTree = "<group>"; };
 		3F4D62DC1F6D2EF200621182 /* attributeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = attributeViewController.swift; sourceTree = "<group>"; };
+		3F5FFF761F6DCB2C00D5AF06 /* noSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = noSelectionViewController.swift; sourceTree = "<group>"; };
+		3F5FFF781F6DD0B000D5AF06 /* nodeAttributeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nodeAttributeViewController.swift; sourceTree = "<group>"; };
+		3F5FFF7A1F6E8FDF00D5AF06 /* nodeGlobalAttributeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nodeGlobalAttributeViewController.swift; sourceTree = "<group>"; };
 		3F890A801F51F79900BBDBFD /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Edge.swift; sourceTree = "<group>"; };
 		3F890A821F51F80000BBDBFD /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		3F921CE71F5A11C2004FD276 /* newGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = newGroup.swift; sourceTree = "<group>"; };
@@ -113,6 +119,9 @@
 				3F921CE71F5A11C2004FD276 /* newGroup.swift */,
 				7B671D0C1F5E96B300EED265 /* newConnectionManual.swift */,
 				3F4D62DC1F6D2EF200621182 /* attributeViewController.swift */,
+				3F5FFF761F6DCB2C00D5AF06 /* noSelectionViewController.swift */,
+				3F5FFF781F6DD0B000D5AF06 /* nodeAttributeViewController.swift */,
+				3F5FFF7A1F6E8FDF00D5AF06 /* nodeGlobalAttributeViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -339,9 +348,12 @@
 				3F0928B91F51A876000997B2 /* Node.swift in Sources */,
 				3F2924821F45A11600F3130E /* AppDelegate.swift in Sources */,
 				3F2924B21F45A31500F3130E /* welcomeScreenWindowController.swift in Sources */,
+				3F5FFF791F6DD0B000D5AF06 /* nodeAttributeViewController.swift in Sources */,
 				3F2924861F45A11600F3130E /* Document.swift in Sources */,
 				3F2924B41F45A47E00F3130E /* welcomeScreenViewController.swift in Sources */,
+				3F5FFF7B1F6E8FDF00D5AF06 /* nodeGlobalAttributeViewController.swift in Sources */,
 				7B671D0D1F5E96B300EED265 /* newConnectionManual.swift in Sources */,
+				3F5FFF771F6DCB2C00D5AF06 /* noSelectionViewController.swift in Sources */,
 				3F9CB19F1F549F8D00451649 /* GraphElement.swift in Sources */,
 				3F890A811F51F79900BBDBFD /* Edge.swift in Sources */,
 				3F0928B71F519318000997B2 /* graphViewController.swift in Sources */,

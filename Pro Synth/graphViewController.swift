@@ -20,11 +20,17 @@ var importGraphPath : URL?
 
 var defaultGroupId: Int = -1
 
+protocol globalAttributeDelegate {
+    func loadAttributes(name: String, weight: Int, nodeID: Int, opType: NodeType, group: GraphElement)
+}
 
 class graphViewController: NSViewController {
     
+    var globalDelegate:globalAttributeDelegate?
+    
     var url : NSURL = NSURL(string:"")!
-    var parser : XMLParser = XMLParser()
+    
+    
     
     lazy var newNode : newNode? = {
         return self.storyboard!.instantiateController(withIdentifier: "newNode")
@@ -47,6 +53,7 @@ class graphViewController: NSViewController {
     dynamic var groups = [GraphElement]()
 
     
+
     
     @IBOutlet var graphAddMenu: NSMenu!
     @IBOutlet weak var addNode: NSMenuItem!
@@ -166,10 +173,8 @@ class graphViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        /* Parser próba */
-        parser = XMLParser(contentsOf: url as URL)!
-        parser.delegate = self
-        parser.parse()
+
+
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
@@ -179,7 +184,7 @@ class graphViewController: NSViewController {
         newGroup?.delegate = self
         newConnectionManual?.delegate = self
         
-
+     
         addNode.isEnabled = false
         addEdge.isEnabled = false
 
@@ -257,6 +262,11 @@ class graphViewController: NSViewController {
         }
     }
     
+    
+    @IBAction func but(_ sender: Any) {
+        
+        globalDelegate?.loadAttributes(name: groups[0].children[0].name, weight: 42, nodeID: 0, opType: .none, group: groups[0])
+    }
 
 }
 
@@ -412,24 +422,4 @@ extension graphViewController: NSOutlineViewDelegate {
     }
 }
 
-extension graphViewController: XMLParserDelegate {
-    
-    
-    
-    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
-        //Kezdő xml sor
-    }
-    
-    func parser(_ parser: XMLParser, foundCharacters string: String) {
-        //Közbenső xml sor
-    }
-    
-    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        //Záró xml sor
-    }
-    
-    
-    
-    
-    
-}
+
