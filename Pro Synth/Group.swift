@@ -20,6 +20,8 @@ import Cocoa
 
 class Group: GraphElement {
     var numberOfNode: Int                       //Megadja, hogy a csoportban összesen hány Node van
+    static var  groupID : Int = 0               //CsoportID, minden csoportnak különböző
+    var maxTime:Int
     
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +33,10 @@ class Group: GraphElement {
 //!                 TODO: numberOfNode rendes implementációja
 //////////////////////////////////////////////////////////////////////////////////////
     
-    override init(name: String) {
+    init(name: String, maxGroupTime: Int) {
+        
+        self.maxTime = maxGroupTime
+        Group.groupID += 1
         self.numberOfNode = 0
         super.init(name: name)
     }

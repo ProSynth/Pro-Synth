@@ -207,8 +207,8 @@ class graphViewController: NSViewController {
         return
     }
     
-    func addGroupWithData(name: String)  {
-        groups.append(Group(name: name) as GraphElement)
+    func addGroupWithData(name: String, maxGroupTime: Int)  {
+        groups.append(Group(name: name, maxGroupTime: maxGroupTime) as GraphElement)
         
         if groups.count > 0 {
             addNode.isEnabled = true
@@ -225,37 +225,111 @@ class graphViewController: NSViewController {
 
     func importMethod() {
         do {
-
+            // Adat beolvasása a data stringbe
             let data = try NSString(contentsOfFile: (importGraphPath?.path)!,
                                     encoding: String.Encoding.utf8.rawValue)
+            // Az adat szétszedése enterenként egy string tömbbe
+            var dataRow  = [String] ()
+            dataRow = data.components(separatedBy: "\n")
             
-            var abc  = [String] ()
-            abc = data.components(separatedBy: "\n")
-            for i in 0..<abc.count {
-                print(i,". a sorban. Adat:",abc[i])
+            if dataRow[0].range(of: "digraph") != nil {                                             //Ha az első sorban benne van a digraph szöveg, akkor ez egy graphviz formátum
+                for element in 1..<dataRow.count {                                                  //Végigmegyünk az összes soron, keresve a gráfcsoportokat
+                    let stringArray = dataRow[element].components(separatedBy: " ")
+                    if (stringArray[0] == "Subgraph") || (stringArray[0] == "subgraph") {           //Ha tartalmazza a Subgraph vagy subgraph stringet, akkor ez egy szubgráf definíció
+                        let groupID = stringArray[1]                                                //Leszedjük belőle a csoportID-t
+                        var groupName : String = "Csoport1"                                         //Csoport1 lesz a default csoportnév
+                        var groupMax : Int                                                       //Csoport időkorlát
+                        let attributes = dataRow[element].range(of: "(?<={)[^}]+", options: .regularExpression) //Megnézzük mi van a kapcsos zárójelen belül
+                        let prop = dataRow[element].components(separatedBy: " ")
+                        for i in 0..<prop.count {
+                            if prop[i].range(of: "label") != nil {                                  //Ha van benne label, akkor abban a stringben lesznek az attribútumok
+                                
+                                if let propArray = prop[i].range(of: "(?<=\")[^:]+", options: .regularExpression) {
+                                    groupName = prop[i].substring(with: propArray)
+                                }
+                                if let propArray2 = prop[i].range(of: "(?<=:)[^\"]+", options: .regularExpression) {
+                                    groupMax = Int(prop[i].substring(with: propArray2))!
+                                } else {
+                                    groupMax = 0
+                                }
+                                addGroupWithData(name: groupName, maxGroupTime: groupMax)            //Hozzáadjuk a csoportot
+                            }
+                            
+                        }
+                    }
+                    
+                }
+                
+                for element in 1..<(dataRow.count-1) {
+                    var nodeName : String
+                    var nodeWeight : Int
+                    var nodeGroup : Int
+                    
+                    var edgeNode1 : Int
+                    var edgeNode2 : Int
+                    var edgeName : String
+                    var edgeWeight : Int
+                    
+                    
+                    let stringArray = dataRow[element].components(separatedBy: " ")
+                    if stringArray[1].range(of: "label") != nil {
+                        if let propArray = dataRow[element].range(of: "(?<=\")[^\"]+", options: .regularExpression) {
+                            let groupMax = dataRow[element].substring(with: propArray)
+                            let propArray2 = groupMax.components(separatedBy: ":")
+                            let name = Array(propArray2[0].characters)
+                            if  name[0] == "@"{
+                                nodeName = propArray2[1]
+                            } else {
+                                nodeName = propArray2[0]
+                            }
+                            nodeWeight = Int(propArray2[propArray2.count-2])!
+                            nodeGroup = Int(propArray2[propArray2.count-1])!
+                            
+                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[nodeGroup] as! Group)
+                        }
+                    } else if stringArray[1] == "->" {
+                        edgeNode1 = Int(stringArray[0])!
+                        edgeNode2 = Int(stringArray[2])!
+                        if let propArray = dataRow[element].range(of: "(?<=\")[^\"]+", options: .regularExpression) {
+                            let groupMax = dataRow[element].substring(with: propArray)
+                            let propArray2 = groupMax.components(separatedBy: ":")
+                            let name = Array(propArray2[0].characters)
+                            if  name[0] == "@"{
+                                edgeName = propArray2[0]
+                            } else {
+                                edgeName = "Él"
+                            }
+                            
+                            edgeWeight = Int(propArray2[1])!
+                            //Itt még a groups 0-t javítani kell
+                            addEdgeWithData(name: edgeName, weight: edgeWeight, type: .none, node1: groups[0].children[edgeNode1] as! Node, node2: groups[0].children[edgeNode2] as! Node)
+                        }
+                    }
+                    
+                }
             }
-            
-            if abc[0].range(of: "digraph") != nil {
+            /*
+            if dataRow[0].range(of: "digraph") != nil {
                 print("Ez egy gráf lesz")
-                addGroupWithData(name: "A gráf")
-                for element in 1..<abc.count {
-                    if (abc[element].range(of: "->") != nil) && (abc[element].range(of: "label") != nil) {
+                //addGroupWithData(name: "A gráf")
+                for element in 1..<dataRow.count {
+                    if (dataRow[element].range(of: "->") != nil) && (dataRow[element].range(of: "label") != nil) {
                         print("Ez egy él")
-                        var edgeArray = abc[element].components(separatedBy: " ")
+                        var edgeArray = dataRow[element].components(separatedBy: " ")
                         let node1 = Int(edgeArray[0])
                         let node2 = Int(edgeArray[2])
                         var name = edgeArray[4].components(separatedBy: "\"")
                         addEdgeWithData(name: name[1], weight: 0, type: .none, node1: groups[0].children[node1!] as! Node, node2: groups[0].children[node2!] as! Node)
-                    } else if (abc[element].range(of: "label") != nil) {
+                    } else if (dataRow[element].range(of: "label") != nil) {
                         print("Ez egy pont")
-                        if let match = abc[element].range(of: "(?<=\")[^:]+", options: .regularExpression) {
-                            addNodeWithData(name: abc[element].substring(with: match), weight: 5, type: .none, group: groups[0] as! Group)
+                        if let match = dataRow[element].range(of: "(?<=\")[^:]+", options: .regularExpression) {
+                            addNodeWithData(name: dataRow[element].substring(with: match), weight: 5, type: .none, group: groups[0] as! Group)
                         }
                         
                     }
                 }
             }
-            
+            */
             print("Fájl vége")
         } catch {
             print("Hiba van")
@@ -295,8 +369,8 @@ extension graphViewController: newNodeDelegate {
 extension graphViewController: newGroupDelegate {
     func createGroupFromData(name: String) {
         
-        addGroupWithData(name: name)
-        
+        addGroupWithData(name: name, maxGroupTime: 0)
+        //TODO
     }
 }
 
