@@ -197,9 +197,9 @@ class graphViewController: NSViewController {
         node2.children.append(tmpEdge as GraphElement)
     }
     
-    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group)  {
+    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group, nodeID:Int)  {
         
-        group.children.append(Node(name: name, weight: weight) as GraphElement)
+        group.children.append(Node(name: name, weight: weight, nodeID: nodeID) as GraphElement)
         
         addEdge.isEnabled = true
         let appDelegate = NSApplication.shared().delegate as! AppDelegate
@@ -232,6 +232,8 @@ class graphViewController: NSViewController {
             var dataRow  = [String] ()
             dataRow = data.components(separatedBy: "\n")
             
+            var nodeGroupArray = [[Int]] ()
+            
             if dataRow[0].range(of: "digraph") != nil {                                             //Ha az első sorban benne van a digraph szöveg, akkor ez egy graphviz formátum
                 for element in 1..<dataRow.count {                                                  //Végigmegyünk az összes soron, keresve a gráfcsoportokat
                     let stringArray = dataRow[element].components(separatedBy: " ")
@@ -260,7 +262,7 @@ class graphViewController: NSViewController {
                     
                 }
                 
-                for element in 1..<(dataRow.count-1) {
+                for element in 1..<(dataRow.count-3) {
                     var nodeName : String
                     var nodeWeight : Int
                     var nodeGroup : Int
@@ -282,10 +284,13 @@ class graphViewController: NSViewController {
                             } else {
                                 nodeName = propArray2[0]
                             }
-                            nodeWeight = Int(propArray2[propArray2.count-2])!
-                            nodeGroup = Int(propArray2[propArray2.count-1])!
+                            nodeWeight = Int(propArray2[5])!
+                            nodeGroup = Int(propArray2[6])!
+                            let tmpnodeID = Int(stringArray[0])
                             
-                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[nodeGroup] as! Group)
+                            nodeGroupArray.append([tmpnodeID!, nodeGroup])
+                            
+                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[nodeGroup] as! Group, nodeID: Int(stringArray[0])!)
                         }
                     } else if stringArray[1] == "->" {
                         edgeNode1 = Int(stringArray[0])!
@@ -294,13 +299,16 @@ class graphViewController: NSViewController {
                             let groupMax = dataRow[element].substring(with: propArray)
                             let propArray2 = groupMax.components(separatedBy: ":")
                             let name = Array(propArray2[0].characters)
-                            if  name[0] == "@"{
+                            if  name[0] != "@"{
                                 edgeName = propArray2[0]
                             } else {
                                 edgeName = "Él"
                             }
                             
                             edgeWeight = Int(propArray2[1])!
+                            
+                            
+                            
                             //Itt még a groups 0-t javítani kell
                             addEdgeWithData(name: edgeName, weight: edgeWeight, type: .none, node1: groups[0].children[edgeNode1] as! Node, node2: groups[0].children[edgeNode2] as! Node)
                         }
@@ -362,7 +370,7 @@ class graphViewController: NSViewController {
 extension graphViewController: newNodeDelegate {
     func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int) {
         
-        addNodeWithData(name: name, weight: weight, type: type, group: groups[groupIndex] as! Group)
+        addNodeWithData(name: name, weight: weight, type: type, group: groups[groupIndex] as! Group, nodeID: 0)
     }
 }
 
