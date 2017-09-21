@@ -29,10 +29,10 @@ class attributeViewController: NSViewController {
         noSelectionViewController.view.frame = self.container.bounds
         self.container.addSubview(noSelectionViewController.view)
  
+        NotificationCenter.default.addObserver(self, selector: #selector(self.switchToNode), name: Notification.Name("nodeAttribute"), object: nil)
     }
     
-
-    @IBAction func change(_ sender: Any) {
+    func switchToNode() {
         for sView in self.container.subviews {
             sView.removeFromSuperview()
         }
@@ -40,6 +40,8 @@ class attributeViewController: NSViewController {
         nodeAttributeViewController.view.frame = self.container.bounds
         self.container.addSubview(nodeAttributeViewController.view)
     }
+
+
     
     
 }

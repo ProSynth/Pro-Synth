@@ -21,9 +21,11 @@ import Cocoa
 
 class Node: GraphElement {
     var weight: Int                     //Ez lesz a pont súlya
-    var numberOfConnectedEdge: Int      //A ponthoz csatlakozó élek számát adja
+    var numberOfConnectedEdge: Int {
+        return children.count
+    }      //A ponthoz csatlakozó élek számát adja
+    static var  currentNodeID : Int = 0
     var nodeID:Int
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 //!         Function
@@ -35,10 +37,13 @@ class Node: GraphElement {
 //!                 Inicializáláskor megkapja a súlyát
 //!///////////////////////////////////////////////////////////////////////////////////
 
-    init(name: String, weight:Int, nodeID:Int) {
-        self.nodeID = nodeID
+    init(name: String, weight:Int) {
+        // ID kiosztó szerkezet
+
+        self.nodeID = Node.currentNodeID
+        Node.currentNodeID += 1
+        
         self.weight = weight
-        self.numberOfConnectedEdge = 0
         super.init(name: name)
     }
     

@@ -197,9 +197,9 @@ class graphViewController: NSViewController {
         node2.children.append(tmpEdge as GraphElement)
     }
     
-    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group, nodeID:Int)  {
+    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group)  {
         
-        group.children.append(Node(name: name, weight: weight, nodeID: nodeID) as GraphElement)
+        group.children.append(Node(name: name, weight: weight) as GraphElement)
         
         addEdge.isEnabled = true
         let appDelegate = NSApplication.shared().delegate as! AppDelegate
@@ -224,6 +224,10 @@ class graphViewController: NSViewController {
     
 
     func importMethod() {
+        
+        let numberOfGroups = groups.count
+        let numberOfNodes = Node.currentNodeID
+        
         do {
             // Adat beolvasása a data stringbe
             let data = try NSString(contentsOfFile: (importGraphPath?.path)!,
@@ -232,7 +236,7 @@ class graphViewController: NSViewController {
             var dataRow  = [String] ()
             dataRow = data.components(separatedBy: "\n")
             
-            var nodeGroupArray = [[Int]] ()
+            var nodeGroupDictionary = [Int:Int]()
             
             if dataRow[0].range(of: "digraph") != nil {                                             //Ha az első sorban benne van a digraph szöveg, akkor ez egy graphviz formátum
                 for element in 1..<dataRow.count {                                                  //Végigmegyünk az összes soron, keresve a gráfcsoportokat
@@ -285,12 +289,12 @@ class graphViewController: NSViewController {
                                 nodeName = propArray2[0]
                             }
                             nodeWeight = Int(propArray2[5])!
-                            nodeGroup = Int(propArray2[6])!
-                            let tmpnodeID = Int(stringArray[0])
+                            nodeGroup = Int(propArray2[6])!+numberOfGroups
+                            let tmpnodeID = Int(stringArray[0])!+numberOfNodes
                             
-                            nodeGroupArray.append([tmpnodeID!, nodeGroup])
+                            nodeGroupDictionary[tmpnodeID] = nodeGroup
                             
-                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[nodeGroup] as! Group, nodeID: Int(stringArray[0])!)
+                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[nodeGroup] as! Group)
                         }
                     } else if stringArray[1] == "->" {
                         edgeNode1 = Int(stringArray[0])!
@@ -310,34 +314,13 @@ class graphViewController: NSViewController {
                             
                             
                             //Itt még a groups 0-t javítani kell
-                            addEdgeWithData(name: edgeName, weight: edgeWeight, type: .none, node1: groups[0].children[edgeNode1] as! Node, node2: groups[0].children[edgeNode2] as! Node)
+                            addEdgeWithData(name: edgeName, weight: edgeWeight, type: .none, node1: groups[nodeGroupDictionary[edgeNode1+numberOfNodes]!].children[edgeNode1] as! Node, node2: groups[nodeGroupDictionary[edgeNode2+numberOfNodes]!].children[edgeNode2] as! Node)
                         }
                     }
                     
                 }
             }
-            /*
-            if dataRow[0].range(of: "digraph") != nil {
-                print("Ez egy gráf lesz")
-                //addGroupWithData(name: "A gráf")
-                for element in 1..<dataRow.count {
-                    if (dataRow[element].range(of: "->") != nil) && (dataRow[element].range(of: "label") != nil) {
-                        print("Ez egy él")
-                        var edgeArray = dataRow[element].components(separatedBy: " ")
-                        let node1 = Int(edgeArray[0])
-                        let node2 = Int(edgeArray[2])
-                        var name = edgeArray[4].components(separatedBy: "\"")
-                        addEdgeWithData(name: name[1], weight: 0, type: .none, node1: groups[0].children[node1!] as! Node, node2: groups[0].children[node2!] as! Node)
-                    } else if (dataRow[element].range(of: "label") != nil) {
-                        print("Ez egy pont")
-                        if let match = dataRow[element].range(of: "(?<=\")[^:]+", options: .regularExpression) {
-                            addNodeWithData(name: dataRow[element].substring(with: match), weight: 5, type: .none, group: groups[0] as! Group)
-                        }
-                        
-                    }
-                }
-            }
-            */
+
             print("Fájl vége")
         } catch {
             print("Hiba van")
@@ -347,7 +330,7 @@ class graphViewController: NSViewController {
     
     @IBAction func but(_ sender: Any) {
         
-        globalDelegate?.loadAttributes(name: groups[0].children[0].name, weight: 42, nodeID: 0, opType: .none, group: groups[0])
+        NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
     }
 
 }
@@ -370,7 +353,7 @@ class graphViewController: NSViewController {
 extension graphViewController: newNodeDelegate {
     func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int) {
         
-        addNodeWithData(name: name, weight: weight, type: type, group: groups[groupIndex] as! Group, nodeID: 0)
+        addNodeWithData(name: name, weight: weight, type: type, group: groups[groupIndex] as! Group)
     }
 }
 
@@ -496,8 +479,14 @@ extension graphViewController: NSOutlineViewDelegate {
 //////////////////////////////////////////////////////////////////////////////////////
     
     func outlineViewSelectionDidChange(_ notification: Notification) {
-        //print((graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath)
-        
+        print((graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath)
+        var path:IndexPath = (graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath
+        nodeAttributesPl.name = groups[path[0]].children[path[1]].name
+        nodeAttributesPl.weight = (groups[path[0]].children[path[1]] as! Node).weight
+        nodeAttributesPl.nodeID = (groups[path[0]].children[path[1]] as! Node).nodeID
+        nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
+        nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
+        NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
         //let selectedItem = graphOutlineView.item(atRow: graphOutlineView.selectedRow) as? GraphElement
         //print(selectedItem?.name as Any)
         
