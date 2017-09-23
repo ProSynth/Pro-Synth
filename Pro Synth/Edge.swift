@@ -27,6 +27,8 @@ enum EdgeType {
 class Edge: GraphElement {
     var weight: Int                     //Ez lesz az él súlya
     var type: EdgeType                  //Kapcoslat típusa
+    static var  currentEdgeID : Int = 0
+    var edgeID : Int
     
 //////////////////////////////////////////////////////////////////////////////////////
 //!         Function
@@ -39,6 +41,8 @@ class Edge: GraphElement {
     
     init(name: String, weight:Int) {
         self.weight = weight
+        self.edgeID = Edge.currentEdgeID
+        Edge.currentEdgeID += 1
         self.type = .none
         super.init(name: name)
     }

@@ -39,4 +39,33 @@ struct nodeAttributes {
     }
 }
 
+struct groupAttributes {
+    var name:String
+    var groupID:Int
+    var numberOfNode: Int
+    var maxTime: Int
+    
+    init (name:String, weight:Int, nodeID:Int, groupID:Int) {
+        self.maxTime = -1
+        self.name = name
+        self.groupID = groupID
+        self.numberOfNode = 0
+    }
+}
+
+struct edgeAttributes {
+    var name : String
+    var edgeID : Int
+    var weight : Int
+    init (name:String, weight:Int, edgeID:Int) {
+ 
+        self.name = name
+        self.weight = weight
+        self.edgeID = edgeID
+    }
+}
+
+var edgeAttributesP1:edgeAttributes = edgeAttributes(name: "", weight: -1, edgeID: -1)
 var nodeAttributesPl:nodeAttributes = nodeAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
+var groupAttributesP1:groupAttributes = groupAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
+

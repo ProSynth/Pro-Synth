@@ -41,11 +41,3 @@ class nodeGlobalAttributeViewController: NSViewController {
     
 }
 
-extension nodeGlobalAttributeViewController : globalAttributeDelegate {
-    func loadAttributes(name: String, weight: Int, nodeID: Int, opType: NodeType, group: GraphElement) {
-        print("A fv meghívódik")
-        self.name.stringValue = name
-        self.weight.stringValue = String(weight)
-        self.nodeID.intValue = Int32(nodeID)
-    }
-}

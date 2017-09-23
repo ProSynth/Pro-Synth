@@ -481,12 +481,28 @@ extension graphViewController: NSOutlineViewDelegate {
     func outlineViewSelectionDidChange(_ notification: Notification) {
         print((graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath)
         var path:IndexPath = (graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath
-        nodeAttributesPl.name = groups[path[0]].children[path[1]].name
-        nodeAttributesPl.weight = (groups[path[0]].children[path[1]] as! Node).weight
-        nodeAttributesPl.nodeID = (groups[path[0]].children[path[1]] as! Node).nodeID
-        nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
-        nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
-        NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
+        switch path.count {
+        case 1:
+            groupAttributesP1.name = groups[path[0]].name
+            groupAttributesP1.groupID = (groups[path[0]] as! Group).groupID
+            groupAttributesP1.maxTime = (groups[path[0]] as! Group).maxTime
+            NotificationCenter.default.post(name: Notification.Name("groupAttribute"), object: self)
+        case 2:
+            nodeAttributesPl.name = groups[path[0]].children[path[1]].name
+            nodeAttributesPl.weight = (groups[path[0]].children[path[1]] as! Node).weight
+            nodeAttributesPl.nodeID = (groups[path[0]].children[path[1]] as! Node).nodeID
+            nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
+            nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
+            NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
+        case 3:
+            edgeAttributesP1.name = groups[path[0]].children[path[1]].children[path[2]].name
+            edgeAttributesP1.edgeID = (groups[path[0]].children[path[1]].children[path[2]] as! Edge).edgeID
+            edgeAttributesP1.weight = (groups[path[0]].children[path[1]].children[path[2]] as! Edge).weight
+            NotificationCenter.default.post(name: Notification.Name("edgeAttribute"), object: self)
+        default:
+            print("Hiba az attribútumszerkesztőben")
+        }
+        
         //let selectedItem = graphOutlineView.item(atRow: graphOutlineView.selectedRow) as? GraphElement
         //print(selectedItem?.name as Any)
         
