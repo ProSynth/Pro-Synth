@@ -197,9 +197,9 @@ class graphViewController: NSViewController {
         node2.children.append(tmpEdge as GraphElement)
     }
     
-    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group)  {
+    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group, nodeID: Int = -1)  {
         
-        group.children.append(Node(name: name, weight: weight) as GraphElement)
+        group.children.append(Node(name: name, weight: weight, nodeID: nodeID) as GraphElement)
         
         addEdge.isEnabled = true
         let appDelegate = NSApplication.shared().delegate as! AppDelegate
@@ -207,8 +207,8 @@ class graphViewController: NSViewController {
         return
     }
     
-    func addGroupWithData(name: String, maxGroupTime: Int)  {
-        groups.append(Group(name: name, maxGroupTime: maxGroupTime) as GraphElement)
+    func addGroupWithData(name: String, maxGroupTime: Int, groupID: Int = -1)  {
+        groups.append(Group(name: name, maxGroupTime: maxGroupTime, groupID: groupID) as GraphElement)
         
         if groups.count > 0 {
             addNode.isEnabled = true
@@ -242,26 +242,35 @@ class graphViewController: NSViewController {
                 for element in 1..<dataRow.count {                                                  //Végigmegyünk az összes soron, keresve a gráfcsoportokat
                     let stringArray = dataRow[element].components(separatedBy: " ")
                     if (stringArray[0] == "Subgraph") || (stringArray[0] == "subgraph") {           //Ha tartalmazza a Subgraph vagy subgraph stringet, akkor ez egy szubgráf definíció
-                        let groupID = stringArray[1]                                                //Leszedjük belőle a csoportID-t
+
+                        var groupID : Int                                           //Leszedjük belőle a csoportID-t
                         var groupName : String = "Csoport1"                                         //Csoport1 lesz a default csoportnév
                         var groupMax : Int                                                       //Csoport időkorlát
                         let attributes = dataRow[element].range(of: "(?<={)[^}]+", options: .regularExpression) //Megnézzük mi van a kapcsos zárójelen belül
                         let prop = dataRow[element].components(separatedBy: " ")
+                        //print(dataRow[element])
+                        groupName = prop[1]
+                        
+                        if let propArray = prop[2].range(of: "(?<=\")[^:]+", options: .regularExpression) {
+                            groupID = Int(prop[2].substring(with: propArray))!
+                        } else {
+                            groupID = -2
+                        }
+                        if let propArray2 = prop[2].range(of: "(?<=:)[^\"]+", options: .regularExpression) {
+                            groupMax = Int(prop[2].substring(with: propArray2))!
+                        } else {
+                            groupMax = 0
+                        }
+                        addGroupWithData(name: groupName, maxGroupTime: groupMax, groupID: groupID)            //Hozzáadjuk a csoportot
+                        /*
                         for i in 0..<prop.count {
                             if prop[i].range(of: "label") != nil {                                  //Ha van benne label, akkor abban a stringben lesznek az attribútumok
                                 
-                                if let propArray = prop[i].range(of: "(?<=\")[^:]+", options: .regularExpression) {
-                                    groupName = prop[i].substring(with: propArray)
-                                }
-                                if let propArray2 = prop[i].range(of: "(?<=:)[^\"]+", options: .regularExpression) {
-                                    groupMax = Int(prop[i].substring(with: propArray2))!
-                                } else {
-                                    groupMax = 0
-                                }
-                                addGroupWithData(name: groupName, maxGroupTime: groupMax)            //Hozzáadjuk a csoportot
+                                
                             }
                             
-                        }
+                        }*/
+                       
                     }
                     
                 }
@@ -269,10 +278,10 @@ class graphViewController: NSViewController {
                 for element in 1..<(dataRow.count-3) {
                     var nodeName : String
                     var nodeWeight : Int
-                    var nodeGroup : Int
+                    var nodeGroupID : Int
                     
-                    var edgeNode1 : Int
-                    var edgeNode2 : Int
+                    var edgeNode1ID : Int
+                    var edgeNode2ID : Int
                     var edgeName : String
                     var edgeWeight : Int
                     
@@ -289,16 +298,18 @@ class graphViewController: NSViewController {
                                 nodeName = propArray2[0]
                             }
                             nodeWeight = Int(propArray2[5])!
-                            nodeGroup = Int(propArray2[6])!+numberOfGroups
+                            nodeGroupID = Int(propArray2[6])!+numberOfGroups
                             let tmpnodeID = Int(stringArray[0])!+numberOfNodes
                             
-                            nodeGroupDictionary[tmpnodeID] = nodeGroup
+                            nodeGroupDictionary[tmpnodeID] = nodeGroupID
+                            //let index = groups.index(of: )
+                            let index = groups.index(where: { ($0 as! Group).groupID == nodeGroupID})!
                             
-                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[nodeGroup] as! Group)
+                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[index] as! Group, nodeID: tmpnodeID)
                         }
                     } else if stringArray[1] == "->" {
-                        edgeNode1 = Int(stringArray[0])!
-                        edgeNode2 = Int(stringArray[2])!
+                        edgeNode1ID = Int(stringArray[0])!
+                        edgeNode2ID = Int(stringArray[2])!
                         if let propArray = dataRow[element].range(of: "(?<=\")[^\"]+", options: .regularExpression) {
                             let groupMax = dataRow[element].substring(with: propArray)
                             let propArray2 = groupMax.components(separatedBy: ":")
@@ -313,8 +324,37 @@ class graphViewController: NSViewController {
                             
                             
                             
+                            var index1N: Int = -1
+                            var index1G: Int = -1
+                            
+                            for i in 0..<groups.count {
+                                    index1N = groups[i].children.index(where: {
+                                        ($0 as! Node).nodeID == edgeNode1ID
+                                    })!
+                                if index1N != -1 {
+                                    index1G = i
+                                    break
+                                }
+                            }
+
+                            var index2N: Int = -1
+                            var index2G: Int = -1
+                            
+                            for i in 0..<groups.count {
+                                index2N = groups[i].children.index(where: {
+                                    ($0 as! Node).nodeID == edgeNode2ID
+                                })!
+                                if index2N != -1 {
+                                    index2G = i
+                                    break
+                                }
+                            }
+                            
+                            
                             //Itt még a groups 0-t javítani kell
-                            addEdgeWithData(name: edgeName, weight: edgeWeight, type: .none, node1: groups[nodeGroupDictionary[edgeNode1+numberOfNodes]!].children[edgeNode1] as! Node, node2: groups[nodeGroupDictionary[edgeNode2+numberOfNodes]!].children[edgeNode2] as! Node)
+                            addEdgeWithData(name: edgeName, weight: edgeWeight, type: .none,
+                                            node1: groups[index1G].children[index1N] as! Node,
+                                            node2: groups[index2G].children[index2N] as! Node)
                         }
                     }
                     

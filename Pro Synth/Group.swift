@@ -34,13 +34,24 @@ class Group: GraphElement {
 //!                 TODO: numberOfNode rendes implementációja
 //////////////////////////////////////////////////////////////////////////////////////
     
-    init(name: String, maxGroupTime: Int) {
+    init(name: String, maxGroupTime: Int, groupID: Int = -1) {
         
+        if groupID == (-1) {
+            self.groupID = Group.currentGroupID
+            Group.currentGroupID += 1
+        } else {
+            self.groupID = groupID
+            Group.currentGroupID = groupID
+        }
+        print(self.groupID)
         self.maxTime = maxGroupTime
-        self.groupID = Group.currentGroupID
-        Group.currentGroupID += 1
+
         self.numberOfNode = 0
         super.init(name: name)
+    }
+    
+    func getGroupID() -> Int {
+        return self.groupID
     }
     
 }

@@ -37,11 +37,15 @@ class Node: GraphElement {
 //!                 Inicializáláskor megkapja a súlyát
 //!///////////////////////////////////////////////////////////////////////////////////
 
-    init(name: String, weight:Int) {
+    init(name: String, weight:Int, nodeID: Int = -1) {
         // ID kiosztó szerkezet
-
-        self.nodeID = Node.currentNodeID
-        Node.currentNodeID += 1
+        if nodeID == (-1) {
+            self.nodeID = Node.currentNodeID
+            Node.currentNodeID += 1
+        } else {
+            self.nodeID = nodeID
+            Node.currentNodeID = nodeID
+        }
         
         self.weight = weight
         super.init(name: name)
