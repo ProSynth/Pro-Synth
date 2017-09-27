@@ -16,7 +16,7 @@ class nodeGlobalAttributeViewController: NSViewController {
 
     @IBOutlet weak var name: NSTextField!
     @IBOutlet weak var nodeID: NSTextField!
-    @IBOutlet weak var weight: NSTokenField!
+    @IBOutlet weak var weight: NSTextField!
     @IBOutlet weak var weightStepper: NSStepper!
     @IBOutlet weak var operationType: NSComboBox!
     @IBOutlet weak var operationPredefined: NSButton!

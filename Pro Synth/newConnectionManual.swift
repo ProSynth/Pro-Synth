@@ -68,6 +68,7 @@ class newConnectionManual: NSViewController {
     @IBOutlet weak var customName: NSButton!
     @IBOutlet weak var name: NSTextField!
     @IBOutlet weak var nameLabel: NSTextField!
+    @IBOutlet weak var edgeDataType: NSComboBox!
     
     @IBOutlet weak var cancel: NSButton!
     @IBOutlet weak var create: NSButton!
@@ -89,6 +90,11 @@ class newConnectionManual: NSViewController {
         
         create.keyEquivalent = "\u{0d}"
         cancel.keyEquivalent = "\u{1b}"
+        
+        edgeDataType.removeAllItems()
+        for i in 0..<edgeDataTypeArray.count {
+            edgeDataType.addItem(withObjectValue: edgeDataTypeArray[i].name)
+        }
         
         name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem]) connection"
     }
@@ -130,10 +136,12 @@ class newConnectionManual: NSViewController {
     }
     
     @IBAction func create(_ sender: NSButton) {
+        //edgeDataTypeArray.append(edgeDataType(name: edgeDataType.stringValue, defaultWeight: weightStepper.integerValue))
         
         delegate?.createConnectionFromData(name: name.stringValue, weight: weightStepper.integerValue, type: .none, node1Index: nodePath[node1Selector.indexOfSelectedItem], node2Index: nodePath[node2Selector.indexOfSelectedItem])
         weightText.stringValue = "0"
         weightStepper.integerValue = 0
+    
         self.dismissViewController(self)
     }
 }

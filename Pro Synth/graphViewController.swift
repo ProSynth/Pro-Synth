@@ -326,28 +326,37 @@ class graphViewController: NSViewController {
                             
                             var index1N: Int = -1
                             var index1G: Int = -1
-                            
-                            for i in 0..<groups.count {
-                                    index1N = groups[i].children.index(where: {
-                                        ($0 as! Node).nodeID == edgeNode1ID
-                                    })!
-                                if index1N != -1 {
-                                    index1G = i
-                                    break
-                                }
-                            }
-
                             var index2N: Int = -1
                             var index2G: Int = -1
                             
                             for i in 0..<groups.count {
-                                index2N = groups[i].children.index(where: {
-                                    ($0 as! Node).nodeID == edgeNode2ID
-                                })!
-                                if index2N != -1 {
-                                    index2G = i
+                                for k in 0..<groups[i].children.count {
+                                    if (groups[i].children[k] as! Node).nodeID == edgeNode1ID {
+                                        index1N = k
+                                        index1G = i
+                                        
+                                    }
+                                    
+                                    if (groups[i].children[k] as! Node).nodeID == edgeNode2ID {
+                                        index2N = k
+                                        index2G = i
+                                        
+                                    }
+                                }
+                            }
+                            
+                            /* Éltípus hozzáadása */
+                            
+                            for i in 0..<edgeDataTypeArray.count {
+                                if (edgeDataTypeArray[i].name == propArray2[2]) {
                                     break
                                 }
+                                
+                            }
+                            if edgeDataTypeArray.contains(where: {($0 ).name == propArray2[2] }) {
+                                
+                            } else {
+                                edgeDataTypeArray.append(edgeDataType(name: propArray2[2], defaultWeight: edgeWeight))
                             }
                             
                             

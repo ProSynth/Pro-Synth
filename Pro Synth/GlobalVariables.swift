@@ -65,6 +65,20 @@ struct edgeAttributes {
     }
 }
 
+class edgeDataType {
+    
+    var name : String
+    var defaultWeight : Int
+    
+    init(name:String, defaultWeight:Int) {
+        self.name = name
+        self.defaultWeight = defaultWeight
+    }
+    
+}
+
+var edgeDataTypeArray = [edgeDataType]()
+
 var edgeAttributesP1:edgeAttributes = edgeAttributes(name: "", weight: -1, edgeID: -1)
 var nodeAttributesPl:nodeAttributes = nodeAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
 var groupAttributesP1:groupAttributes = groupAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
