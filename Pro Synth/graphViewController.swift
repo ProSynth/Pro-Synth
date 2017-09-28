@@ -197,9 +197,9 @@ class graphViewController: NSViewController {
         node2.children.append(tmpEdge as GraphElement)
     }
     
-    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group, nodeID: Int = -1)  {
+    func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group, nodeOpType:nodeOpType, nodeID: Int = -1)  {
         
-        group.children.append(Node(name: name, weight: weight, nodeID: nodeID) as GraphElement)
+        group.children.append(Node(name: name, weight: weight, nodeOpType: nodeOpType, nodeID: nodeID) as GraphElement)
         
         addEdge.isEnabled = true
         let appDelegate = NSApplication.shared().delegate as! AppDelegate
@@ -305,7 +305,18 @@ class graphViewController: NSViewController {
                             //let index = groups.index(of: )
                             let index = groups.index(where: { ($0 as! Group).groupID == nodeGroupID})!
                             
-                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[index] as! Group, nodeID: tmpnodeID)
+                            for i in 0..<nodeOpTypeArray.count {
+                                if (nodeOpTypeArray[i].name == propArray2[1]) {
+                                    break
+                                }
+                            }
+                            if nodeOpTypeArray.contains(where: {($0 ).name == propArray2[1] }) {
+                                
+                            } else {
+                                nodeOpTypeArray.append(nodeOpType(name: propArray2[1], defaultWeight: nodeWeight))
+                            }
+                            
+                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[index] as! Group, nodeOpType: nodeOpType(name:propArray2[1] ,defaultWeight:nodeWeight), nodeID: tmpnodeID)
                         }
                     } else if stringArray[1] == "->" {
                         edgeNode1ID = Int(stringArray[0])!
@@ -351,7 +362,6 @@ class graphViewController: NSViewController {
                                 if (edgeDataTypeArray[i].name == propArray2[2]) {
                                     break
                                 }
-                                
                             }
                             if edgeDataTypeArray.contains(where: {($0 ).name == propArray2[2] }) {
                                 
@@ -400,9 +410,9 @@ class graphViewController: NSViewController {
 // Extensions!!!!
 
 extension graphViewController: newNodeDelegate {
-    func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int) {
+    func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int, nodeOpType:nodeOpType) {
         
-        addNodeWithData(name: name, weight: weight, type: type, group: groups[groupIndex] as! Group)
+        addNodeWithData(name: name, weight: weight, type: type, group: groups[groupIndex] as! Group, nodeOpType: nodeOpType)
     }
 }
 
@@ -542,6 +552,7 @@ extension graphViewController: NSOutlineViewDelegate {
             nodeAttributesPl.nodeID = (groups[path[0]].children[path[1]] as! Node).nodeID
             nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
             nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
+            nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType
             NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
         case 3:
             edgeAttributesP1.name = groups[path[0]].children[path[1]].children[path[2]].name

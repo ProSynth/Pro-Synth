@@ -28,7 +28,7 @@ protocol newNodeDelegate {
 //!                 ahhoz, hogy létrehozhassa a megfelelő helyen az új pontot
 //////////////////////////////////////////////////////////////////////////////////////
     
-    func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int)
+    func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int, nodeOpType:nodeOpType)
  
 }
 
@@ -131,7 +131,7 @@ class newNode: NSViewController {
     @IBAction func create(_ sender: AnyObject) {
         
         weight = weightStepper.integerValue
-        delegate?.createNodeFromData(name: name.stringValue, weight: weight, type: .none, groupIndex: selectionIndex)
+        delegate?.createNodeFromData(name: name.stringValue, weight: weight, type: .none, groupIndex: selectionIndex, nodeOpType: nodeOpType(name: opType.stringValue, defaultWeight: weight))
         name.stringValue = ""
         weightText.stringValue = "0"
         weightStepper.integerValue = 0

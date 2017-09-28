@@ -29,13 +29,15 @@ struct nodeAttributes {
     var nodeID:Int
     var groupID:Int
     var numberOfEdge: Int
+    var opType: nodeOpType
     
-    init (name:String, weight:Int, nodeID:Int, groupID:Int) {
+    init (name:String, weight:Int, nodeID:Int, groupID:Int, opType:nodeOpType) {
         self.name = name
         self.weight = weight
         self.nodeID = nodeID
         self.groupID = groupID
         self.numberOfEdge = 0
+        self.opType = opType
     }
 }
 
@@ -77,9 +79,21 @@ class edgeDataType {
     
 }
 
+class nodeOpType {
+    
+    var name: String
+    var defaultWeight: Int
+    
+    init(name:String, defaultWeight:Int) {
+        self.name = name
+        self.defaultWeight = defaultWeight
+    }
+}
+
 var edgeDataTypeArray = [edgeDataType]()
+var nodeOpTypeArray = [nodeOpType]()
 
 var edgeAttributesP1:edgeAttributes = edgeAttributes(name: "", weight: -1, edgeID: -1)
-var nodeAttributesPl:nodeAttributes = nodeAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
+var nodeAttributesPl:nodeAttributes = nodeAttributes(name: "", weight: -1, nodeID: -1, groupID: -1, opType: nodeOpType(name: "", defaultWeight: -1))
 var groupAttributesP1:groupAttributes = groupAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
 

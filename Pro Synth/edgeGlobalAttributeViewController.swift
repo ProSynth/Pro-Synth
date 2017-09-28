@@ -29,6 +29,7 @@ class edgeGlobalAttributeViewController: NSViewController {
     func update() {
         name.stringValue = edgeAttributesP1.name
         edgeID.stringValue = String(edgeAttributesP1.edgeID)
+        print(edgeAttributesP1.weight)
         weightText.integerValue = edgeAttributesP1.weight
         weightStepper.integerValue = weightText.integerValue
     }
