@@ -97,3 +97,5 @@ var edgeAttributesP1:edgeAttributes = edgeAttributes(name: "", weight: -1, edgeI
 var nodeAttributesPl:nodeAttributes = nodeAttributes(name: "", weight: -1, nodeID: -1, groupID: -1, opType: nodeOpType(name: "", defaultWeight: -1))
 var groupAttributesP1:groupAttributes = groupAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
 
+var groupAttribute:Group = Group(name: "Attribútum", maxGroupTime: 0, groupID: -2)
+var nodeAttribute:Node = Node(name: " ", weight: -1, nodeOpType: nodeOpTypeArray[0], nodeID: -2)

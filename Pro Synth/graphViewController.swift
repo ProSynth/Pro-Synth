@@ -369,9 +369,10 @@ class graphViewController: NSViewController {
                                 edgeDataTypeArray.append(edgeDataType(name: propArray2[2], defaultWeight: edgeWeight))
                             }
                             
+                            let defaultString : String = "\(groups[index1G].children[index1N].name) - \(groups[index2G].children[index2N].name) él"
                             
                             //Itt még a groups 0-t javítani kell
-                            addEdgeWithData(name: edgeName, weight: edgeWeight, type: .none,
+                            addEdgeWithData(name: defaultString, weight: edgeWeight, type: .none,
                                             node1: groups[index1G].children[index1N] as! Node,
                                             node2: groups[index2G].children[index2N] as! Node)
                         }
@@ -545,6 +546,9 @@ extension graphViewController: NSOutlineViewDelegate {
             groupAttributesP1.name = groups[path[0]].name
             groupAttributesP1.groupID = (groups[path[0]] as! Group).groupID
             groupAttributesP1.maxTime = (groups[path[0]] as! Group).maxTime
+            
+            groupAttribute = groups[path[0]] as! Group
+            
             NotificationCenter.default.post(name: Notification.Name("groupAttribute"), object: self)
         case 2:
             nodeAttributesPl.name = groups[path[0]].children[path[1]].name
@@ -553,6 +557,9 @@ extension graphViewController: NSOutlineViewDelegate {
             nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
             nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
             nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType
+            
+            nodeAttribute = groups[path[0]].children[path[1]] as! Node
+            
             NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
         case 3:
             edgeAttributesP1.name = groups[path[0]].children[path[1]].children[path[2]].name
@@ -565,6 +572,7 @@ extension graphViewController: NSOutlineViewDelegate {
         
         //let selectedItem = graphOutlineView.item(atRow: graphOutlineView.selectedRow) as? GraphElement
         //print(selectedItem?.name as Any)
+        
         
     }
 }

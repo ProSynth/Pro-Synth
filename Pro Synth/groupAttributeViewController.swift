@@ -10,9 +10,11 @@ import Cocoa
 
 class groupAttributeViewController: NSSplitViewController {
 
+    @IBOutlet weak var groupGlobalAttribute: NSSplitViewItem!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
+        NSLayoutConstraint(item: groupGlobalAttribute.viewController.view, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 285)
     }
     
 }

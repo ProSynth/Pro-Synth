@@ -43,6 +43,8 @@ class Node: GraphElement {
         if nodeID == (-1) {
             self.nodeID = Node.currentNodeID
             Node.currentNodeID += 1
+        } else if nodeID == -2 {
+            self.nodeID = nodeID
         } else {
             self.nodeID = nodeID
             Node.currentNodeID = nodeID

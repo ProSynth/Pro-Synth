@@ -39,6 +39,8 @@ class Group: GraphElement {
         if groupID == (-1) {
             self.groupID = Group.currentGroupID
             Group.currentGroupID += 1
+        } else if groupID == (-2) {
+            self.groupID = groupID
         } else {
             self.groupID = groupID
             Group.currentGroupID = groupID

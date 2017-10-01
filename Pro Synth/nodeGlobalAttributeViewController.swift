@@ -30,6 +30,7 @@ class nodeGlobalAttributeViewController: NSViewController {
         //graphViewController?.globalAttributeDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(self.update), name: Notification.Name("nodeAttribute"), object: nil)
         update()
+        
         operationType.removeAllItems()
         for i in 0..<nodeOpTypeArray.count {
             operationType.addItem(withObjectValue: nodeOpTypeArray[i].name)
@@ -42,12 +43,12 @@ class nodeGlobalAttributeViewController: NSViewController {
     
     
     func update() {
-        name.stringValue = nodeAttributesPl.name
-        nodeID.stringValue = String(nodeAttributesPl.nodeID)
-        weightText.integerValue = nodeAttributesPl.weight
-        numberOfEdge.integerValue = nodeAttributesPl.numberOfEdge
+        name.stringValue = (nodeAttribute as GraphElement).name
+        nodeID.stringValue = String(nodeAttribute.nodeID)
+        weightText.integerValue = nodeAttribute.weight
+        numberOfEdge.integerValue = nodeAttribute.numberOfConnectedEdge
         weightStepper.integerValue = weightText.integerValue
-        let opIndex = nodeOpTypeArray.index(where: {$0.name == nodeAttributesPl.opType.name})!
+        let opIndex = nodeOpTypeArray.index(where: {$0.name == nodeAttribute.opType.name})!
         operationType.selectItem(at: opIndex)
     }
     
