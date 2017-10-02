@@ -48,8 +48,13 @@ class nodeGlobalAttributeViewController: NSViewController {
         weightText.integerValue = nodeAttribute.weight
         numberOfEdge.integerValue = nodeAttribute.numberOfConnectedEdge
         weightStepper.integerValue = weightText.integerValue
-        let opIndex = nodeOpTypeArray.index(where: {$0.name == nodeAttribute.opType.name})!
-        operationType.selectItem(at: opIndex)
+        /*for item in 0..<nodeOpTypeArray.count {
+            if nodeOpTypeArray[item].name == nodeAttribute.opType.name {
+                operationType.selectItem(at: item)
+            }
+        }*/
+        //let opIndex = nodeOpTypeArray.index(where: {$0.name == nodeAttribute.opType.name})!
+        //operationType.selectItem(at: opIndex)
     }
     
 }

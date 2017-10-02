@@ -30,7 +30,7 @@ class graphViewController: NSViewController {
     
     var url : NSURL = NSURL(string:"")!
     
-    
+
     
     lazy var newNode : newNode? = {
         return self.storyboard!.instantiateController(withIdentifier: "newNode")
@@ -66,8 +66,10 @@ class graphViewController: NSViewController {
     
     @IBOutlet var graphTreeController: NSTreeController!
     @IBOutlet weak var graphOutlineView: NSOutlineView!
+    @IBOutlet weak var graphScrollView: NSScrollView!
     
-
+    @IBOutlet weak var sideBarWidth: NSLayoutConstraint!
+    
 
     @IBAction func addGraphMenuButton(_ sender: NSButton) {
     
@@ -180,6 +182,9 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
+        /* Oldalsáv kezelése */
+        NotificationCenter.default.addObserver(self, selector: #selector(self.hideSidebar), name: Notification.Name("hideGraphSidebar"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.showSidebar), name: Notification.Name("showGraphSidebar"), object: nil)
         newNode?.delegate = self
         newGroup?.delegate = self
         newConnectionManual?.delegate = self
@@ -392,7 +397,25 @@ class graphViewController: NSViewController {
         
         NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
     }
+    
 
+    @objc func showSidebar()  {
+        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+            context.duration = 0.25
+            self.sideBarWidth.animator().constant = 300
+        }, completionHandler: { ()-> Void in
+            
+        })
+    }
+    
+    @objc func hideSidebar()  {
+        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+            context.duration = 0.25
+            self.sideBarWidth.animator().constant = 0
+        }, completionHandler: { ()-> Void in
+            
+        })
+    }
 }
 
 
@@ -573,7 +596,7 @@ extension graphViewController: NSOutlineViewDelegate {
         //let selectedItem = graphOutlineView.item(atRow: graphOutlineView.selectedRow) as? GraphElement
         //print(selectedItem?.name as Any)
         
-        
+       
     }
 }
 

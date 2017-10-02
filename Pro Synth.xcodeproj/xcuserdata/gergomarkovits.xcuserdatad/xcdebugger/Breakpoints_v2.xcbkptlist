@@ -6,63 +6,31 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/nodeGlobalAttributeViewController.swift"
-            timestampString = "528585895.062473"
+            timestampString = "528675891.253414"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "51"
-            endingLineNumber = "51"
-            landmarkName = "update()"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Pro_Synth.nodeGlobalAttributeViewController.update() -&gt; ()"
-                  moduleName = "Pro Synth"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/gergomarkovits/ProSynth/Pro-Synth/Pro%20Synth/nodeGlobalAttributeViewController.swift"
-                  timestampString = "528585895.373478"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "51"
-                  endingLineNumber = "51"
-                  offsetFromSymbolStart = "1895">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Pro_Synth.nodeOpType) -&gt; Swift.Bool in Pro_Synth.nodeGlobalAttributeViewController.update() -&gt; ()"
-                  moduleName = "Pro Synth"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/gergomarkovits/ProSynth/Pro-Synth/Pro%20Synth/nodeGlobalAttributeViewController.swift"
-                  timestampString = "528585895.375526"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "51"
-                  endingLineNumber = "51"
-                  offsetFromSymbolStart = "17">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/nodeGlobalAttributeViewController.swift"
-            timestampString = "528585895.062929"
+            timestampString = "528675891.253463"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "52"
-            endingLineNumber = "52"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
             landmarkName = "update()"
             landmarkType = "7">
          </BreakpointContent>

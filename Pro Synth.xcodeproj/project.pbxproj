@@ -35,6 +35,7 @@
 		3F89FE111F74627300F7B623 /* GlobalVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F89FE101F74627300F7B623 /* GlobalVariables.swift */; };
 		3F921CE81F5A11C2004FD276 /* newGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F921CE71F5A11C2004FD276 /* newGroup.swift */; };
 		3F9CB19F1F549F8D00451649 /* GraphElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9CB19E1F549F8D00451649 /* GraphElement.swift */; };
+		3FAFA6FD1F82D40E005F57FB /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FAFA6FC1F82D40E005F57FB /* WindowController.swift */; };
 		3FB5BC7E1F817253006A2A72 /* SplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB5BC7D1F817253006A2A72 /* SplitViewController.swift */; };
 		3FB5BC821F817959006A2A72 /* nodeSinthesisAttributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB5BC811F817959006A2A72 /* nodeSinthesisAttributeViewController.swift */; };
 		3FEFCF561F767CD1001FA2A9 /* edgeAttributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FEFCF551F767CD1001FA2A9 /* edgeAttributeViewController.swift */; };
@@ -96,6 +97,7 @@
 		3F89FE101F74627300F7B623 /* GlobalVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariables.swift; sourceTree = "<group>"; };
 		3F921CE71F5A11C2004FD276 /* newGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = newGroup.swift; sourceTree = "<group>"; };
 		3F9CB19E1F549F8D00451649 /* GraphElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphElement.swift; sourceTree = "<group>"; };
+		3FAFA6FC1F82D40E005F57FB /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		3FB5BC7D1F817253006A2A72 /* SplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
 		3FB5BC811F817959006A2A72 /* nodeSinthesisAttributeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nodeSinthesisAttributeViewController.swift; sourceTree = "<group>"; };
 		3FEFCF551F767CD1001FA2A9 /* edgeAttributeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = edgeAttributeViewController.swift; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 				3F0928B51F5192C7000997B2 /* ViewControllers */,
 				3F29248C1F45A11600F3130E /* Info.plist */,
 				3F2924B51F45B21E00F3130E /* Kép1.png */,
+				3FAFA6FC1F82D40E005F57FB /* WindowController.swift */,
 			);
 			path = "Pro Synth";
 			sourceTree = "<group>";
@@ -415,6 +418,7 @@
 				3F226A681F75CA17004733A8 /* groupAttributeViewController.swift in Sources */,
 				3FEFCF561F767CD1001FA2A9 /* edgeAttributeViewController.swift in Sources */,
 				3F2924BD1F45B3E300F3130E /* welcomeCollectionViewItem.swift in Sources */,
+				3FAFA6FD1F82D40E005F57FB /* WindowController.swift in Sources */,
 				3F226A641F75C620004733A8 /* groupSinthesisAttributeViewController.swift in Sources */,
 				3F921CE81F5A11C2004FD276 /* newGroup.swift in Sources */,
 				3F2924841F45A11600F3130E /* ViewController.swift in Sources */,
