@@ -17,9 +17,28 @@ class SplitViewController: NSSplitViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-        NSLayoutConstraint(item: attributesViewItem.viewController.view, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 285)
+
         
-        NSLayoutConstraint(item: graphViewItem.viewController.view, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 245)
+        /* Oldalsáv kezelése */
+        NotificationCenter.default.addObserver(self, selector: #selector(self.hideGraphSidebar), name: Notification.Name("hideGraphSidebar"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.showGraphSidebar), name: Notification.Name("showGraphSidebar"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.hideAttrSidebar), name: Notification.Name("hideAttrSidebar"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.showAttrSidebar), name: Notification.Name("showAttrSidebar"), object: nil)
     }
     
+    @objc func showGraphSidebar()  {
+        graphViewItem.animator().isCollapsed = false
+    }
+    
+    @objc func hideGraphSidebar()  {
+        graphViewItem.animator().isCollapsed = true
+    }
+    
+    @objc func showAttrSidebar()  {
+        attributesViewItem.animator().isCollapsed = false
+    }
+    
+    @objc func hideAttrSidebar()  {
+        attributesViewItem.animator().isCollapsed = true
+    }
 }

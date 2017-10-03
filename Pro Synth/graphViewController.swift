@@ -182,9 +182,7 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
-        /* Oldalsáv kezelése */
-        NotificationCenter.default.addObserver(self, selector: #selector(self.hideSidebar), name: Notification.Name("hideGraphSidebar"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.showSidebar), name: Notification.Name("showGraphSidebar"), object: nil)
+
         newNode?.delegate = self
         newGroup?.delegate = self
         newConnectionManual?.delegate = self
@@ -399,23 +397,7 @@ class graphViewController: NSViewController {
     }
     
 
-    @objc func showSidebar()  {
-        NSAnimationContext.runAnimationGroup({ (context) -> Void in
-            context.duration = 0.25
-            self.sideBarWidth.animator().constant = 300
-        }, completionHandler: { ()-> Void in
-            
-        })
-    }
-    
-    @objc func hideSidebar()  {
-        NSAnimationContext.runAnimationGroup({ (context) -> Void in
-            context.duration = 0.25
-            self.sideBarWidth.animator().constant = 0
-        }, completionHandler: { ()-> Void in
-            
-        })
-    }
+
 }
 
 
