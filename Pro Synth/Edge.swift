@@ -29,6 +29,8 @@ class Edge: GraphElement {
     var type: EdgeType                  //Kapcoslat típusa
     static var  currentEdgeID : Int = 0
     var edgeID : Int
+    var parentNode1 : Node
+    var parentNode2 : Node
     
 //////////////////////////////////////////////////////////////////////////////////////
 //!         Function
@@ -39,11 +41,13 @@ class Edge: GraphElement {
 //!                 Inicializáláskor megkapja a súlyát
 //!///////////////////////////////////////////////////////////////////////////////////
     
-    init(name: String, weight:Int) {
+    init(name: String, weight:Int, parentNode1:Node, parentNode2:Node) {
         self.weight = weight
         self.edgeID = Edge.currentEdgeID
         Edge.currentEdgeID += 1
         self.type = .none
+        self.parentNode1 = parentNode1
+        self.parentNode2 = parentNode2
         super.init(name: name)
     }
     

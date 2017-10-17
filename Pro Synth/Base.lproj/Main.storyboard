@@ -770,6 +770,9 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
+                                    <connections>
+                                        <action selector="start:" target="jGA-0Y-lOj" id="vbf-fC-0u2"/>
+                                    </connections>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="55392F98-12E0-4151-9AE0-719CE853AA88" label="Custom View" paletteLabel="Custom View" image="NSStopProgressFreestandingTemplate" id="xIg-uv-oUt">
                                     <nil key="toolTip"/>
@@ -819,6 +822,7 @@
                     <connections>
                         <outlet property="hideShowSidebar" destination="cBI-to-Wtz" id="izC-5m-j8x"/>
                         <outlet property="sidebars" destination="cBI-to-Wtz" id="1DE-aY-ItF"/>
+                        <outlet property="start" destination="rMI-mh-5Ml" id="Ead-Vt-eqx"/>
                         <segue destination="lYi-tC-DBZ" kind="relationship" relationship="window.shadowedContentViewController" id="SiP-Rc-ne0"/>
                     </connections>
                 </windowController>
@@ -1590,7 +1594,7 @@ Gw
                                             </comboBoxCell>
                                         </comboBox>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Re6-jx-Jwp">
-                                            <rect key="frame" x="20" y="178" width="411" height="4"/>
+                                            <rect key="frame" x="20" y="178" width="411" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="031-LU-TOV">
@@ -2151,7 +2155,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="pl7-yj-aZl">
-                                    <rect key="frame" x="1" y="119" width="238" height="15"/>
+                                    <rect key="frame" x="1" y="7" width="0.0" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="b0P-qy-VmT">
@@ -2644,6 +2648,6 @@ Gw
         <image name="NSGoRightTemplate" width="9" height="12"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
+        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
     </resources>
 </document>

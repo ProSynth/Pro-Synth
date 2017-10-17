@@ -182,6 +182,8 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.pushMatrix), name: Notification.Name("startSynth"), object: nil)
 
         newNode?.delegate = self
         newGroup?.delegate = self
@@ -195,7 +197,7 @@ class graphViewController: NSViewController {
     }
     
     func addEdgeWithData(name:String, weight:Int, type:EdgeType, node1:Node, node2:Node) {
-        let tmpEdge = Edge(name: name, weight: weight)
+        let tmpEdge = Edge(name: name, weight: weight, parentNode1:node1, parentNode2:node2)
         node1.children.append(tmpEdge as GraphElement)
         node2.children.append(tmpEdge as GraphElement)
     }
@@ -396,7 +398,51 @@ class graphViewController: NSViewController {
         NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
     }
     
+    
+    func pushMatrix() {
+        var sizeOfMatrix : Int = 0
+        for i in 0..<groups.count {             // Összeszámolja az összes pontot a gráfban
+            sizeOfMatrix += groups[i].children.count
+        }
+        Matrix.removeAll()
+        for i in 0..<sizeOfMatrix*sizeOfMatrix {
+            Matrix.append(0)
+        }
 
+        
+        for i in 0..<groups.count {
+            for j in 0..<groups[i].children.count {
+                for k in 0..<groups[i].children[j].children.count {
+                    let parent1 = (groups[i].children[j].children[k] as! Edge).parentNode1
+                    let parent2 = (groups[i].children[j].children[k] as! Edge).parentNode2
+                    
+                    
+                    Matrix[parent2.nodeID*sizeOfMatrix + parent1.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
+                    Matrix[parent1.nodeID*sizeOfMatrix + parent2.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
+                    
+                    // Mi van, ha két pont között több él is van?
+                }
+            }
+        }
+        
+
+        
+        for j in 0..<sizeOfMatrix {
+            var rowSum : Double = 0
+            for i in (j*sizeOfMatrix)..<((j+1)*sizeOfMatrix) {
+                rowSum = rowSum + Matrix[i]
+            }
+            Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
+        }
+        
+        for i in 0..<sizeOfMatrix {
+            for j in 0..<sizeOfMatrix {
+                print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
+            }
+            print("\n")
+        }
+        
+    }
 
 }
 
@@ -544,7 +590,7 @@ extension graphViewController: NSOutlineViewDelegate {
 //////////////////////////////////////////////////////////////////////////////////////
     
     func outlineViewSelectionDidChange(_ notification: Notification) {
-        print((graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath)
+        //print((graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath)
         var path:IndexPath = (graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath
         switch path.count {
         case 1:

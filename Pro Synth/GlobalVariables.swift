@@ -99,3 +99,14 @@ var groupAttributesP1:groupAttributes = groupAttributes(name: "", weight: -1, no
 
 var groupAttribute:Group = Group(name: "Attribútum", maxGroupTime: 0, groupID: -2)
 var nodeAttribute:Node = Node(name: " ", weight: -1, nodeOpType: nodeOpTypeArray[0], nodeID: -2)
+
+
+
+
+
+
+
+
+
+/* WNCut globális változói */
+var Matrix = [Double](repeatElement(0, count: 4))

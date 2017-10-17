@@ -11,6 +11,7 @@ import Cocoa
 class WindowController: NSWindowController {
 
     @IBOutlet weak var sidebars: NSSegmentedControl!
+
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -32,6 +33,10 @@ class WindowController: NSWindowController {
         } else {
             NotificationCenter.default.post(name: Notification.Name("hideAttrSidebar"), object: self)
         }
+    }
+    
+    @IBAction func start(_ sender: NSToolbarItem) {
+        NotificationCenter.default.post(name: Notification.Name("startSynth"), object: self)
     }
     
 }
