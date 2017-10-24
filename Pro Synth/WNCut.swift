@@ -151,6 +151,7 @@ class WNCut: NSObject {
             
             
         }
+        return (Matrix,sizeOfMatrix)
     }
 }
 
