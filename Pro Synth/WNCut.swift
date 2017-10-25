@@ -11,7 +11,15 @@ import Cocoa
 import Accelerate
 import simd
 
+var eigVectorArray: [[Double]] = []
+var eigValueArray: [Double] = []
+
+var minEigVector: [Double] = []
+var minEigValue: Double!
+
 class WNCut: NSObject {
+
+    
 
     
     /* A Laplace Mátrix generáló */
@@ -50,8 +58,8 @@ class WNCut: NSObject {
             }
         }
         // D*(D-W)*D'
-        cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, sizeOfMatrixInt32, sizeOfMatrixInt32, sizeOfMatrixInt32, 1, &DiagMatrix, 1, &Matrix, 1, 0, &L1Matrix, 1)     // D*(D-W)
-        cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, sizeOfMatrixInt32, sizeOfMatrixInt32, sizeOfMatrixInt32, 1, &L1Matrix, 1, &DiagMatrix, 1, 0, &LaplaceMatrix, 1)      // (D*(D-W))*D' (D transzponálva!! bár nincs értelme)
+        cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, sizeOfMatrixInt32, sizeOfMatrixInt32, sizeOfMatrixInt32, 1, &DiagMatrix, sizeOfMatrixInt32, &Matrix, sizeOfMatrixInt32, 0, &L1Matrix, sizeOfMatrixInt32)     // D*(D-W)
+        cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, sizeOfMatrixInt32, sizeOfMatrixInt32, sizeOfMatrixInt32, 1, &L1Matrix, sizeOfMatrixInt32, &DiagMatrix, sizeOfMatrixInt32, 0, &LaplaceMatrix, sizeOfMatrixInt32)      // (D*(D-W))*D' (D transzponálva!! bár nincs értelme)
         
         return LaplaceMatrix
     }
@@ -60,14 +68,14 @@ class WNCut: NSObject {
     /* A Lánczos algoritmus egyetlen sajátvektorra */
     // Bemenet: A számolni kívánt mátrix, és mérete
     // Kimenet: A sajátvektor és a sajátérték
-    func Lanczos(Matrix : [Double], sizeOfMatrix: Int) -> (eig_vector: [Double], eig_value: Double) {
+    func Lanczos(Matrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: Double)? {
         
         /* Változók inicializálása */
         var v_prev = [Double](repeatElement(0x00, count: sizeOfMatrix))                     // Az előző felírt próbavektor
         var v = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
         var y = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A forgatott próbavektor
         var eig_value : Double              = 0x00                                          // A leendő sajátérték
-        var w_fault = [Double](repeatElement(Double(arc4random()), count: sizeOfMatrix))    // A hibavektor, ami az új próbavektor irányát adja majd
+        var w_fault = initVector                                                            // A hibavektor, ami az új próbavektor irányát adja majd
         var B_fault_norm : Double           = 0x00                                          // A hibavektor normáltja
         var S_Matrix : [Double]             = Matrix                                        // A szimmetrikus mátrix
         
@@ -100,7 +108,7 @@ class WNCut: NSObject {
             // A hibavektor Euklideszi normálása
             B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
             
-        } while (B_fault_norm != 0x00) && (k != sizeOfMatrix)
+        } while (B_fault_norm != 0x00) && (k != sizeOfMatrix) && (k != forcedTerminationStep)
         
         return (v, eig_value)
     }
@@ -111,7 +119,10 @@ class WNCut: NSObject {
     // Kimenet: Az új próbavektor
     func NewVector(eigVectors : [[Double]], sizeOfMatrix : Int, numberOfVectors : Int) -> [Double] {
         //var v = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
-        var v_new = [Double](repeatElement(Double(arc4random()), count: sizeOfMatrix))      // A hibavektor, ami az új próbavektor irányát adja majd
+        var v_new = [Double]()      // A hibavektor, ami az új próbavektor irányát adja majd
+        for i in 0..<sizeOfMatrix {
+            v_new.append(Double(arc4random()))
+        }
         
         var v_norm: Double = 0x00
         var alpha: Double = 0x00
@@ -153,14 +164,47 @@ class WNCut: NSObject {
         }
         return (Matrix,sizeOfMatrix)
     }
+    
+    func NCut(sourceMatrix: [Double], sizeOfMatrix: Int, groupDensity: Float) -> Bool {
+        
+        /* A Laplace Mátrix létrehozása */
+        let LMatrix = makeLaplace(matrix: Matrix, sizeOfMatrix: sizeOfMatrix)
+        
+        
+        /* A kezdeti sajátvektorok és sajátértékek kiszámítása, kisebb pontossággal */
+        for i in 0..<sizeOfMatrix {
+            var startVector = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
+            startVector = NewVector(eigVectors: eigVectorArray, sizeOfMatrix: sizeOfMatrix, numberOfVectors: eigVectorArray.count)
+            if let eigvv = Lanczos(Matrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: startVector, forcedTerminationStep: Int(sizeOfMatrix/100)) {
+                eigVectorArray.append(eigvv.eig_vector)
+                eigValueArray.append(eigvv.eig_value)
+            }
+        }
+        
+        /* A pontos sajátvektor kiszámítása */
+        if let index = eigValueArray.index(of: eigValueArray.min()!) {
+            let result = Lanczos(Matrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: eigVectorArray[index], forcedTerminationStep: nil)
+            minEigValue = result?.eig_value
+            minEigVector = (result?.eig_vector)!
+        } else {
+            NSLog("Nem bírta meghatározni a legkisebb sajátértéket.")
+        }
+        
+        print("A sajátérték: \(minEigValue) \nA sajátvektor: \(minEigVector)")
+        
+        return true
+    }
+    
+    
+    
+    
+    
+
+    
+    override init() {
+        super.init()
+    }
 }
-
-
-
-
-
-
-
 
 
 

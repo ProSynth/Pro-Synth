@@ -183,7 +183,7 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.pushMatrix), name: Notification.Name("startSynth"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
 
         newNode?.delegate = self
         newGroup?.delegate = self
@@ -399,7 +399,7 @@ class graphViewController: NSViewController {
     }
     
     
-    func pushMatrix() {
+    func pushMatrix() -> Int {
         var sizeOfMatrix : Int = 0
         for i in 0..<groups.count {             // Összeszámolja az összes pontot a gráfban
             sizeOfMatrix += groups[i].children.count
@@ -434,14 +434,23 @@ class graphViewController: NSViewController {
             }
             Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
         }
-        
+        /*
         for i in 0..<sizeOfMatrix {
             for j in 0..<sizeOfMatrix {
                 print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
             }
             print("\n")
         }
-        
+ */
+        return sizeOfMatrix
+    }
+    
+    func doSynth()  {
+        let sizeOfMatrix = pushMatrix()
+        NSLog("Kész a mátrixxá alakítás")
+        var synth: WNCut = WNCut()
+        synth.NCut(sourceMatrix: Matrix, sizeOfMatrix: sizeOfMatrix, groupDensity: 10)
+        NSLog("Kész van mindennel")
     }
 
 }
