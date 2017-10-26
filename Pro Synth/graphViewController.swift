@@ -376,6 +376,10 @@ class graphViewController: NSViewController {
                             
                             let defaultString : String = "\(groups[index1G].children[index1N].name) - \(groups[index2G].children[index2N].name) él"
                             
+                            if edgeWeight == 0 {
+                                print("Hiba van a forrás fájlban")
+                            }
+                            
                             //Itt még a groups 0-t javítani kell
                             addEdgeWithData(name: defaultString, weight: edgeWeight, type: .none,
                                             node1: groups[index1G].children[index1N] as! Node,
@@ -419,7 +423,7 @@ class graphViewController: NSViewController {
                     
                     Matrix[parent2.nodeID*sizeOfMatrix + parent1.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
                     Matrix[parent1.nodeID*sizeOfMatrix + parent2.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
-                    
+
                     // Mi van, ha két pont között több él is van?
                 }
             }

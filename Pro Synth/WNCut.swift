@@ -46,6 +46,7 @@ class WNCut: NSObject {
         for i in 0..<sizeOfMatrix {
             DiagVector[i] = sqrt(Diag[i])       // Gyökvonás elemenként
         }
+        
         for i in 0..<sizeOfMatrix {
             DiagVector[i] = 1/DiagVector[i]       // A vektor invertálása
         }
@@ -60,6 +61,12 @@ class WNCut: NSObject {
         // D*(D-W)*D'
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, sizeOfMatrixInt32, sizeOfMatrixInt32, sizeOfMatrixInt32, 1, &DiagMatrix, sizeOfMatrixInt32, &Matrix, sizeOfMatrixInt32, 0, &L1Matrix, sizeOfMatrixInt32)     // D*(D-W)
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, sizeOfMatrixInt32, sizeOfMatrixInt32, sizeOfMatrixInt32, 1, &L1Matrix, sizeOfMatrixInt32, &DiagMatrix, sizeOfMatrixInt32, 0, &LaplaceMatrix, sizeOfMatrixInt32)      // (D*(D-W))*D' (D transzponálva!! bár nincs értelme)
+        
+        for i in 0..<(sizeOfMatrix*sizeOfMatrix) {
+            if LaplaceMatrix[i].isNaN {
+                print("Nem szám is van benne")
+            }
+        }
         
         return LaplaceMatrix
     }
@@ -92,7 +99,7 @@ class WNCut: NSObject {
             v_prev = v                                                                      // Az előző próbavektort megjegyezzük, mert szükség lesz rá később
             
             for i in 0..<sizeOfMatrix {
-                v[i] = B_fault_norm * w_fault[i]                                      // A hiba vektor normalizálása
+                v[i] =  w_fault[i] / B_fault_norm                                            // A hiba vektor normalizálása
             }
             
             // A próbavektor forgatása a sajátvektor felé
@@ -108,7 +115,9 @@ class WNCut: NSObject {
             // A hibavektor Euklideszi normálása
             B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
             
-        } while (B_fault_norm != 0x00) && (k != sizeOfMatrix) && (k != forcedTerminationStep)
+            print("Ez a \(k)-adik kör, a sajátérték becslés:\(eig_value)")
+            
+        } while (B_fault_norm != 0x00) && (k != sizeOfMatrix) && (k != 100)
         
         return (v, eig_value)
     }
@@ -167,17 +176,26 @@ class WNCut: NSObject {
     
     func NCut(sourceMatrix: [Double], sizeOfMatrix: Int, groupDensity: Float) -> Bool {
         
+        for i in 0..<(sizeOfMatrix*sizeOfMatrix) {
+            if sourceMatrix[i].isNaN {
+                print("Nem szám is van a forrás mátrixban")
+            }
+        }
+        
+        
         /* A Laplace Mátrix létrehozása */
         let LMatrix = makeLaplace(matrix: Matrix, sizeOfMatrix: sizeOfMatrix)
         
         
         /* A kezdeti sajátvektorok és sajátértékek kiszámítása, kisebb pontossággal */
         for i in 0..<sizeOfMatrix {
+            print("Az \(i). vektort számolja")
             var startVector = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
             startVector = NewVector(eigVectors: eigVectorArray, sizeOfMatrix: sizeOfMatrix, numberOfVectors: eigVectorArray.count)
             if let eigvv = Lanczos(Matrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: startVector, forcedTerminationStep: Int(sizeOfMatrix/100)) {
                 eigVectorArray.append(eigvv.eig_vector)
                 eigValueArray.append(eigvv.eig_value)
+                print("Az \(i). vektort kiszámolta, sajátérték: \(eigvv.eig_value)")
             }
         }
         
