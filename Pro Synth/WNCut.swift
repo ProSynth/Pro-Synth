@@ -70,12 +70,15 @@ class WNCut: NSObject {
         
         return LaplaceMatrix
     }
+
+    
+    
     
     
     /* A Lánczos algoritmus egyetlen sajátvektorra */
     // Bemenet: A számolni kívánt mátrix, és mérete
     // Kimenet: A sajátvektor és a sajátérték
-    func Lanczos(Matrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: Double)? {
+    func Lanczos2(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: Double)? {
         
         /* Változók inicializálása */
         var v_prev = [Double](repeatElement(0x00, count: sizeOfMatrix))                     // Az előző felírt próbavektor
@@ -84,7 +87,61 @@ class WNCut: NSObject {
         var eig_value : Double              = 0x00                                          // A leendő sajátérték
         var w_fault = initVector                                                            // A hibavektor, ami az új próbavektor irányát adja majd
         var B_fault_norm : Double           = 0x00                                          // A hibavektor normáltja
-        var S_Matrix : [Double]             = Matrix                                        // A szimmetrikus mátrix
+        var S_Matrix : [Double]             = sMatrix                                        // A szimmetrikus mátrix
+        
+        let sizeOfMatrix32 : Int32          = Int32(sizeOfMatrix)                           // A 32 bites mátrix méret
+        var k : Int                         = 0                                             // A ciklus száma
+        
+        /* Inicializálás */
+        B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
+        
+        /* A ciklus */
+        repeat {
+            k += 1                                                                          // A ciklus számot növelni kell
+            
+            v_prev = v                                                                      // Az előző próbavektort megjegyezzük, mert szükség lesz rá később
+            
+            for i in 0..<sizeOfMatrix {
+                v[i] =  w_fault[i] / B_fault_norm                                            // A hiba vektor normalizálása
+            }
+            
+            // A próbavektor forgatása a sajátvektor felé
+            cblas_dgemv(CblasRowMajor, CblasNoTrans, sizeOfMatrix32, sizeOfMatrix32, 1, &S_Matrix, sizeOfMatrix32, &v, 1, 0, &y, 1)
+            catlas_daxpby(sizeOfMatrix32, (-1)*B_fault_norm, &v, 1, 1, &y, 1)
+            
+            // A közelítő sajátérték számítása
+            eig_value = cblas_ddot(sizeOfMatrix32, &y, 1, &v, 1)
+            
+            // A hibavektor kiszámítása
+            w_fault = y
+            //catlas_daxpby(sizeOfMatrix32, eig_value, &v, 1, B_fault_norm, &v_prev, 1)    // Akivonandó tagok összeadása
+            catlas_daxpby(sizeOfMatrix32, -eig_value, &v, 1, 1, &w_fault, 1)                     // Kivonás
+            
+            // A hibavektor Euklideszi normálása
+            B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
+            
+            print("Ez a \(k)-adik kör, a sajátérték becslés:\(eig_value)")
+            
+        } while (B_fault_norm != 0x00) &&  (k != 100)
+        
+        return (v, eig_value)
+    }
+    
+    
+    
+    /* A Lánczos algoritmus egyetlen sajátvektorra */
+    // Bemenet: A számolni kívánt mátrix, és mérete
+    // Kimenet: A sajátvektor és a sajátérték
+    func Lanczos(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: Double)? {
+        
+        /* Változók inicializálása */
+        var v_prev = [Double](repeatElement(0x00, count: sizeOfMatrix))                     // Az előző felírt próbavektor
+        var v = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
+        var y = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A forgatott próbavektor
+        var eig_value : Double              = 0x00                                          // A leendő sajátérték
+        var w_fault = initVector                                                            // A hibavektor, ami az új próbavektor irányát adja majd
+        var B_fault_norm : Double           = 0x00                                          // A hibavektor normáltja
+        var S_Matrix : [Double]             = sMatrix                                        // A szimmetrikus mátrix
         
         let sizeOfMatrix32 : Int32          = Int32(sizeOfMatrix)                           // A 32 bites mátrix méret
         var k : Int                         = 0                                             // A ciklus száma
@@ -109,15 +166,16 @@ class WNCut: NSObject {
             eig_value = cblas_ddot(sizeOfMatrix32, &y, 1, &v, 1)
             
             // A hibavektor kiszámítása
+            w_fault = y
             catlas_daxpby(sizeOfMatrix32, eig_value, &v, 1, B_fault_norm, &v_prev, 1)    // Akivonandó tagok összeadása
-            catlas_daxpby(sizeOfMatrix32, -1, &v, 1, 1, &w_fault, 1)                     // Kivonás
+            catlas_daxpby(sizeOfMatrix32, -1, &v_prev, 1, 1, &w_fault, 1)                     // Kivonás
             
             // A hibavektor Euklideszi normálása
             B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
             
             print("Ez a \(k)-adik kör, a sajátérték becslés:\(eig_value)")
             
-        } while (B_fault_norm != 0x00) && (k != sizeOfMatrix) && (k != 100)
+        } while (B_fault_norm != 0x00) &&  (k != 100)
         
         return (v, eig_value)
     }
@@ -192,7 +250,7 @@ class WNCut: NSObject {
             print("Az \(i). vektort számolja")
             var startVector = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
             startVector = NewVector(eigVectors: eigVectorArray, sizeOfMatrix: sizeOfMatrix, numberOfVectors: eigVectorArray.count)
-            if let eigvv = Lanczos(Matrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: startVector, forcedTerminationStep: Int(sizeOfMatrix/100)) {
+            if let eigvv = Lanczos2(sMatrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: startVector, forcedTerminationStep: Int(sizeOfMatrix/100)) {
                 eigVectorArray.append(eigvv.eig_vector)
                 eigValueArray.append(eigvv.eig_value)
                 print("Az \(i). vektort kiszámolta, sajátérték: \(eigvv.eig_value)")
@@ -201,7 +259,7 @@ class WNCut: NSObject {
         
         /* A pontos sajátvektor kiszámítása */
         if let index = eigValueArray.index(of: eigValueArray.min()!) {
-            let result = Lanczos(Matrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: eigVectorArray[index], forcedTerminationStep: nil)
+            let result = Lanczos2(sMatrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: eigVectorArray[index], forcedTerminationStep: nil)
             minEigValue = result?.eig_value
             minEigVector = (result?.eig_vector)!
         } else {
