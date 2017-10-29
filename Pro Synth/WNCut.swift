@@ -11,7 +11,7 @@ import Cocoa
 import Accelerate
 import simd
 
-var eigVectorArray: [[Double]] = []
+
 var eigValueArray: [Double] = []
 
 var minEigVector: [Double] = []
@@ -19,7 +19,17 @@ var minEigValue: Double!
 
 class WNCut: NSObject {
 
+    var L_Eigvectors: [[Double]] = []
+    var T_Matrix: [[Double]] = []
+    var g_sizeOfMatrix: Int
     
+    init(sizeOfMatrix: Int) {
+        
+        self.g_sizeOfMatrix = sizeOfMatrix
+        T_Matrix = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
+        L_Eigvectors = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
+        super.init()
+    }
 
     
     /* A Laplace Mátrix generáló */
@@ -133,12 +143,13 @@ class WNCut: NSObject {
         /* Inicializálás */
         B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
         
+        
         /* A ciklus */
         repeat {
             k += 1                                                                          // A ciklus számot növelni kell
             
             v_prev = v                                                                      // Az előző próbavektort megjegyezzük, mert szükség lesz rá később
-            
+            L_Eigvectors.append(v)                                                          // Feltöltjük a Q mátrixot is
             for i in 0..<sizeOfMatrix {
                 v[i] =  w_fault[i] / B_fault_norm                                            // A hiba vektor normalizálása
             }
@@ -161,8 +172,13 @@ class WNCut: NSObject {
             print("Ez a \(k)-adik kör, a hiba:\(B_fault_norm)")
             //print("Sajátvektor: \(v)")
             
-            
-        } while (B_fault_norm != 0x00) &&  (k != sizeOfMatrix)
+            T_Matrix[k-1][k-1] = eig_value
+            if k < g_sizeOfMatrix {
+                T_Matrix[k][k-1] = B_fault_norm
+                T_Matrix[k-1][k] = B_fault_norm
+            }
+
+        } while  (k != sizeOfMatrix)
         
         return (v, eig_value)
     }
@@ -219,6 +235,23 @@ class WNCut: NSObject {
         return (Matrix,sizeOfMatrix)
     }
     
+    /* Sajátvektor számoló függvény sajátértékből */
+    // Bemenet: A számolni kívánt mátrix, és a sajátérték
+    // Kimenet: A sajátvektor
+    func CalcEigVectorFrom(sMatrix: [Double], eigValue: Double) -> [Double] {
+        var eigVector: [Double] = Array(repeating: 0.0, count: g_sizeOfMatrix)
+        var AmL_Matrix: [Double] = sMatrix
+        for i in 0..<g_sizeOfMatrix {
+            for j in 0..<g_sizeOfMatrix {
+                if i==j{
+                    AmL_Matrix[i*g_sizeOfMatrix+j]-=eigValue
+                }
+            }
+        }
+        cblas_dtbsv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasNonUnit, Int32(g_sizeOfMatrix), Int32(g_sizeOfMatrix), &AmL_Matrix, Int32(g_sizeOfMatrix), &eigVector, 1)
+        return eigVector
+    }
+    
     func NCut(sourceMatrix: [Double], sizeOfMatrix: Int, groupDensity: Float) -> Bool {
         
         let LMatrix = makeLaplace(matrix: sourceMatrix, sizeOfMatrix: sizeOfMatrix)
@@ -239,6 +272,8 @@ class WNCut: NSObject {
         }
         kiirosor.write(FileManager.default.url(for .documentDirectory)?.appendingPathComponent("proba.csv"))
         */
+        
+        /*
         var eredmeny = Lanczos2(sMatrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: [0, 0], forcedTerminationStep: nil)
         print("Sajátérték:\(eredmeny?.eig_value)\n")
         //print("Sajátvektorok:\(eredmeny?.eig_vector)")
@@ -261,6 +296,10 @@ class WNCut: NSObject {
         }
         print("\(smallest)")
         print("\(eig_ve)")
+ */
+        Lanczos(sMatrix: LMatrix, sizeOfMatrix: g_sizeOfMatrix, initVector: NewVector(eigVectors: [[0],[0]], sizeOfMatrix: g_sizeOfMatrix, numberOfVectors: 0), forcedTerminationStep: nil)
+        
+        print(T_Matrix)
         return true
     }
     
@@ -270,9 +309,7 @@ class WNCut: NSObject {
     
 
     
-    override init() {
-        super.init()
-    }
+
 }
 
 

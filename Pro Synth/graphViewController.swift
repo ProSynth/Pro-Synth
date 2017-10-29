@@ -438,21 +438,21 @@ class graphViewController: NSViewController {
             }
             Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
         }
-        /*
+        
         for i in 0..<sizeOfMatrix {
             for j in 0..<sizeOfMatrix {
                 print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
             }
             print("\n")
         }
-         */
+ 
         return sizeOfMatrix
     }
     
     func doSynth()  {
         let sizeOfMatrix = pushMatrix()
         NSLog("Kész a mátrixxá alakítás")
-        var synth: WNCut = WNCut()
+        var synth: WNCut = WNCut(sizeOfMatrix: sizeOfMatrix)
         synth.NCut(sourceMatrix: Matrix, sizeOfMatrix: sizeOfMatrix, groupDensity: 10)
         NSLog("Kész van mindennel")
     }
