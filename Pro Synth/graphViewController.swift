@@ -438,14 +438,14 @@ class graphViewController: NSViewController {
             }
             Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
         }
-        
+        /*
         for i in 0..<sizeOfMatrix {
             for j in 0..<sizeOfMatrix {
                 print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
             }
             print("\n")
         }
- 
+         */
         return sizeOfMatrix
     }
     

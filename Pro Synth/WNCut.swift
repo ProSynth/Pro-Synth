@@ -78,53 +78,37 @@ class WNCut: NSObject {
     /* A Lánczos algoritmus egyetlen sajátvektorra */
     // Bemenet: A számolni kívánt mátrix, és mérete
     // Kimenet: A sajátvektor és a sajátérték
-    func Lanczos2(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: Double)? {
+    func Lanczos2(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: [Double])? {
         
-        /* Változók inicializálása */
-        var v_prev = [Double](repeatElement(0x00, count: sizeOfMatrix))                     // Az előző felírt próbavektor
-        var v = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
-        var y = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A forgatott próbavektor
-        var eig_value : Double              = 0x00                                          // A leendő sajátérték
-        var w_fault = initVector                                                            // A hibavektor, ami az új próbavektor irányát adja majd
-        var B_fault_norm : Double           = 0x00                                          // A hibavektor normáltja
+        
         var S_Matrix : [Double]             = sMatrix                                        // A szimmetrikus mátrix
         
-        let sizeOfMatrix32 : Int32          = Int32(sizeOfMatrix)                           // A 32 bites mátrix méret
-        var k : Int                         = 0                                             // A ciklus száma
+        var workspace = [Double] (repeating:0.0, count: Int(sizeOfMatrix))
+        var error: __CLPK_integer = 0
+        var lwork = __CLPK_integer(-1)
+        var mekkora = __CLPK_doublereal (0)
         
-        /* Inicializálás */
-        B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
+        var wr = [Double] (repeating:0.0, count: Int(sizeOfMatrix))
+        var wi = [Double] (repeating:0.0, count: Int(sizeOfMatrix))
         
-        /* A ciklus */
-        repeat {
-            k += 1                                                                          // A ciklus számot növelni kell
-            
-            v_prev = v                                                                      // Az előző próbavektort megjegyezzük, mert szükség lesz rá később
-            
-            for i in 0..<sizeOfMatrix {
-                v[i] =  w_fault[i] / B_fault_norm                                            // A hiba vektor normalizálása
-            }
-            
-            // A próbavektor forgatása a sajátvektor felé
-            cblas_dgemv(CblasRowMajor, CblasNoTrans, sizeOfMatrix32, sizeOfMatrix32, 1, &S_Matrix, sizeOfMatrix32, &v, 1, 0, &y, 1)
-            catlas_daxpby(sizeOfMatrix32, (-1)*B_fault_norm, &v, 1, 1, &y, 1)
-            
-            // A közelítő sajátérték számítása
-            eig_value = cblas_ddot(sizeOfMatrix32, &y, 1, &v, 1)
-            
-            // A hibavektor kiszámítása
-            w_fault = y
-            //catlas_daxpby(sizeOfMatrix32, eig_value, &v, 1, B_fault_norm, &v_prev, 1)    // Akivonandó tagok összeadása
-            catlas_daxpby(sizeOfMatrix32, -eig_value, &v, 1, 1, &w_fault, 1)                     // Kivonás
-            
-            // A hibavektor Euklideszi normálása
-            B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
-            
-            print("Ez a \(k)-adik kör, a sajátérték becslés:\(eig_value)")
-            
-        } while (B_fault_norm != 0x00) &&  (k != 100)
+        var vl = [__CLPK_doublereal] (repeating:0.0, count: Int(sizeOfMatrix*sizeOfMatrix))
+        var vr = [__CLPK_doublereal] (repeating:0.0, count: Int(sizeOfMatrix*sizeOfMatrix))
         
-        return (v, eig_value)
+        var sizeOfMatrix32 : __CLPK_integer          = __CLPK_integer(sizeOfMatrix)                           // A 32 bites mátrix méret
+        
+        
+        dgeev_(UnsafeMutablePointer(mutating: ("V" as NSString).utf8String), UnsafeMutablePointer(mutating: ("V" as NSString).utf8String), &sizeOfMatrix32, &S_Matrix, &sizeOfMatrix32, &wr, &wi, &vl, &sizeOfMatrix32, &vr, &sizeOfMatrix32, &mekkora, &lwork, &error )
+        
+        workspace = [Double] (repeating:0.0, count: Int(mekkora))
+        lwork = __CLPK_integer(mekkora)
+        
+        
+        dgeev_(UnsafeMutablePointer(mutating: ("V" as NSString).utf8String), UnsafeMutablePointer(mutating: ("V" as NSString).utf8String), &sizeOfMatrix32, &S_Matrix, &sizeOfMatrix32, &wr, &wi, &vl, &sizeOfMatrix32, &vr, &sizeOfMatrix32, &workspace, &lwork, &error )
+        
+        
+        //print("\(wr)")
+        
+        return (vr, wr)
     }
     
     
@@ -174,8 +158,11 @@ class WNCut: NSObject {
             B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
             
             print("Ez a \(k)-adik kör, a sajátérték becslés:\(eig_value)")
+            print("Ez a \(k)-adik kör, a hiba:\(B_fault_norm)")
+            //print("Sajátvektor: \(v)")
             
-        } while (B_fault_norm != 0x00) &&  (k != 100)
+            
+        } while (B_fault_norm != 0x00) &&  (k != sizeOfMatrix)
         
         return (v, eig_value)
     }
@@ -234,40 +221,46 @@ class WNCut: NSObject {
     
     func NCut(sourceMatrix: [Double], sizeOfMatrix: Int, groupDensity: Float) -> Bool {
         
-        for i in 0..<(sizeOfMatrix*sizeOfMatrix) {
-            if sourceMatrix[i].isNaN {
-                print("Nem szám is van a forrás mátrixban")
+        let LMatrix = makeLaplace(matrix: sourceMatrix, sizeOfMatrix: sizeOfMatrix)
+        
+        /*
+         var kiirosor = ""
+        for i in 0..<sizeOfMatrix
+        {
+           
+            for j in 0..<sizeOfMatrix
+            {
+                kiirosor  = kiirosor+" \(LMatrix[i*sizeOfMatrix+j]);"
+                
+                
             }
+            kiirosor+="\n"
+           
         }
-        
-        
-        /* A Laplace Mátrix létrehozása */
-        let LMatrix = makeLaplace(matrix: Matrix, sizeOfMatrix: sizeOfMatrix)
-        
-        
-        /* A kezdeti sajátvektorok és sajátértékek kiszámítása, kisebb pontossággal */
+        kiirosor.write(FileManager.default.url(for .documentDirectory)?.appendingPathComponent("proba.csv"))
+        */
+        var eredmeny = Lanczos2(sMatrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: [0, 0], forcedTerminationStep: nil)
+        print("Sajátérték:\(eredmeny?.eig_value)\n")
+        //print("Sajátvektorok:\(eredmeny?.eig_vector)")
+        var eig_va = [Double] ()
         for i in 0..<sizeOfMatrix {
-            print("Az \(i). vektort számolja")
-            var startVector = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
-            startVector = NewVector(eigVectors: eigVectorArray, sizeOfMatrix: sizeOfMatrix, numberOfVectors: eigVectorArray.count)
-            if let eigvv = Lanczos2(sMatrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: startVector, forcedTerminationStep: Int(sizeOfMatrix/100)) {
-                eigVectorArray.append(eigvv.eig_vector)
-                eigValueArray.append(eigvv.eig_value)
-                print("Az \(i). vektort kiszámolta, sajátérték: \(eigvv.eig_value)")
+            if (eredmeny!.eig_value[i] < 1.0e-15 ) {
+                
+            } else {
+                eig_va.append(eredmeny!.eig_value[i])
             }
         }
-        
-        /* A pontos sajátvektor kiszámítása */
-        if let index = eigValueArray.index(of: eigValueArray.min()!) {
-            let result = Lanczos2(sMatrix: LMatrix, sizeOfMatrix: sizeOfMatrix, initVector: eigVectorArray[index], forcedTerminationStep: nil)
-            minEigValue = result?.eig_value
-            minEigVector = (result?.eig_vector)!
-        } else {
-            NSLog("Nem bírta meghatározni a legkisebb sajátértéket.")
+        var smallest: Double!
+        for i in 0..<eig_va.count {
+            smallest = eig_va.min()
         }
-        
-        print("A sajátérték: \(minEigValue) \nA sajátvektor: \(minEigVector)")
-        
+        let index = eredmeny?.eig_value.index(of: smallest)
+        var eig_ve = [Double] ()
+        for i in index!*sizeOfMatrix...(index!+1)*sizeOfMatrix-1 {
+            eig_ve.append((eredmeny?.eig_vector[i])!)
+        }
+        print("\(smallest)")
+        print("\(eig_ve)")
         return true
     }
     
