@@ -314,29 +314,47 @@ class WNCut: NSObject {
             }
         }
         
-        // Pivoting
+        
         for i in 0..<g_sizeOfMatrix {
-            for j in 0..<g_sizeOfMatrix {
-                if j>i {
-                    let c = G_Matrix[j][i]/G_Matrix[i][i]
-                    for k in 0...g_sizeOfMatrix {
-                        G_Matrix[i][k]=G_Matrix[i][k]-c*G_Matrix[j][k]
+            // Keressük meg a maximumot az adott oszlopban
+            var maxEl: Double               = abs(G_Matrix[i][i])
+            var maxRow: Int                 = i
+            for k in i+1..<g_sizeOfMatrix {
+                let absValue = G_Matrix[k][i]
+                if absValue > maxEl {
+                    maxEl = absValue
+                    maxRow = k
+                }
+            }
+            // Kicseréljük a max sort a jelenlegivel
+            for k in i..<g_sizeOfMatrix+1 {
+                let tmp: Double = -G_Matrix[maxRow][k]
+                G_Matrix[maxRow][k] = G_Matrix[i][k]
+                G_Matrix[i][k] = tmp
+            }
+            
+            // Kinullázzuk az alatta lévő sorokat alatta
+            for k in i+1..<g_sizeOfMatrix {
+                let c: Double = -G_Matrix[k][i]/G_Matrix[i][i]
+                for j in i..<g_sizeOfMatrix+1 {
+                    
+                    if i==j {
+                        G_Matrix[k][j] = 0
+                    }
+                    else {
+                        G_Matrix[k][j] += c * G_Matrix[i][j]
                     }
                 }
             }
         }
         
-        // Eliminiating
-        eigVector[g_sizeOfMatrix-1]=G_Matrix[g_sizeOfMatrix-1][g_sizeOfMatrix]/G_Matrix[g_sizeOfMatrix-1][g_sizeOfMatrix-1]
-        
-        for i in stride(from:g_sizeOfMatrix-2, through: 0, by: -1) {
-            var sum: Double = 0
-            for j in i..<g_sizeOfMatrix {
-                sum+=G_Matrix[i][j]*eigVector[j]
+        // A felső háromszögmátrix megoldása
+        for i in stride(from: g_sizeOfMatrix-1, through: 0, by: -1) {
+            eigVector[i] = G_Matrix[i][g_sizeOfMatrix]/G_Matrix[i][i]
+            for k in stride(from: i-1, through: 0, by: -1) {
+                G_Matrix[k][g_sizeOfMatrix] -= G_Matrix[k][i] * eigVector[i]
             }
-            eigVector[i] = (G_Matrix[i][g_sizeOfMatrix]-sum)/G_Matrix[i][i]
         }
-        
         return eigVector
     }
     
