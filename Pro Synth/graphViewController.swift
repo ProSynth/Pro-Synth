@@ -230,6 +230,8 @@ class graphViewController: NSViewController {
 
     func importMethod() {
         
+        var sumEl: Int = 0
+        
         let numberOfGroups = groups.count
         let numberOfNodes = Node.currentNodeID
         
@@ -384,6 +386,7 @@ class graphViewController: NSViewController {
                             addEdgeWithData(name: defaultString, weight: edgeWeight, type: .none,
                                             node1: groups[index1G].children[index1N] as! Node,
                                             node2: groups[index2G].children[index2N] as! Node)
+                            sumEl += edgeWeight
                         }
                     }
                     
@@ -391,6 +394,7 @@ class graphViewController: NSViewController {
             }
 
             print("Fájl vége")
+            print(sumEl)
         } catch {
             print("Hiba van")
         }
