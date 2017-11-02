@@ -265,23 +265,85 @@ class WNCut: NSObject {
     /* Mátrix bővítő */
     // Bemenet: A bővíteni kívánt mátrix, a mérete, és az egyes pontok súlya
     // Kimenet: A bővített mátrix, és mérete
-    func MatrixExpansion(Matrix: [Double], sizeOfMatrix: Int, weight: [Double]) -> (Matrix: [Double], sizeOfMatrix: Int) {
+    func MatrixExpansion(sMatrix: [Double], sizeOfsMatrix: Int, weight: [Int]) -> (dMatrix: [Double], sizeOfdMatrix: Int) {
         // Bemenet újradefiniálása
-        var LaplaceMatrix: [[Double]] = []
-        
-        let sizeOfMatrixInt32 = Int32(sizeOfMatrix)
-        let trace: Double = sparse_matrix_trace_double(sparse_matrix_double(Matrix), 0)
-        let maxWeight: Double = weight[Int(cblas_idamax(sizeOfMatrixInt32, weight, 1))]
-        
-        for i in 0..<sizeOfMatrix {
-            if weight[i] == 1 {break}                                   // Ha nem kell klikket növeszteni, akkor kilépünk
-            
-            let klikkWeight = 2*(maxWeight-1)*trace/(weight[i]-1)       // A klikkben szereplő élek súlya
-            
-            
+        var sizeOfdMatrix: Int          = 0
+        for i in 0..<weight.count {
+            sizeOfdMatrix += weight[i]
         }
-        return (Matrix,sizeOfMatrix)
+        var destinationMatrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfdMatrix), count: sizeOfdMatrix)
+        
+        
+        var trace: Double = 0
+        for i in 0..<sizeOfsMatrix{
+            trace += sMatrix[i*sizeOfsMatrix+i]
+        }
+        
+        let maxWeight: Int = weight.max()!
+        var weightCounter: Int = 0
+        
+        for i in 0..<weight.count {
+            if weight[i]>1 {
+                let n = Double(2*(maxWeight-1))*trace
+                let d = Double(weight[i]-1)
+                let klikk_weight = n/d
+                
+                
+                for j in weightCounter...weightCounter+weight[i] {
+                    for k in weightCounter...weightCounter+weight[i] {
+                        if j != k {
+                            destinationMatrix[j][k] = -klikk_weight
+                        }
+                    }
+                }
+                var columnCounter: Int = 0
+                for j in 0..<sizeOfsMatrix {
+                    if i != j {
+                       destinationMatrix[weightCounter][columnCounter] = sMatrix[i*sizeOfsMatrix+j]
+                    }
+                    columnCounter += weight[j]
+                }
+                
+                weightCounter += weight[i]
+            }
+        }
+        
+        // A főátló feltöltése
+        for j in 0..<sizeOfdMatrix {
+            var rowSum : Double = 0
+            for i in 0..<(sizeOfdMatrix) {
+                rowSum = rowSum + destinationMatrix[j][i]
+            }
+            destinationMatrix[j][j] = (-1)*rowSum
+        }
+        
+        var dMatrix: [Double] = Array(repeating: 0.0, count: sizeOfdMatrix*sizeOfdMatrix)
+        
+        for i in 0..<sizeOfdMatrix {
+            for j in 0..<sizeOfdMatrix {
+                dMatrix[i*sizeOfdMatrix+j] = destinationMatrix[i][j]
+            }
+        }
+        
+        return (Matrix,sizeOfdMatrix)
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /* Sajátvektor számoló függvény sajátértékből */
     // Bemenet: A számolni kívánt mátrix, és a sajátérték
@@ -350,7 +412,15 @@ class WNCut: NSObject {
         
         // A felső háromszögmátrix megoldása
         for i in stride(from: g_sizeOfMatrix-1, through: 0, by: -1) {
-            eigVector[i] = G_Matrix[i][g_sizeOfMatrix]/G_Matrix[i][i]
+            if (i==g_sizeOfMatrix-1) {
+                eigVector[i] = 1000
+            }
+            else {
+                eigVector[i] = G_Matrix[i][g_sizeOfMatrix]/G_Matrix[i][i]
+            }
+            
+            
+            
             for k in stride(from: i-1, through: 0, by: -1) {
                 G_Matrix[k][g_sizeOfMatrix] -= G_Matrix[k][i] * eigVector[i]
             }

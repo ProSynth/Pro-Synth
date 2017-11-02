@@ -42,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.632337"
+            timestampString = "531333242.29448"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "246"
             endingLineNumber = "246"
-            landmarkName = "NCut(sourceMatrix:sizeOfMatrix:groupDensity:)"
+            landmarkName = "NewVector(sizeOfMatrix:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -58,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.633195"
+            timestampString = "531333242.29542"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "251"
             endingLineNumber = "251"
-            landmarkName = "NCut(sourceMatrix:sizeOfMatrix:groupDensity:)"
+            landmarkName = "NewVector(sizeOfMatrix:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -74,12 +74,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.633818"
+            timestampString = "531333242.29584"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "252"
             endingLineNumber = "252"
-            landmarkName = "NCut(sourceMatrix:sizeOfMatrix:groupDensity:)"
+            landmarkName = "NewVector(sizeOfMatrix:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -90,12 +90,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.634434"
+            timestampString = "531333242.296239"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "253"
             endingLineNumber = "253"
-            landmarkName = "NCut(sourceMatrix:sizeOfMatrix:groupDensity:)"
+            landmarkName = "NewVector(sizeOfMatrix:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -106,12 +106,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.635055"
+            timestampString = "531333242.296635"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "259"
             endingLineNumber = "259"
-            landmarkName = "NCut(sourceMatrix:sizeOfMatrix:groupDensity:)"
+            landmarkName = "NewVector(sizeOfMatrix:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -122,12 +122,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.635667"
+            timestampString = "531333242.297032"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "270"
             endingLineNumber = "270"
-            landmarkName = "NCut(sourceMatrix:sizeOfMatrix:groupDensity:)"
+            landmarkName = "MatrixExpansion(sMatrix:sizeOfsMatrix:weight:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -138,7 +138,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.636283"
+            timestampString = "531333242.297431"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "156"
@@ -154,7 +154,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.636892"
+            timestampString = "531333242.297824"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "162"
@@ -170,7 +170,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.637511"
+            timestampString = "531333242.298216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "165"
@@ -186,7 +186,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.638156"
+            timestampString = "531333242.298602"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "168"
@@ -202,7 +202,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.638787"
+            timestampString = "531333242.298994"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "173"
@@ -214,11 +214,11 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pro Synth/WNCut.swift"
-            timestampString = "530725324.639395"
+            timestampString = "531333242.299382"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "67"
