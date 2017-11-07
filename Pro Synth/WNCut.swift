@@ -21,14 +21,14 @@ class WNCut: NSObject {
 
     var sourceMatrix: [Double]
     var L_Eigvectors: [[Double]] = []
-    var T_Matrix: [[Double]] = []
+    var T_Matrix: [[Double]]!
     var g_sizeOfMatrix: Int
     var e_sizeOfMatrix: Int!
     
     init(sizeOfMatrix: Int, sourceMatrix: [Double]) {
         self.sourceMatrix = sourceMatrix
         self.g_sizeOfMatrix = sizeOfMatrix
-        T_Matrix = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
+        
         L_Eigvectors = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
         super.init()
     }
@@ -176,7 +176,7 @@ class WNCut: NSObject {
             //print("Sajátvektor: \(v)")
             
             T_Matrix[k-1][k-1] = eig_value
-            if k < g_sizeOfMatrix {
+            if k < sizeOfMatrix {
                 T_Matrix[k][k-1] = B_fault_norm
                 T_Matrix[k-1][k] = B_fault_norm
             }
@@ -271,11 +271,7 @@ class WNCut: NSObject {
         // Bemenet újradefiniálása
         var sizeOfdMatrix: Int          = 0
         for i in 0..<weight.count {
-            if weight[i] < 1 {
-                sizeOfdMatrix += 1
-            } else {
-                sizeOfdMatrix += weight[i]
-            }
+            sizeOfdMatrix += weight[i]
         }
         var destinationMatrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfdMatrix), count: sizeOfdMatrix)
         
@@ -289,19 +285,22 @@ class WNCut: NSObject {
         var weightCounter: Int = 0
         
         for i in 0..<weight.count {
-            if weight[i]>1 {
-                let n = Double(2*(maxWeight-1))*trace
-                let d = Double(weight[i]-1)
-                let klikk_weight = n/d
-                
-                
-                for j in weightCounter...weightCounter+weight[i] {
-                    for k in weightCounter...weightCounter+weight[i] {
-                        if j != k {
-                            destinationMatrix[j][k] = -klikk_weight
+            if weight[i] > 0 {
+                if weight[i] > 1 {
+                    let n = Double(2*(maxWeight-1))*trace
+                    let d = Double(weight[i]-1)
+                    let klikk_weight = n/d
+                    
+                    
+                    for j in weightCounter...weightCounter+weight[i] {
+                        for k in weightCounter...weightCounter+weight[i] {
+                            if j != k {
+                                destinationMatrix[j][k] = -klikk_weight
+                            }
                         }
                     }
                 }
+                
                 var columnCounter: Int = 0
                 for j in 0..<sizeOfsMatrix {
                     if i != j {
@@ -311,6 +310,8 @@ class WNCut: NSObject {
                 }
                 
                 weightCounter += weight[i]
+            } else {
+                print("Van 0-ás súlyú pont a mátrixban")
             }
         }
         
@@ -441,6 +442,9 @@ class WNCut: NSObject {
     }
     
     func NCut() -> [Double] {
+        // Inicializálás
+        T_Matrix = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
+        
         let LMatrix = makeLaplace(matrix: sourceMatrix, sizeOfMatrix: g_sizeOfMatrix)
         
         let tridiag: [Double] = Lanczos(sMatrix: LMatrix, sizeOfMatrix: g_sizeOfMatrix, initVector: NewVector(sizeOfMatrix: g_sizeOfMatrix), forcedTerminationStep: nil)!
@@ -466,11 +470,17 @@ class WNCut: NSObject {
     
     func WNCut(weight: [Int]) -> [Double] {
         
+        
         let EMatrix = MatrixExpansion(sMatrix: sourceMatrix, sizeOfsMatrix: g_sizeOfMatrix, weight: weight)
         e_sizeOfMatrix = EMatrix.sizeOfdMatrix
+        
+        // Inicializálás
+        T_Matrix = Array(repeating: Array(repeating: 0.0, count: e_sizeOfMatrix), count: e_sizeOfMatrix)
+        
+        
         let LEMatrix = makeLaplace(matrix: EMatrix.dMatrix, sizeOfMatrix: e_sizeOfMatrix)
         
-        let tridiag = Lanczos(sMatrix: LEMatrix, sizeOfMatrix: e_sizeOfMatrix, initVector: NewVector(sizeOfMatrix: g_sizeOfMatrix), forcedTerminationStep: nil)
+        let tridiag = Lanczos(sMatrix: LEMatrix, sizeOfMatrix: e_sizeOfMatrix, initVector: NewVector(sizeOfMatrix: e_sizeOfMatrix), forcedTerminationStep: nil)
         
         let eigValues: [Double] = tridiagToEigValues(symTridiagMatrix: tridiag!, sizeOfMatrix: e_sizeOfMatrix)
         

@@ -421,7 +421,12 @@ class graphViewController: NSViewController {
         
         for i in 0..<groups.count {
             for j in 0..<groups[i].children.count {
-                weight.append((groups[i].children[j] as! Node).weight)
+                let currentWeight = (groups[i].children[j] as! Node).weight
+                if currentWeight > 1 {
+                    weight.append(currentWeight)
+                } else {
+                    weight.append(1)
+                }
                 for k in 0..<groups[i].children[j].children.count {
                     let parent1 = (groups[i].children[j].children[k] as! Edge).parentNode1
                     let parent2 = (groups[i].children[j].children[k] as! Edge).parentNode2
