@@ -407,7 +407,8 @@ class graphViewController: NSViewController {
     }
     
     
-    func pushMatrix() -> Int {
+    func pushMatrix() -> (sizeOfmatrix: Int, weight: [Int]) {
+        var weight: [Int] = []
         var sizeOfMatrix : Int = 0
         for i in 0..<groups.count {             // Összeszámolja az összes pontot a gráfban
             sizeOfMatrix += groups[i].children.count
@@ -420,6 +421,7 @@ class graphViewController: NSViewController {
         
         for i in 0..<groups.count {
             for j in 0..<groups[i].children.count {
+                weight.append((groups[i].children[j] as! Node).weight)
                 for k in 0..<groups[i].children[j].children.count {
                     let parent1 = (groups[i].children[j].children[k] as! Edge).parentNode1
                     let parent2 = (groups[i].children[j].children[k] as! Edge).parentNode2
@@ -450,14 +452,14 @@ class graphViewController: NSViewController {
             print("\n")
         }
  
-        return sizeOfMatrix
+        return (sizeOfMatrix, weight)
     }
     
     func doSynth()  {
-        let sizeOfMatrix = pushMatrix()
+        let MatrixProp = pushMatrix()
         NSLog("Kész a mátrixxá alakítás")
-        var synth: WNCut = WNCut(sizeOfMatrix: sizeOfMatrix)
-        synth.NCut(sourceMatrix: Matrix, sizeOfMatrix: sizeOfMatrix, groupDensity: 10)
+        var synth: WNCut = WNCut(sizeOfMatrix: MatrixProp.sizeOfmatrix, sourceMatrix: Matrix)
+        synth.WNCut(weight: MatrixProp.weight)
         NSLog("Kész van mindennel")
     }
 

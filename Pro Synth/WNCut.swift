@@ -19,12 +19,14 @@ var minEigValue: Double!
 
 class WNCut: NSObject {
 
+    var sourceMatrix: [Double]
     var L_Eigvectors: [[Double]] = []
     var T_Matrix: [[Double]] = []
     var g_sizeOfMatrix: Int
+    var e_sizeOfMatrix: Int!
     
-    init(sizeOfMatrix: Int) {
-        
+    init(sizeOfMatrix: Int, sourceMatrix: [Double]) {
+        self.sourceMatrix = sourceMatrix
         self.g_sizeOfMatrix = sizeOfMatrix
         T_Matrix = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
         L_Eigvectors = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
@@ -269,7 +271,11 @@ class WNCut: NSObject {
         // Bemenet újradefiniálása
         var sizeOfdMatrix: Int          = 0
         for i in 0..<weight.count {
-            sizeOfdMatrix += weight[i]
+            if weight[i] < 1 {
+                sizeOfdMatrix += 1
+            } else {
+                sizeOfdMatrix += weight[i]
+            }
         }
         var destinationMatrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfdMatrix), count: sizeOfdMatrix)
         
@@ -325,7 +331,7 @@ class WNCut: NSObject {
             }
         }
         
-        return (Matrix,sizeOfdMatrix)
+        return (dMatrix,sizeOfdMatrix)
     }
     
     
@@ -411,12 +417,18 @@ class WNCut: NSObject {
         }
         
         // A felső háromszögmátrix megoldása
+        var csoport: Double = 1.0
         for i in stride(from: g_sizeOfMatrix-1, through: 0, by: -1) {
             if (i==g_sizeOfMatrix-1) {
-                eigVector[i] = 1000
+                eigVector[i] = csoport
             }
             else {
                 eigVector[i] = G_Matrix[i][g_sizeOfMatrix]/G_Matrix[i][i]
+            }
+            if ((eigVector[i] == 0) && (G_Matrix[i][g_sizeOfMatrix]==0))
+            {
+                csoport += Double(g_sizeOfMatrix)
+                eigVector[i] = csoport
             }
             
             
@@ -428,26 +440,57 @@ class WNCut: NSObject {
         return eigVector
     }
     
-    func NCut(sourceMatrix: [Double], sizeOfMatrix: Int, groupDensity: Float) -> Bool {
+    func NCut() -> [Double] {
+        let LMatrix = makeLaplace(matrix: sourceMatrix, sizeOfMatrix: g_sizeOfMatrix)
         
-        
-        
-        let LMatrix = makeLaplace(matrix: sourceMatrix, sizeOfMatrix: sizeOfMatrix)
-        
-
         let tridiag: [Double] = Lanczos(sMatrix: LMatrix, sizeOfMatrix: g_sizeOfMatrix, initVector: NewVector(sizeOfMatrix: g_sizeOfMatrix), forcedTerminationStep: nil)!
         let eigValues: [Double] = tridiagToEigValues(symTridiagMatrix: tridiag, sizeOfMatrix: g_sizeOfMatrix)
-        let eigVectorMin: [Double] = GaussElimination(sMatrix: LMatrix, eigValue: eigValues[1])
+        var minEigValue: Double!
+        for i in 0..<g_sizeOfMatrix {
+            if ((eigValues[i] < 0)  || (eigValues[i] < 1e-10)) {
+                
+            }
+            else {
+                minEigValue = eigValues[i]
+                break
+            }
+        }
         
+        let eigVectorMin: [Double] = GaussElimination(sMatrix: LMatrix, eigValue: minEigValue)
         
-        print(tridiag)
         print(eigValues)
         print(eigVectorMin)
-        return true
+        return eigVectorMin
     }
     
     
-    
+    func WNCut(weight: [Int]) -> [Double] {
+        
+        let EMatrix = MatrixExpansion(sMatrix: sourceMatrix, sizeOfsMatrix: g_sizeOfMatrix, weight: weight)
+        e_sizeOfMatrix = EMatrix.sizeOfdMatrix
+        let LEMatrix = makeLaplace(matrix: EMatrix.dMatrix, sizeOfMatrix: e_sizeOfMatrix)
+        
+        let tridiag = Lanczos(sMatrix: LEMatrix, sizeOfMatrix: e_sizeOfMatrix, initVector: NewVector(sizeOfMatrix: g_sizeOfMatrix), forcedTerminationStep: nil)
+        
+        let eigValues: [Double] = tridiagToEigValues(symTridiagMatrix: tridiag!, sizeOfMatrix: e_sizeOfMatrix)
+        
+        var minEigValue: Double!
+        for i in 0..<e_sizeOfMatrix {
+            if ((eigValues[i] < 0)  || (eigValues[i] < 1e-10)) {
+                
+            }
+            else {
+                minEigValue = eigValues[i]
+                break
+            }
+        }
+        
+        let eigVectorMin: [Double] = GaussElimination(sMatrix: LEMatrix, eigValue: minEigValue)
+        
+        print(eigValues)
+        print(eigVectorMin)
+        return eigVectorMin
+    }
     
     
 
