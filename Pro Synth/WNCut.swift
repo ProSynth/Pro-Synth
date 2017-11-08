@@ -345,7 +345,7 @@ class WNCut: NSObject {
         var eigVector: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
         var eigVectorTmp: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
         var eigVectorOrder: [Int] = Array(repeating: 0, count: sizeOfMatrix)
-        var G_Matrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfMatrix+1), count: sizeOfMatrix)
+        var G_Matrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfMatrix+2), count: sizeOfMatrix)
         
         for i in 0..<sizeOfMatrix {
             for j in 0..<sizeOfMatrix {
@@ -357,6 +357,7 @@ class WNCut: NSObject {
         }
         for i in 0..<sizeOfMatrix {
             eigVectorOrder[i] = i
+            G_Matrix[i][sizeOfMatrix+1] = Double(i)
         }
         
         
@@ -372,8 +373,8 @@ class WNCut: NSObject {
                 }
             }
             // Kicseréljük a max sort a jelenlegivel
-            for k in i..<sizeOfMatrix+1 {
-                let tmp: Double = -G_Matrix[maxRow][k]
+            for k in i..<sizeOfMatrix+2 {
+                let tmp: Double = G_Matrix[maxRow][k]
                 G_Matrix[maxRow][k] = G_Matrix[i][k]
                 G_Matrix[i][k] = tmp
             }
