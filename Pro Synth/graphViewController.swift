@@ -463,9 +463,18 @@ class graphViewController: NSViewController {
     func doSynth()  {
         let MatrixProp = pushMatrix()
         NSLog("Kész a mátrixxá alakítás")
-        var synth: WNCut = WNCut(sizeOfMatrix: MatrixProp.sizeOfmatrix, sourceMatrix: Matrix)
-        synth.WNCut(weight: MatrixProp.weight)
-        NSLog("Kész van mindennel")
+        let synth: WNCut = WNCut(sizeOfMatrix: MatrixProp.sizeOfmatrix, sourceMatrix: Matrix)
+        let spectrum = synth.WNCut(weight: MatrixProp.weight)
+        NSLog("Kész van a spektrummal")
+        
+        // Dekompozíció cégrehajtása
+        let decomposer: WNCutDecomposer = WNCutDecomposer()
+        let grouping = decomposer.WNCutDecomposer(Spectrum: spectrum, Weight: MatrixProp.weight, Parameter: 10)
+        guard nil != grouping  else {
+            print("A Dekompozíció nem végződött el")
+            return
+        }
+        
     }
 
 }

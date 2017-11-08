@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2BFE8A4A1FB277E600EDA589 /* WNCutDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */; };
+		2BFE8A4E1FB2785100EDA589 /* RSCU_LoopUnroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */; };
+		2BFE8A501FB2786600EDA589 /* SpectralForceDirected.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A4F1FB2786600EDA589 /* SpectralForceDirected.swift */; };
 		3F0928B71F519318000997B2 /* graphViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0928B61F519318000997B2 /* graphViewController.swift */; };
 		3F0928B91F51A876000997B2 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0928B81F51A876000997B2 /* Node.swift */; };
 		3F226A601F75C3BE004733A8 /* nodeEdgesAttributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F226A5F1F75C3BE004733A8 /* nodeEdgesAttributeViewController.swift */; };
@@ -64,6 +67,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WNCutDecomposer.swift; sourceTree = "<group>"; };
+		2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSCU_LoopUnroller.swift; sourceTree = "<group>"; };
+		2BFE8A4F1FB2786600EDA589 /* SpectralForceDirected.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectralForceDirected.swift; sourceTree = "<group>"; };
 		3F0928B61F519318000997B2 /* graphViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = graphViewController.swift; sourceTree = "<group>"; };
 		3F0928B81F51A876000997B2 /* Node.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		3F226A5F1F75C3BE004733A8 /* nodeEdgesAttributeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nodeEdgesAttributeViewController.swift; sourceTree = "<group>"; };
@@ -134,6 +140,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2BFE8A481FB2766D00EDA589 /* WNCutDecomposer */ = {
+			isa = PBXGroup;
+			children = (
+				2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */,
+			);
+			name = WNCutDecomposer;
+			sourceTree = "<group>";
+		};
+		2BFE8A4B1FB277F600EDA589 /* RSCU_LoopUnroller */ = {
+			isa = PBXGroup;
+			children = (
+				2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */,
+			);
+			name = RSCU_LoopUnroller;
+			sourceTree = "<group>";
+		};
+		2BFE8A4C1FB2780B00EDA589 /* SpectralForceDirectedScheduler */ = {
+			isa = PBXGroup;
+			children = (
+				2BFE8A4F1FB2786600EDA589 /* SpectralForceDirected.swift */,
+			);
+			name = SpectralForceDirectedScheduler;
+			sourceTree = "<group>";
+		};
 		3F0928B51F5192C7000997B2 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -191,7 +221,10 @@
 		3F2924801F45A11600F3130E /* Pro Synth */ = {
 			isa = PBXGroup;
 			children = (
-				7B1B75571F8F88AB004973F2 /* WNCutDecomposer */,
+				2BFE8A4C1FB2780B00EDA589 /* SpectralForceDirectedScheduler */,
+				2BFE8A4B1FB277F600EDA589 /* RSCU_LoopUnroller */,
+				2BFE8A481FB2766D00EDA589 /* WNCutDecomposer */,
+				7B1B75571F8F88AB004973F2 /* SpectralMachen */,
 				3F89FE101F74627300F7B623 /* GlobalVariables.swift */,
 				3F8A64A21F5760F900BE2889 /* GraphSupport */,
 				3F2924AE1F45A23300F3130E /* welcomeScreen */,
@@ -279,12 +312,12 @@
 			name = Edge;
 			sourceTree = "<group>";
 		};
-		7B1B75571F8F88AB004973F2 /* WNCutDecomposer */ = {
+		7B1B75571F8F88AB004973F2 /* SpectralMachen */ = {
 			isa = PBXGroup;
 			children = (
 				7B1B75581F8F88E8004973F2 /* WNCut.swift */,
 			);
-			name = WNCutDecomposer;
+			name = SpectralMachen;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -430,6 +463,8 @@
 				3FEFCF561F767CD1001FA2A9 /* edgeAttributeViewController.swift in Sources */,
 				3F2924BD1F45B3E300F3130E /* welcomeCollectionViewItem.swift in Sources */,
 				3FAFA6FD1F82D40E005F57FB /* WindowController.swift in Sources */,
+				2BFE8A501FB2786600EDA589 /* SpectralForceDirected.swift in Sources */,
+				2BFE8A4A1FB277E600EDA589 /* WNCutDecomposer.swift in Sources */,
 				3F226A641F75C620004733A8 /* groupSinthesisAttributeViewController.swift in Sources */,
 				3F921CE81F5A11C2004FD276 /* newGroup.swift in Sources */,
 				3F2924841F45A11600F3130E /* ViewController.swift in Sources */,
@@ -449,6 +484,7 @@
 				7B1B75591F8F88E8004973F2 /* WNCut.swift in Sources */,
 				3F226A601F75C3BE004733A8 /* nodeEdgesAttributeViewController.swift in Sources */,
 				3F9CB19F1F549F8D00451649 /* GraphElement.swift in Sources */,
+				2BFE8A4E1FB2785100EDA589 /* RSCU_LoopUnroller.swift in Sources */,
 				3FB5BC821F817959006A2A72 /* nodeSinthesisAttributeViewController.swift in Sources */,
 				3F890A811F51F79900BBDBFD /* Edge.swift in Sources */,
 				3F0928B71F519318000997B2 /* graphViewController.swift in Sources */,

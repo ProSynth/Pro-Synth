@@ -336,51 +336,27 @@ class WNCut: NSObject {
     }
     
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /* Sajátvektor számoló függvény sajátértékből */
-    // Bemenet: A számolni kívánt mátrix, és a sajátérték
-    // Kimenet: A sajátvektor
-    func CalcEigVectorFrom(sMatrix: [Double], eigValue: Double) -> [Double] {
-        var eigVector: [Double] = Array(repeating: 0.0, count: g_sizeOfMatrix)
-        var AmL_Matrix: [Double] = sMatrix
-        for i in 0..<g_sizeOfMatrix {
-            for j in 0..<g_sizeOfMatrix {
-                if i==j{
-                    AmL_Matrix[i*g_sizeOfMatrix+j]-=eigValue
-                }
-            }
-        }
-        cblas_dtbsv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasNonUnit, Int32(g_sizeOfMatrix), Int32(g_sizeOfMatrix), &AmL_Matrix, Int32(g_sizeOfMatrix), &eigVector, 1)
-        return eigVector
-    }
-    
-    
-    func GaussElimination(sMatrix: [Double], eigValue: Double) -> [Double] {
-        var eigVector: [Double] = Array(repeating: 0.0, count: g_sizeOfMatrix)
-        var G_Matrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix+1), count: g_sizeOfMatrix)
+    /* Gauss elimináló */
+    // Bemenet: Az eredeti, laplacolt, súlyozott mátrix, a sajátérték, és a mátrix mérete
+    // Kimenet: A sajátértékek, és sorrendjük
+    func GaussElimination(sMatrix: [Double], eigValue: Double, sizeOfMatrix: Int) -> [Double] {
+        var eigVector: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
+        var eigVectorTmp: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
+        var eigVectorOrder: [Int] = Array(repeating: 0, count: sizeOfMatrix)
+        var G_Matrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfMatrix+1), count: sizeOfMatrix)
         
-        for i in 0..<g_sizeOfMatrix {
-            for j in 0..<g_sizeOfMatrix {
-                G_Matrix[i][j] = sMatrix[i*g_sizeOfMatrix+j]
+        for i in 0..<sizeOfMatrix {
+            for j in 0..<sizeOfMatrix {
+                G_Matrix[i][j] = sMatrix[i*sizeOfMatrix+j]
                 if i==j {
                     G_Matrix[i][j]-=eigValue
                 }
             }
+        }
+        for i in 0..<sizeOfMatrix {
+            eigVectorOrder[i] = i
         }
         
         
@@ -388,7 +364,7 @@ class WNCut: NSObject {
             // Keressük meg a maximumot az adott oszlopban
             var maxEl: Double               = abs(G_Matrix[i][i])
             var maxRow: Int                 = i
-            for k in i+1..<g_sizeOfMatrix {
+            for k in i+1..<sizeOfMatrix {
                 let absValue = G_Matrix[k][i]
                 if absValue > maxEl {
                     maxEl = absValue
@@ -396,16 +372,20 @@ class WNCut: NSObject {
                 }
             }
             // Kicseréljük a max sort a jelenlegivel
-            for k in i..<g_sizeOfMatrix+1 {
+            for k in i..<sizeOfMatrix+1 {
                 let tmp: Double = -G_Matrix[maxRow][k]
                 G_Matrix[maxRow][k] = G_Matrix[i][k]
                 G_Matrix[i][k] = tmp
             }
+            let tmpOrd: Int = eigVectorOrder[maxRow]
+            eigVectorOrder[maxRow] = eigVectorOrder[i]
+            eigVectorOrder[i] = tmpOrd
+            
             
             // Kinullázzuk az alatta lévő sorokat alatta
-            for k in i+1..<g_sizeOfMatrix {
+            for k in i+1..<sizeOfMatrix {
                 let c: Double = -G_Matrix[k][i]/G_Matrix[i][i]
-                for j in i..<g_sizeOfMatrix+1 {
+                for j in i..<sizeOfMatrix+1 {
                     
                     if i==j {
                         G_Matrix[k][j] = 0
@@ -419,25 +399,30 @@ class WNCut: NSObject {
         
         // A felső háromszögmátrix megoldása
         var csoport: Double = 1.0
-        for i in stride(from: g_sizeOfMatrix-1, through: 0, by: -1) {
-            if (i==g_sizeOfMatrix-1) {
-                eigVector[i] = csoport
+        for i in stride(from: sizeOfMatrix-1, through: 0, by: -1) {
+            if (i==sizeOfMatrix-1) {
+                eigVectorTmp[i] = csoport
             }
             else {
-                eigVector[i] = G_Matrix[i][g_sizeOfMatrix]/G_Matrix[i][i]
+                eigVectorTmp[i] = G_Matrix[i][sizeOfMatrix]/G_Matrix[i][i]
             }
-            if ((eigVector[i] == 0) && (G_Matrix[i][g_sizeOfMatrix]==0))
+            if ((eigVectorTmp[i] == 0) && (G_Matrix[i][sizeOfMatrix]==0))
             {
-                csoport += Double(g_sizeOfMatrix)
-                eigVector[i] = csoport
+                csoport += Double(sizeOfMatrix)
+                eigVectorTmp[i] = csoport
             }
             
             
             
             for k in stride(from: i-1, through: 0, by: -1) {
-                G_Matrix[k][g_sizeOfMatrix] -= G_Matrix[k][i] * eigVector[i]
+                G_Matrix[k][sizeOfMatrix] -= G_Matrix[k][i] * eigVectorTmp[i]
             }
         }
+        
+        for i in 0..<eigVectorOrder.count {
+            eigVector[eigVectorOrder[i]] = eigVectorTmp[i]
+        }
+        
         return eigVector
     }
     
@@ -460,7 +445,7 @@ class WNCut: NSObject {
             }
         }
         
-        let eigVectorMin: [Double] = GaussElimination(sMatrix: LMatrix, eigValue: minEigValue)
+        let eigVectorMin: [Double] = GaussElimination(sMatrix: LMatrix, eigValue: minEigValue, sizeOfMatrix: g_sizeOfMatrix)
         
         print(eigValues)
         print(eigVectorMin)
@@ -495,7 +480,7 @@ class WNCut: NSObject {
             }
         }
         
-        let eigVectorMin: [Double] = GaussElimination(sMatrix: LEMatrix, eigValue: minEigValue)
+        let eigVectorMin: [Double] = GaussElimination(sMatrix: LEMatrix, eigValue: minEigValue, sizeOfMatrix: e_sizeOfMatrix)
         
         print(eigValues)
         print(eigVectorMin)
