@@ -22,7 +22,7 @@ import Cocoa
 
 class GraphElement: NSObject {
     dynamic var name: String
-    
+    //dynamic var parent: GraphElement
     dynamic var children = [GraphElement] ()
     
 //////////////////////////////////////////////////////////////////////////////////////

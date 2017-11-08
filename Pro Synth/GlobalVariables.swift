@@ -109,4 +109,4 @@ var nodeAttribute:Node = Node(name: " ", weight: -1, nodeOpType: nodeOpTypeArray
 
 
 /* WNCut globális változói */
-var Matrix = [Double](repeatElement(0, count: 4))
+

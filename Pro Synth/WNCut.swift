@@ -37,7 +37,7 @@ class WNCut: NSObject {
     /* A Laplace Mátrix generáló */
     // Bemenet: Diag vektor, D-W mátrix és a mátrixok mérete
     // Kimenet: A Laplapce mátrix
-    func makeLaplace(matrix: [Double], sizeOfMatrix: Int) -> [Double] {
+    private func makeLaplace(matrix: [Double], sizeOfMatrix: Int) -> [Double] {
         // Változók definiálása
         let sizeOfMatrixInt32 : Int32 = Int32(sizeOfMatrix)
         var Matrix: [Double] = matrix
@@ -90,7 +90,7 @@ class WNCut: NSObject {
     /* A Lánczos algoritmus egyetlen sajátvektorra */
     // Bemenet: A számolni kívánt mátrix, és mérete
     // Kimenet: A sajátvektor és a sajátérték
-    func Lanczos2(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: [Double])? {
+    private func Lanczos2(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> (eig_vector: [Double], eig_value: [Double])? {
         
         
         var S_Matrix : [Double]             = sMatrix                                        // A szimmetrikus mátrix
@@ -128,7 +128,7 @@ class WNCut: NSObject {
     /* A Lánczos algoritmus egyetlen sajátvektorra */
     // Bemenet: A számolni kívánt mátrix, és mérete
     // Kimenet: A sajátvektor és a sajátérték
-    func Lanczos(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> ([Double])? {
+    private func Lanczos(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> ([Double])? {
         
         /* Változók inicializálása */
         var v_prev = [Double](repeatElement(0x00, count: sizeOfMatrix))                     // Az előző felírt próbavektor
@@ -192,7 +192,7 @@ class WNCut: NSObject {
     }
     
     
-    func tridiagToEigValues(symTridiagMatrix: [Double], sizeOfMatrix:Int) -> [Double] {
+    private func tridiagToEigValues(symTridiagMatrix: [Double], sizeOfMatrix:Int) -> [Double] {
         var info: __CLPK_integer                            = __CLPK_integer(0)
         var CLPKsizeOfMatrix: __CLPK_integer                = __CLPK_integer(sizeOfMatrix)
         var numOfSuperdiagonals: __CLPK_integer             = __CLPK_integer(1)
@@ -236,7 +236,7 @@ class WNCut: NSObject {
     /* Új próbavektor generáló */
     // Bemenet: Az eddigi, egymásra merőleges sajátvektorok, azok száma és hossza
     // Kimenet: Az új próbavektor
-    func NewVector(sizeOfMatrix : Int) -> [Double] {
+    private func NewVector(sizeOfMatrix : Int) -> [Double] {
         //var v = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
         var v_new = [Double]()      // A hibavektor, ami az új próbavektor irányát adja majd
         for i in 0..<sizeOfMatrix {
@@ -267,7 +267,7 @@ class WNCut: NSObject {
     /* Mátrix bővítő */
     // Bemenet: A bővíteni kívánt mátrix, a mérete, és az egyes pontok súlya
     // Kimenet: A bővített mátrix, és mérete
-    func MatrixExpansion(sMatrix: [Double], sizeOfsMatrix: Int, weight: [Int]) -> (dMatrix: [Double], sizeOfdMatrix: Int) {
+    private func MatrixExpansion(sMatrix: [Double], sizeOfsMatrix: Int, weight: [Int]) -> (dMatrix: [Double], sizeOfdMatrix: Int) {
         // Bemenet újradefiniálása
         var sizeOfdMatrix: Int          = 0
         for i in 0..<weight.count {
@@ -341,7 +341,7 @@ class WNCut: NSObject {
     /* Gauss elimináló */
     // Bemenet: Az eredeti, laplacolt, súlyozott mátrix, a sajátérték, és a mátrix mérete
     // Kimenet: A sajátértékek, és sorrendjük
-    func GaussElimination(sMatrix: [Double], eigValue: Double, sizeOfMatrix: Int) -> [Double] {
+    private func GaussElimination(sMatrix: [Double], eigValue: Double, sizeOfMatrix: Int) -> (Spectrum: [Double], Group: [Int]) {
         var eigVector: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
         var eigVectorTmp: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
         var eigVectorOrder: [Int] = Array(repeating: 0, count: sizeOfMatrix)
@@ -398,18 +398,24 @@ class WNCut: NSObject {
         }
         
         // A felső háromszögmátrix megoldása
-        var csoport: Double = 1.0
+        var csoport: Int = 1
+        var groupTmp: [Int] = Array(repeating: 0, count: sizeOfMatrix)
+        var group: [Int] = Array(repeating: 0, count: sizeOfMatrix)
+        
         for i in stride(from: sizeOfMatrix-1, through: 0, by: -1) {
             if (i==sizeOfMatrix-1) {
-                eigVectorTmp[i] = csoport
+                eigVectorTmp[i] = 1.0
+                groupTmp[i] = csoport
             }
             else {
                 eigVectorTmp[i] = G_Matrix[i][sizeOfMatrix]/G_Matrix[i][i]
+                groupTmp[i] = csoport
             }
             if ((eigVectorTmp[i] == 0) && (G_Matrix[i][sizeOfMatrix]==0))
             {
-                csoport += Double(sizeOfMatrix)
-                eigVectorTmp[i] = csoport
+                csoport += 1
+                eigVectorTmp[i] = 1.0
+                groupTmp[i] = csoport
             }
             
             
@@ -421,12 +427,13 @@ class WNCut: NSObject {
         
         for i in 0..<eigVectorOrder.count {
             eigVector[eigVectorOrder[i]] = eigVectorTmp[i]
+            group[eigVectorOrder[i]] = groupTmp[i]
         }
         
-        return eigVector
+        return (eigVector, group)
     }
     
-    func NCut() -> [Double] {
+    func NCut() -> (Spectrum: [Double], Group: [Int]) {
         // Inicializálás
         T_Matrix = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
         
@@ -445,15 +452,15 @@ class WNCut: NSObject {
             }
         }
         
-        let eigVectorMin: [Double] = GaussElimination(sMatrix: LMatrix, eigValue: minEigValue, sizeOfMatrix: g_sizeOfMatrix)
+        let eigVectorMin = GaussElimination(sMatrix: LMatrix, eigValue: minEigValue, sizeOfMatrix: g_sizeOfMatrix)
         
         print(eigValues)
         print(eigVectorMin)
-        return eigVectorMin
+        return (eigVectorMin.Spectrum, eigVectorMin.Group)
     }
     
     
-    func WNCut(weight: [Int]) -> [Double] {
+    func WNCut(weight: [Int]) -> (Spectrum: [Double], Group: [Int], NodeIDCoder: [Int]) {
         
         
         let EMatrix = MatrixExpansion(sMatrix: sourceMatrix, sizeOfsMatrix: g_sizeOfMatrix, weight: weight)
@@ -480,11 +487,21 @@ class WNCut: NSObject {
             }
         }
         
-        let eigVectorMin: [Double] = GaussElimination(sMatrix: LEMatrix, eigValue: minEigValue, sizeOfMatrix: e_sizeOfMatrix)
+        let eigVectorMin = GaussElimination(sMatrix: LEMatrix, eigValue: minEigValue, sizeOfMatrix: e_sizeOfMatrix)
         
         print(eigValues)
         print(eigVectorMin)
-        return eigVectorMin
+        
+        var NodeIDCoder: [Int] = []
+        for i in 0..<weight.count {
+            for j in 0..<weight[i] {
+                NodeIDCoder.append(weight[i])
+            }
+        }
+
+        
+        
+        return (eigVectorMin.Spectrum, eigVectorMin.Group, NodeIDCoder)
     }
     
     

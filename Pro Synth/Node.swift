@@ -26,7 +26,8 @@ class Node: GraphElement {
     }      //A ponthoz csatlakozó élek számát adja
     static var  currentNodeID : Int = 0
     var nodeID:Int
-    var opType: nodeOpType
+    var opType: nodeOpType?
+    var spectrum: Double?
 
 //////////////////////////////////////////////////////////////////////////////////////
 //!         Function
@@ -38,7 +39,7 @@ class Node: GraphElement {
 //!                 Inicializáláskor megkapja a súlyát
 //!///////////////////////////////////////////////////////////////////////////////////
 
-    init(name: String, weight:Int, nodeOpType:nodeOpType, nodeID: Int = -1) {
+    init(name: String, weight:Int, nodeOpType:nodeOpType?, nodeID: Int = -1) {
         // ID kiosztó szerkezet
         if nodeID == (-1) {
             self.nodeID = Node.currentNodeID
@@ -49,7 +50,7 @@ class Node: GraphElement {
             self.nodeID = nodeID
             Node.currentNodeID = nodeID
         }
-        self.opType = nodeOpType
+        self.opType? = nodeOpType!
         self.weight = weight
         super.init(name: name)
     }

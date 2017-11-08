@@ -22,7 +22,7 @@ class Group: GraphElement {
     var numberOfNode: Int                       //Megadja, hogy a csoportban összesen hány Node van
     static var  currentGroupID : Int = 0
     var groupID : Int                           //CsoportID, minden csoportnak különböző
-    var maxTime:Int
+    var maxTime: Int
     
 
 //////////////////////////////////////////////////////////////////////////////////////

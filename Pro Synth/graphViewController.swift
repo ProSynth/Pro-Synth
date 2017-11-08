@@ -407,73 +407,29 @@ class graphViewController: NSViewController {
     }
     
     
-    func pushMatrix() -> (sizeOfmatrix: Int, weight: [Int]) {
-        var weight: [Int] = []
-        var sizeOfMatrix : Int = 0
-        for i in 0..<groups.count {             // Összeszámolja az összes pontot a gráfban
-            sizeOfMatrix += groups[i].children.count
-        }
-        Matrix.removeAll()
-        for i in 0..<sizeOfMatrix*sizeOfMatrix {
-            Matrix.append(0)
-        }
 
-        
-        for i in 0..<groups.count {
-            for j in 0..<groups[i].children.count {
-                let currentWeight = (groups[i].children[j] as! Node).weight
-                if currentWeight > 1 {
-                    weight.append(currentWeight)
-                } else {
-                    weight.append(1)
-                }
-                for k in 0..<groups[i].children[j].children.count {
-                    let parent1 = (groups[i].children[j].children[k] as! Edge).parentNode1
-                    let parent2 = (groups[i].children[j].children[k] as! Edge).parentNode2
-                    
-                    
-                    Matrix[parent2.nodeID*sizeOfMatrix + parent1.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
-                    Matrix[parent1.nodeID*sizeOfMatrix + parent2.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
-
-                    // Mi van, ha két pont között több él is van?
-                }
-            }
-        }
-        
-
-        
-        for j in 0..<sizeOfMatrix {
-            var rowSum : Double = 0
-            for i in (j*sizeOfMatrix)..<((j+1)*sizeOfMatrix) {
-                rowSum = rowSum + Matrix[i]
-            }
-            Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
-        }
-        
-        for i in 0..<sizeOfMatrix {
-            for j in 0..<sizeOfMatrix {
-                print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
-            }
-            print("\n")
-        }
- 
-        return (sizeOfMatrix, weight)
-    }
     
     func doSynth()  {
-        let MatrixProp = pushMatrix()
-        NSLog("Kész a mátrixxá alakítás")
-        let synth: WNCut = WNCut(sizeOfMatrix: MatrixProp.sizeOfmatrix, sourceMatrix: Matrix)
-        let spectrum = synth.WNCut(weight: MatrixProp.weight)
-        NSLog("Kész van a spektrummal")
-        
+
         // Dekompozíció cégrehajtása
-        let decomposer: WNCutDecomposer = WNCutDecomposer()
-        let grouping = decomposer.WNCutDecomposer(Spectrum: spectrum, Weight: MatrixProp.weight, Parameter: 10)
+        let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
+        let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: groups, p:5)
         guard nil != grouping  else {
             print("A Dekompozíció nem végződött el")
             return
         }
+        
+        let oldGroups = groups
+        groups.removeAll()
+        groups = grouping!
+        
+        var we: Int = 0
+        for group in 0..<groups.count {
+            for node in 0..<groups[group].children.count {
+                we += (groups[group].children[node] as! Node).weight
+            }
+        }
+        print("Összes pont: \(we)")
         
     }
 
@@ -640,7 +596,7 @@ extension graphViewController: NSOutlineViewDelegate {
             nodeAttributesPl.nodeID = (groups[path[0]].children[path[1]] as! Node).nodeID
             nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
             nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
-            nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType
+            nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType!
             
             nodeAttribute = groups[path[0]].children[path[1]] as! Node
             
