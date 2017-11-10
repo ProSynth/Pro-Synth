@@ -45,6 +45,7 @@
 		3FEFCF581F7686FE001FA2A9 /* edgeGlobalAttributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FEFCF571F7686FE001FA2A9 /* edgeGlobalAttributeViewController.swift */; };
 		3FEFCF5A1F768730001FA2A9 /* edgeSinthesisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FEFCF591F768730001FA2A9 /* edgeSinthesisViewController.swift */; };
 		7B1B75591F8F88E8004973F2 /* WNCut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1B75581F8F88E8004973F2 /* WNCut.swift */; };
+		7B47046D1FB605C600F40F9D /* CNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B47046C1FB605C600F40F9D /* CNode.swift */; };
 		7B671D0D1F5E96B300EED265 /* newConnectionManual.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B671D0C1F5E96B300EED265 /* newConnectionManual.swift */; };
 		7BDB22581F581BF200D785DD /* newNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB22571F581BF200D785DD /* newNode.swift */; };
 /* End PBXBuildFile section */
@@ -111,6 +112,7 @@
 		3FEFCF571F7686FE001FA2A9 /* edgeGlobalAttributeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = edgeGlobalAttributeViewController.swift; sourceTree = "<group>"; };
 		3FEFCF591F768730001FA2A9 /* edgeSinthesisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = edgeSinthesisViewController.swift; sourceTree = "<group>"; };
 		7B1B75581F8F88E8004973F2 /* WNCut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WNCut.swift; sourceTree = "<group>"; };
+		7B47046C1FB605C600F40F9D /* CNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNode.swift; sourceTree = "<group>"; };
 		7B671D0C1F5E96B300EED265 /* newConnectionManual.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = newConnectionManual.swift; sourceTree = "<group>"; };
 		7BDB22571F581BF200D785DD /* newNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = newNode.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -160,6 +162,7 @@
 			isa = PBXGroup;
 			children = (
 				2BFE8A4F1FB2786600EDA589 /* SpectralForceDirected.swift */,
+				7B47046C1FB605C600F40F9D /* CNode.swift */,
 			);
 			name = SpectralForceDirectedScheduler;
 			sourceTree = "<group>";
@@ -489,6 +492,7 @@
 				3F890A811F51F79900BBDBFD /* Edge.swift in Sources */,
 				3F0928B71F519318000997B2 /* graphViewController.swift in Sources */,
 				3FEFCF581F7686FE001FA2A9 /* edgeGlobalAttributeViewController.swift in Sources */,
+				7B47046D1FB605C600F40F9D /* CNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
