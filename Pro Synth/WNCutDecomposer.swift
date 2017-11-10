@@ -80,6 +80,8 @@ class WNCutDecomposer: NSObject {
         return nil
     }
     
+    
+    
     func DoProcess(sourceGroups: [GraphElement], p:Double) -> [GraphElement]? {
         
         var destinationGroups = [GraphElement]()
@@ -99,30 +101,50 @@ class WNCutDecomposer: NSObject {
         let NodeSpectrum = spectrum.Spectrum
         let NodeGroup = spectrum.Group
         
-        var NodeDictionary: [Int: Double] = [:]
+        var NodeDictionary = [Int : Double]()
         
+
         
         for group in 1...(NodeGroup.max()!) {
+            
+            // A kibővített gráf leredukálása, így már egészen biztos, hogy egy nodeID-hoz a vektor egyetlen eleme, és egyetlen spetruma fog tartozni
+            var nodeCounter: Int = 0
+            var nodeSpectrums = [Double]()
             for i in 0..<NodeSpectrum.count {
                 if NodeGroup[i] == group {
-                    NodeDictionary[NodeIDKodtabla[i]] = NodeSpectrum[i]
+                    if NodeDictionary[NodeIDKodtabla[i]] != nil {                   // Ha létezik már olyan NodeID-jű pont, akkor átlagot veszünk
+                        nodeSpectrums.append(NodeSpectrum[i])
+                        nodeCounter += 1
+                        let avg = (nodeSpectrums.reduce(0,+))/Double(nodeCounter)
+                        NodeDictionary[NodeIDKodtabla[i]] = avg
+                    } else {
+                        NodeDictionary[NodeIDKodtabla[i]] = NodeSpectrum[i]
+                        nodeSpectrums.removeAll()
+                        nodeSpectrums.append(NodeSpectrum[i])
+                        nodeCounter = 1
+                    }
+                    
                 }
             }
+            
             // Itt kell elvégezni a sorbarendezést, stb-t
             
             let sortedNodeDictionary = NodeDictionary.sorted{ $0.value < $1.value }
-            let min = sortedNodeDictionary.min{ a, b in a.value < b.value }
-            let max = sortedNodeDictionary.min{ a, b in a.value > b.value }
+            let min = (sortedNodeDictionary.first!).value
+            let max = (sortedNodeDictionary.last!).value
             
-            var runningPoint: Double = (min?.value)!
-            let maxDistence = ((max?.value)!-(min?.value)!)*(p/100)
+            var runningPoint: Double = min
+            let maxDistence = (max-min)*(p/100)
             
-            destinationGroups.append(Group(name: "Group #\(group)", maxGroupTime: 0))
+            
+            // A kimeneti gráf struktúra feltöltése
+            destinationGroups.append(Group(name: "Group #\(group)", maxGroupTime: 0))           // Az adott, diszjunkt csoport létrehozása
             
             guard let index = findNode(fromID: sortedNodeDictionary[0].key, nodes: sourceNodes) else {
-                print("Hiba az ID alapú meghatározásnál")
+                print("Hiba az ID alapú meghatározásnál, nem találta a pontot")
                 return nil
             }
+            
             //let index = findNode(fromID: sortedNodeDictionary[0].key, nodes: sourceNodes)
             let name = (sourceNodes[index] as GraphElement).name
             //let weight = sourceNodes[index].weight
@@ -131,7 +153,7 @@ class WNCutDecomposer: NSObject {
             
             for i in 1..<sortedNodeDictionary.count {
                 guard let index = findNode(fromID: sortedNodeDictionary[0].key, nodes: sourceNodes) else {
-                    print("Hiba az ID alapú meghatározásnál")
+                    print("Hiba az ID alapú meghatározásnál, nem találta a pontot")
                     return nil
                 }
                 let name = (sourceNodes[index] as GraphElement).name
