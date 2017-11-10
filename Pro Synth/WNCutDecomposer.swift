@@ -80,7 +80,27 @@ class WNCutDecomposer: NSObject {
         return nil
     }
     
+    var plus: Int = 0
     
+    func checkIfBothNodeIdInArray(edge: Edge, indexes: [Int], sourceNodes: [Node]) -> Bool {
+        //edge.parentNode2.nodeID
+        var cond1: Bool = false
+        var cond2: Bool = false
+        for i in 0..<indexes.count {
+            cond1 = edge.parentNode1.nodeID == sourceNodes[indexes[i]].nodeID
+            if cond1 { break }
+        }
+        for i in 0..<indexes.count {
+            cond2 = edge.parentNode2.nodeID == sourceNodes[indexes[i]].nodeID
+            if cond2 { break }
+        }
+        if (cond1 && cond2) {
+            print("Nem kerül be")
+            plus += 1
+            return true
+        }
+        return false
+    }
     
     func DoProcess(sourceGroups: [GraphElement], p:Double) -> [GraphElement]? {
         
@@ -92,7 +112,7 @@ class WNCutDecomposer: NSObject {
                 sourceNodes.append(sourceGroups[group].children[node] as! Node)
             }
         }
-
+        
         let matrixStruct = pushMatrix(groups: sourceGroups)
         let synthesis: WNCut = WNCut(sizeOfMatrix: matrixStruct.sizeOfmatrix, sourceMatrix: matrixStruct.matrix)
         let spectrum = synthesis.WNCut(weight: matrixStruct.weight)
@@ -111,13 +131,17 @@ class WNCutDecomposer: NSObject {
             var nodeCounter: Int = 0
             var nodeSpectrums = [Double]()
             for i in 0..<NodeSpectrum.count {
+                //print("\(i). ciklusban van benne")
                 if NodeGroup[i] == group {
+                    //print("Feltétel teljesül")
                     if NodeDictionary[NodeIDKodtabla[i]] != nil {                   // Ha létezik már olyan NodeID-jű pont, akkor átlagot veszünk
+                        //print("Meglévő pont integrálása")
                         nodeSpectrums.append(NodeSpectrum[i])
                         nodeCounter += 1
                         let avg = (nodeSpectrums.reduce(0,+))/Double(nodeCounter)
                         NodeDictionary[NodeIDKodtabla[i]] = avg
                     } else {
+                        //print("Új pont                        ÚJ!!!!")
                         NodeDictionary[NodeIDKodtabla[i]] = NodeSpectrum[i]
                         nodeSpectrums.removeAll()
                         nodeSpectrums.append(NodeSpectrum[i])
@@ -125,6 +149,7 @@ class WNCutDecomposer: NSObject {
                     }
                     
                 }
+                
             }
             
             // Itt kell elvégezni a sorbarendezést, stb-t
@@ -134,29 +159,25 @@ class WNCutDecomposer: NSObject {
             let max = (sortedNodeDictionary.last!).value
             
             var runningPoint: Double = min
-            let maxDistence = (max-min)*(p/100)
+            let maxDistence = (max-min)*(p/1000)
             
             
             // A kimeneti gráf struktúra feltöltése
             destinationGroups.append(Group(name: "Group #\(group)", maxGroupTime: 0))           // Az adott, diszjunkt csoport létrehozása
             
-            guard let index = findNode(fromID: sortedNodeDictionary[0].key, nodes: sourceNodes) else {
-                print("Hiba az ID alapú meghatározásnál, nem találta a pontot")
-                return nil
-            }
+
+            var indexes = [Int]()
+            var prevIndex: Int? = nil
             
-            //let index = findNode(fromID: sortedNodeDictionary[0].key, nodes: sourceNodes)
-            let name = (sourceNodes[index] as GraphElement).name
-            //let weight = sourceNodes[index].weight
-            destinationGroups[group-1].children.append(Node(name: name, weight: 1, nodeOpType: nil, nodeID: sortedNodeDictionary[0].key))
-            runningPoint += maxDistence
-            
-            for i in 1..<sortedNodeDictionary.count {
-                guard let index = findNode(fromID: sortedNodeDictionary[0].key, nodes: sourceNodes) else {
+            for i in 0..<sortedNodeDictionary.count {
+                guard let index = findNode(fromID: sortedNodeDictionary[i].key, nodes: sourceNodes) else {
                     print("Hiba az ID alapú meghatározásnál, nem találta a pontot")
                     return nil
                 }
+                
+                //print("\(index) sorszámú pontot megtaláltam")
                 let name = (sourceNodes[index] as GraphElement).name
+
                 //let weight = sourceNodes[index].weight
                 
                 if runningPoint > sortedNodeDictionary[i].value {
@@ -164,16 +185,48 @@ class WNCutDecomposer: NSObject {
                     destinationGroups[group-1].children.last?.name += ":\(name)"
                     runningPoint = sortedNodeDictionary[i].value
                 } else {
-                    destinationGroups[group-1].children.append(Node(name: name, weight: 1, nodeOpType: nil))
+                    
+                    if prevIndex != nil {
+                        for j in 0..<indexes.count {
+                            for edge in 0..<(sourceNodes[indexes[j]] as GraphElement).children.count {
+                                let  theEdge = ((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
+                                if (!checkIfBothNodeIdInArray(edge: theEdge, indexes: indexes, sourceNodes: sourceNodes)) {
+                                    (destinationGroups[group-1].children.last!).children.append((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
+                                }
+                            }
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                    destinationGroups[group-1].children.append(Node(name: name, weight: 1, nodeOpType: .none))
+                    // Élek hozzáadása
+
+                    indexes.removeAll()
                     runningPoint = sortedNodeDictionary[i].value
                 }
                 
+                
+                
+
+                indexes.append(index)                           // Az összetartozó pontok indexe
+
+                
                 runningPoint += maxDistence
                 
-                
+                prevIndex = index
             }
             
-            
+            for j in 0..<indexes.count {
+                for edge in 0..<(sourceNodes[indexes[j]] as GraphElement).children.count {
+                    let  theEdge = ((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
+                    if (!checkIfBothNodeIdInArray(edge: theEdge, indexes: indexes, sourceNodes: sourceNodes)) {
+                        (destinationGroups[group-1].children.last!).children.append((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
+                    }
+                }
+            }
             
             //Töröljük a tartalmát, hogy legközelebb üres legyen
             NodeDictionary.removeAll()
@@ -181,7 +234,7 @@ class WNCutDecomposer: NSObject {
 
         
         
-        
+        print("\(plus)")
         
         
         return destinationGroups

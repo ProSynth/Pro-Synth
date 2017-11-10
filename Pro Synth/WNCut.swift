@@ -361,7 +361,7 @@ class WNCut: NSObject {
         }
         
         
-        for i in 0..<g_sizeOfMatrix {
+        for i in 0..<sizeOfMatrix {
             // Keressük meg a maximumot az adott oszlopban
             var maxEl: Double               = abs(G_Matrix[i][i])
             var maxRow: Int                 = i
@@ -496,7 +496,7 @@ class WNCut: NSObject {
         var NodeIDCoder: [Int] = []
         for i in 0..<weight.count {
             for j in 0..<weight[i] {
-                NodeIDCoder.append(weight[i])
+                NodeIDCoder.append(i)
             }
         }
 

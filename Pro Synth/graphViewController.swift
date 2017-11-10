@@ -413,7 +413,7 @@ class graphViewController: NSViewController {
 
         // Dekompozíció cégrehajtása
         let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
-        let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: groups, p:5)
+        let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: groups, p:0.001)
         guard nil != grouping  else {
             print("A Dekompozíció nem végződött el")
             return
@@ -596,7 +596,7 @@ extension graphViewController: NSOutlineViewDelegate {
             nodeAttributesPl.nodeID = (groups[path[0]].children[path[1]] as! Node).nodeID
             nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
             nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
-            nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType!
+            //nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType!
             
             nodeAttribute = groups[path[0]].children[path[1]] as! Node
             
