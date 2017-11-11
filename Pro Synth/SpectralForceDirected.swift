@@ -11,6 +11,7 @@ import Cocoa
 let EPS: Float      = 0.05
 let USE_QI          = 1
 let USE_TI          = 0
+let VERBOSE         = false
 
 // Arguments:
 // p :  include buffers in allocation estimation
@@ -21,6 +22,15 @@ let USE_TI          = 0
 // Jelzések: //!!! --> Hiba lehetőség
 
 class SpectralForceDirected: NSObject {
+    // Saját változók definiálása
+    var groups: [GraphElement]
+    
+    init(groups: [GraphElement]) {
+        self.groups = groups
+        super.init()
+    }
+    
+    
     // Változók definiálása
     var maxdelayrounds: Int                 = 1
     var restartTime: Int                    = -1
@@ -36,6 +46,7 @@ class SpectralForceDirected: NSObject {
     // CNode osztály példányosítása
     var ops                                 = [CNode]()
     
+    
     //////////////////////////////////////////////////////////////////////////////////////
     //!         Function readInput
     //!===================================================================================
@@ -44,7 +55,18 @@ class SpectralForceDirected: NSObject {
     //////////////////////////////////////////////////////////////////////////////////////
     
     // MARK: - Bemenet kezelés - ki kell találni
-    
+    func readInput() {
+        var tmpNode: CNode
+        for i in 0..<groups[0].children.count {
+            let id = (groups[0].children[0] as! Node).nodeID
+            let weight = (groups[0].children[0] as! Node).weight
+            let name = groups[0].children[0].name
+            // Még más dolgokat is hozzá kell adni, és az éleket is
+            tmpNode = CNode(NodeID: id, Name: name, Weight: weight)
+            ops.append(tmpNode)
+        }
+        
+    }
     
     
     //////////////////////////////////////////////////////////////////////////////////////
@@ -746,5 +768,11 @@ class SpectralForceDirected: NSObject {
         }
         testArg = -1
         return
+    }
+    
+    func DoProcess(restartTime: Int, p: Bool, s: Bool, d: Bool) {
+        self.restartTime = restartTime
+        readInput()
+        mainAlgorithm(p: p, s: s, d: d, v: VERBOSE)
     }
 }
