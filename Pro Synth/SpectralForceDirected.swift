@@ -54,7 +54,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func findL() {
+    private func findL() {
         for i in 0..<ops.count {
             if ((ops[i].alap + ops[i].latency) > 1) {
                 l = ops[i].alap + ops[i].latency
@@ -70,7 +70,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func genTransfers() {
+    private func genTransfers() {
         for i in 0..<ops.count {
             ops[i].transfers.removeAll()
             ops[i].transfers.append(ops[i].asap)
@@ -92,7 +92,7 @@ class SpectralForceDirected: NSObject {
     //////////////////////////////////////////////////////////////////////////////////////
     // MARK: - a tömb referenciával van átadva. Direkt így van, vagy csak C++ hülyeség?
     
-    func aFold(arr: [Float]) -> [Float] {
+    private func aFold(arr: inout [Float]) -> [Float] {
         var tmp     = [Float]()
         if arr.count > restartTime {                            //no folding required if arr.size()<=restartTime
             var i: Int = 0
@@ -116,7 +116,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func build_qi(e: CNode, t: Int, wgt: Float) -> [Float] {
+    private func build_qi(e: CNode, t: Int, wgt: Float) -> [Float] {
         var follow      = [Float]()
         var nextAsap: Int
         var plusWgt: Float
@@ -148,7 +148,7 @@ class SpectralForceDirected: NSObject {
     //////////////////////////////////////////////////////////////////////////////////////
     // MARK: - Referenciával kell meghívni!!!
     
-    func addIp(a: inout [Float], b: [Float], wgt: Int = 1) -> [Float] {
+    private func addIp(a: inout [Float], b: [Float], wgt: Int = 1) -> [Float] {
         var maxIdx: Int!
         if a.count <= b.count {                                 // MARK:!!!
             maxIdx = a.count
@@ -174,12 +174,38 @@ class SpectralForceDirected: NSObject {
     //!         Leírás: non-overlapped processor usage; caches result if required.
     //!
     //////////////////////////////////////////////////////////////////////////////////////
-    // MARK: - TODO
-    func usageQm(e: CNode, wgt: Float = 1, useWhichTime: Int = USE_QI) -> [Float] {
+
+    private func usageQm(e: CNode, wgt: Float = 1, useWhichTime: Int = USE_QI) -> [Float] {
         var tmp             = [Float]()
         var test: Bool      = true
-        if transferTimeInfo[e.id] != transferTimeInfo. {
-            <#code#>
+        if transferTimeInfo.index(forKey: e.id) != transferTimeInfo.endIndex {          // MARK:!!! Itt mi a fenét akart az eredeti szerző???
+            if transferTimeInfo[e.id]?.count == e.transfers.count {
+                for i in 0..<e.transfers.count {
+                    if transferTimeInfo[e.id]![i] != e.transfers[i] {
+                        test = false
+                    }
+                }
+            }
+            if test == true {
+                return usageCache[e.id]!
+            }
+        }
+        tmp.removeAll()
+        tmp.append(0)
+        for i in 0..<tmp.count {
+            tmp[i] = 0
+        }
+        for i in e.asap...e.alap {
+            for j in 0..<e.latency {
+                tmp[i+j] += wgt
+            }
+            if USE_TI != useWhichTime {
+                addIp(a: &tmp, b: build_qi(e: e, t: i, wgt: wgt))
+            }
+        }
+        aFold(arr: &tmp)
+        if !(e.transfers.isEmpty) {
+            transferTimeInfo[e.id] = e.transfers
         }
         return tmp
     }
@@ -191,7 +217,68 @@ class SpectralForceDirected: NSObject {
     //!         Leírás: non-overlapped processor usage; caches result if required.
     //!
     //////////////////////////////////////////////////////////////////////////////////////
-    // MARK: - TODO
+   
+    private func buildC(c: inout [String : [Float]], max: inout Float, mean: inout Float, _type: [CNode]) {
+        var u: [Float]
+        var tot: [Float]
+        var nodeTmp: CNode
+        var type: [CNode] = _type
+        var i: Int          = 0
+        var test: Bool      = false
+        
+        for k in 1..<type.count {
+            for m in stride(from: type.count-1, through: k, by: -1) {
+                if (type[m-1].type.compare(String(0)).rawValue) > 0 {
+                    nodeTmp = type[m-1]
+                    type[m-1] = type[m]
+                    type[m] = nodeTmp
+                }
+            }
+        }
+        
+        repeat {
+            if w[type[i].type] != 0 {
+                max = 0
+                tot = Array(repeating: 0.0, count: restartTime)                // MARK:!!!
+                for k in 0..<tot.count {
+                    tot[k] = 0
+                }
+                repeat {
+                    test = false
+                    u = usageQm(e: type[i], wgt: Float(1)/Float(1 + type[i].alap - type[i].asap), useWhichTime: USE_QI)
+                    for k in 0..<tot.count {
+                        tot[k] += u[k]
+                    }
+                    if ((i != type.count-1) && (type[i].type == type[i+1].type)) {
+                        test = true
+                    }
+                    i += 1
+                } while ((i <= type.count) && (test==true))
+                
+                mean = 0
+                for k in 0..<tot.count {
+                    mean += tot[k]
+                    if tot[k] > max {
+                        max = tot[k]
+                    }
+                }
+                
+                mean = mean/Float(tot.count)
+                
+                for k in 0..<tot.count {
+                    tot[k] = abs(tot[k]-mean)                   //difference from original force directed scheduler
+                }
+                if i <= type.count {
+                    i -= 1
+                    c[type[i].type] = tot
+                }
+                i += 1
+            }
+            else {
+                i += 1
+            }
+        } while i < type.count
+    }
     
     //////////////////////////////////////////////////////////////////////////////////////
     //!         Function setAsap
@@ -200,7 +287,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func setAsap(elops: [Int], now: Int) {
+    private func setAsap(elops: [Int], now: Int) {
         for i in 0..<elops.count {
             if (ops[elops[i]].asap < now) {
                 ops[elops[i]].alap = now
@@ -217,7 +304,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func setAlap(elops: [Int], now: Int) {
+    private func setAlap(elops: [Int], now: Int) {
         for i in 0..<elops.count {
             if (ops[elops[i]].alap > now-ops[elops[i]].latency) {
                 ops[elops[i]].alap = (now - ops[elops[i]].latency)
@@ -234,7 +321,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func saveAsap(e: CNode) {
+    private func saveAsap(e: CNode) {
         for i in 0..<e.nxt.count {
             ops[e.nxt[i]].origAsap = ops[e.nxt[i]].asap
             if !(ops[e.nxt[i]].nxt.isEmpty) {
@@ -251,7 +338,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func saveAlap(e: CNode) {
+    private func saveAlap(e: CNode) {
         for i in 0..<e.prd.count {
             ops[e.prd[i]].origAlap = ops[e.prd[i]].alap
             if !(ops[e.prd[i]].prd.isEmpty) {
@@ -268,7 +355,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func restoreAsap(e: CNode) {
+    private func restoreAsap(e: CNode) {
         for i in 0..<e.nxt.count {
             ops[e.nxt[i]].asap = ops[e.nxt[i]].origAsap
             if !(ops[e.nxt[i]].nxt.isEmpty) {
@@ -285,7 +372,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func restoreAlap(e: CNode) {
+    private func restoreAlap(e: CNode) {
         for i in 0..<e.prd.count {
             ops[e.prd[i]].alap = ops[e.prd[i]].origAlap
             if !(ops[e.prd[i]].prd.isEmpty) {
@@ -302,7 +389,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func aadd(a: [Float], b: [Float], wgt: Int = 1) -> [Float] {
+    private func aadd(a: [Float], b: [Float], wgt: Int = 1) -> [Float] {
         var tmp: [Float] = a
         var maxIdx: Int!
         if a.count <= b.count {                                 // MARK:!!!
@@ -330,7 +417,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func amul(a: [Float], b: [Float]) -> Float {
+    private func amul(a: [Float], b: [Float]) -> Float {
         var tmp: Float = 0
         for i in 0..<a.count {
             tmp += a[i]*b[i]
@@ -346,8 +433,19 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     // MARK: - TODO
-    func cdc(<#parameters#>) {
-        <#function body#>
+    private func cdc(c: inout [String : [Float]], newC: inout [String : [Float]], fce: inout Float) {
+        var tmp         = [Float]()
+        let pIterNewC = newC.startIndex
+        var i: Int = 0
+        for (key, value) in c {
+            if key != String(0) {
+                var newErt = (key: "", value: [Float(0.0), Float(0.0)])
+                newErt = newC[newC.index(pIterNewC, offsetBy: i)]
+                tmp = aadd(a: newErt.value, b: value)
+                fce += (Float(w[key]!)*amul(a: value, b: tmp))
+            }
+            i += 1
+        }
     }
     
     
@@ -358,7 +456,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     // MARK: - Referenciával kell meghívni!!!
-    func updateBestTime(fce: Float, bestFce: Float, t: Int, bestTimes: inout [Int]) -> [Int] {
+    private func updateBestTime(fce: Float, bestFce: Float, t: Int, bestTimes: inout [Int]) -> [Int] {
         if fce >= bestFce + EPS {
             print("update_best_time() should not be called now")
         }
@@ -371,13 +469,22 @@ class SpectralForceDirected: NSObject {
     
     
     //////////////////////////////////////////////////////////////////////////////////////
+    //!         Function dumpelop
+    //!===================================================================================
+    //!         Leírás:
+    //!
+    //////////////////////////////////////////////////////////////////////////////////////
+    //MARK: - TODO Eredmény visszadása, kiírása
+    
+    
+    //////////////////////////////////////////////////////////////////////////////////////
     //!         Function genOrder
     //!===================================================================================
     //!         Leírás: find scheduling order (defaults to enumeration)
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func genOrder(ord: [CNode], p: Bool) -> [CNode] {
+    private func genOrder(ord: [CNode], p: Bool) -> [CNode] {
         var _ord: [CNode] = ord
         var testArg = -1
         if p == true {
@@ -405,8 +512,8 @@ class SpectralForceDirected: NSObject {
     //!         Leírás: Gondolom majd itt kell módosítgatni
     //!
     //////////////////////////////////////////////////////////////////////////////////////
-    
-    func forcedir(delayties: Bool, fixed: inout Int, tofix: inout Int, ord: [CNode]) -> [CNode] {           // argv-k nincsenek átadve, egyelőre nem biztos, hogy most kell
+
+    private func forcedir(delayties: Bool, fixed: inout Int, tofix: inout Int, ord: [CNode]) -> [CNode] {           // argv-k nincsenek átadve, egyelőre nem biztos, hogy most kell
         var e: CNode
         var nodeTmp: CNode
         
@@ -424,9 +531,9 @@ class SpectralForceDirected: NSObject {
         var fce: Float          = 0
         var mean: Float         = 0
         var bestFce: Float      = PLUS_INF_FCE
-        var max: Float
+        var max: Float          = 0 //MARK: -!!! Értékadás nem feltétlenül van rendben
         
-        var bestIndex: Int       // =-1 si arg 's' ?
+        var bestIndex: Int      = 0 //si arg 's' ?
         var ts: Int
         var tl: Int
         var testArg: Int        = -1
@@ -478,10 +585,111 @@ class SpectralForceDirected: NSObject {
                 
                 genTransfers()
                 
-                // MARK: -TODO
+                buildC(c: &c, max: &max, mean: &mean, _type: ops)       // a max nincs inicializálva!!
+                
+                maxChange.append(max)
+                meanChange.append(mean)
+                
+                ts = e.asap
+                tl = e.alap
+                
+                for i in ts...tl {
+                    fce = 0
+                    
+                    ops[e.id].asap = i
+                    ops[e.id].alap = i
+                    e.asap = i
+                    e.alap = i
+                    
+                    setAsap(elops: e.nxt, now: i+e.latency)
+                    setAlap(elops: e.prd, now: i)
+                    
+                    genTransfers()                  // Update q(i) configuration
+                    
+                    buildC(c: &newC, max: &max, mean: &mean, _type: ops)
+                    
+                    //MARK: -XXXXXXXXXXXXXXIttkellkiegészíteniXXXXXXXXXXXXX
+                    cdc(c: &c, newC: &newC, fce: &fce)          // calculate force
+                    if (argV) {
+                        print("## F : \(fce)        # node\(e.id)           \(i)")
+                    }
+                    if fce < (bestFce+EPS) {
+                        updateBestTime(fce: fce, bestFce: bestFce, t: i, bestTimes: &bestTimes)
+                        bestFce = fce
+                    }
+                    restoreAsap(e: e)
+                    restoreAlap(e: e)
+                }
+                
+                if (delayties && (bestTimes.count >= 2) && ((tofix-fixed) > 1)) {
+                    print("## tie node \(e.id) delayed")
+                    delayed.append(e)
+                }
+                else {
+                    if (delayties && (bestTimes.count >= 2) && ((tofix-fixed) == 1)) {
+                        print("## no use delaying node \(e.id) even if tied")
+                        for i in 0..<delayed.count {
+                            print("node \(delayed[i].id) ,")
+                        }
+                    }
+                    print("## node \(e.id) best in cycles \(bestTimes[bestIndex])")
+                    
+                    forceChange.append(bestFce)
+                    
+                    ops[e.id].asap = bestTimes[bestIndex]
+                    ops[e.id].alap = bestTimes[bestIndex]
+                    e.asap = bestTimes[bestIndex]
+                    e.alap = bestTimes[bestIndex]
+                    
+                    setAsap(elops: e.nxt, now: (e.asap + e.latency))
+                    setAlap(elops: e.prd, now: e.alap)
+                    
+                    fixed += 1
+                }
+                print("##   \(fixed)/\(tofix) done")
+            }
+            c.removeAll()
+            newC.removeAll()
+        }
+        if delayed.count == 0 {
+            // Kiírás fájlba, vagy.. ugye nem oda.....
+        }
+        if argV {
+            print("## force changes were ")
+            for i in 0..<forceChange.count {
+                print("\(forceChange[i]),")
+            }
+            print("## mean of used processors by steps ")
+            for i in 0..<meanChange.count {
+                print("\(meanChange[i]),")
+            }
+            print("## max of used processors by steps ")
+            for i in 0..<maxChange.count {
+                print("\(maxChange[i]),")
             }
         }
+        return delayed
     }
+    
+    
+    //////////////////////////////////////////////////////////////////////////////////////
+    //!         Function genwgt
+    //!===================================================================================
+    //!         Leírás: set undefined weights to 1
+    //!         Ez szerintem egyáltalán nem működik....
+    //////////////////////////////////////////////////////////////////////////////////////
+    
+    private func genwgt(type: inout [CNode]) {
+        var i: Int = 0
+        var tmp = [String: Int]()
+        repeat {
+            if w.index(forKey: type[i].type) == w.endIndex {
+                w.updateValue(1, forKey: type[i].type)
+            }
+            i += 1
+        } while i < type.count
+    }
+    
     
     //////////////////////////////////////////////////////////////////////////////////////
     //!         Function main
@@ -495,6 +703,48 @@ class SpectralForceDirected: NSObject {
     //////////////////////////////////////////////////////////////////////////////////////
 
     func mainAlgorithm(p: Bool, s: Bool, d: Bool, v: Bool) {
+        var ord         = [CNode]()
+        var delayed     = [CNode]()
         
+        var testArg: Int        = -1
+        var tofix: Int          = 0
+        var fixed: Int          = 0
+        var roundstone: Int     = 1
+        
+        argV = v
+        
+        // readInput()          Itt kell a bemenetet beadni
+        
+        if restartTime == -1 {
+            restartTime = l
+        }
+        
+        print("## scheduling...")
+        
+        tofix = ord.count
+        
+        if d {
+            testArg = 0
+            
+            delayed = forcedir(delayties: true, fixed: &fixed, tofix: &tofix, ord: ord)
+            
+            while ((delayed.count > 0) && (roundstone < maxdelayrounds)) {
+                print("## resolving ties (round \(roundstone)")
+                delayed = forcedir(delayties: true, fixed: &fixed, tofix: &tofix, ord: ord)
+                roundstone += 1                 // Schedule in second round
+            }
+            
+            if delayed.count < 0 {
+                print("## unresolved ties after \(roundstone) rounds")
+                for i in 0..<delayed.count {
+                    print("node \(delayed[i].id),")
+                }
+            }
+        }
+        else {
+            forcedir(delayties: false, fixed: &tofix, tofix: &fixed, ord: ord)
+        }
+        testArg = -1
+        return
     }
 }
