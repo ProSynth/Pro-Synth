@@ -19,7 +19,7 @@ class CNode: NSObject {
     var origAlap: Int!
     
     // Az eredeti fájlban itt kezdődnek a public változók
-    var transfer    = [Int]()
+    var transfers   = [Int]()
     var prd         = [Int]()
     var nxt         = [Int]()
     
