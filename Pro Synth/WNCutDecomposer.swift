@@ -39,8 +39,8 @@ class WNCutDecomposer: NSObject {
                     weight.append(1)
                 }
                 for k in 0..<groups[i].children[j].children.count {
-                    let parent1 = (groups[i].children[j].children[k] as! Edge).parentNode1
-                    let parent2 = (groups[i].children[j].children[k] as! Edge).parentNode2
+                    let parent1 = (groups[i].children[j].children[k] as! Edge).parentsNode
+                    let parent2 = (groups[i].children[j].children[k] as! Edge).parentdNode
                     
                     
                     Matrix[parent2.nodeID*sizeOfMatrix + parent1.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
@@ -87,11 +87,11 @@ class WNCutDecomposer: NSObject {
         var cond1: Bool = false
         var cond2: Bool = false
         for i in 0..<indexes.count {
-            cond1 = edge.parentNode1.nodeID == sourceNodes[indexes[i]].nodeID
+            cond1 = edge.parentsNode.nodeID == sourceNodes[indexes[i]].nodeID
             if cond1 { break }
         }
         for i in 0..<indexes.count {
-            cond2 = edge.parentNode2.nodeID == sourceNodes[indexes[i]].nodeID
+            cond2 = edge.parentdNode.nodeID == sourceNodes[indexes[i]].nodeID
             if cond2 { break }
         }
         if (cond1 && cond2) {

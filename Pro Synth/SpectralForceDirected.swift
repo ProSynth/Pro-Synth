@@ -51,7 +51,7 @@ class SpectralForceDirected: NSObject {
     //!         Function readInput
     //!===================================================================================
     //!         Leírás: Adatok betöltése a gráfszerkezetből
-    //!         TODO
+    //!
     //////////////////////////////////////////////////////////////////////////////////////
     
     func readInput() {
@@ -62,7 +62,8 @@ class SpectralForceDirected: NSObject {
                 let weight = (groups[i].children[j] as! Node).weight
                 let name = groups[i].children[j].name
                 let output = (groups[i].children[j] as! Node).output
-                tmpNode = CNode(NodeID: id, Name: name, Weight: weight, Output: output)
+                let indexPath = IndexPath(indexes:[i, j])                           //MARK: -!!!
+                tmpNode = CNode(NodeID: id, Name: name, Weight: weight, Output: output, groupPath: indexPath)
                 ops.append(tmpNode)
             }
         }
@@ -730,6 +731,21 @@ class SpectralForceDirected: NSObject {
     
     
     //////////////////////////////////////////////////////////////////////////////////////
+    //!         Function writeBack
+    //!===================================================================================
+    //!         Leírás: visszaadja a csoportokba a startTimeokat
+    //!
+    //////////////////////////////////////////////////////////////////////////////////////
+    
+    func writeBack() {
+        for i in 0..<ops.count {
+            let indexPath = ops[i].groupPath
+            (groups[indexPath![0]].children[indexPath![1]] as! Node).startTime = ops[i].asap
+        }
+    }
+    
+    
+    //////////////////////////////////////////////////////////////////////////////////////
     //!         Function main
     //!===================================================================================
     //!         Leírás: find scheduling order (defaults to enumeration)
@@ -786,9 +802,11 @@ class SpectralForceDirected: NSObject {
         return
     }
     
-    func DoProcess(restartTime: Int, p: Bool, s: Bool, d: Bool) {
+    func DoProcess(restartTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement], latency: Int) {
         self.restartTime = restartTime
         readInput()
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE)
+        writeBack()
+        return (groups, l)
     }
 }
