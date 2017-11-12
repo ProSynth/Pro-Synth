@@ -15,6 +15,7 @@ var nodeString = [String] ()
 var nodePath = [IndexPath] ()
 var addNodeMenuEnabled : Bool = false
 var addEdgeMenuEnabled : Bool = false
+var index: Int = 0
 
 var importGraphPath : URL?
 
@@ -49,9 +50,8 @@ class graphViewController: NSViewController {
             as! NSViewController
     } () as! newConnectionManual
 
-
-    dynamic var groups = [GraphElement]()
-
+    dynamic var selectedGroups = [GraphElement]()
+    var allGroups = [[GraphElement]]()
     
 
     
@@ -67,6 +67,7 @@ class graphViewController: NSViewController {
     @IBOutlet var graphTreeController: NSTreeController!
     @IBOutlet weak var graphOutlineView: NSOutlineView!
     @IBOutlet weak var graphScrollView: NSScrollView!
+    @IBOutlet weak var selectGraph: NSPopUpButton!
     
     @IBOutlet weak var sideBarWidth: NSLayoutConstraint!
     
@@ -84,13 +85,13 @@ class graphViewController: NSViewController {
         
         groupString.removeAll()
   
-        while groupString.count != groups.count {
+        while groupString.count != selectedGroups.count {
             groupString.append("")
         }
         
         for i in 0..<groupString.count {
             
-            let tmpName:String = groups[i].getName()
+            let tmpName:String = selectedGroups[i].getName()
             
             groupString[i] = tmpName
         }
@@ -126,9 +127,9 @@ class graphViewController: NSViewController {
     @IBAction func addEdge(_ sender: NSMenuItem) {
         nodeString.removeAll()
         nodePath.removeAll()
-        for i in 0..<groups.count {
-            for j in 0..<(groups[i].children.count) {
-                nodeString.append(groups[i].children[j].name)
+        for i in 0..<selectedGroups.count {
+            for j in 0..<(selectedGroups[i].children.count) {
+                nodeString.append(selectedGroups[i].children[j].name)
                 nodePath.append(IndexPath(indexes: [i,j]))
                 
             }
@@ -144,25 +145,25 @@ class graphViewController: NSViewController {
         
         switch indexPath.count {
         case 1:                                 // Csoportot akarunk eltávolítani
-            groups.remove(at: indexPath[0])
+            selectedGroups.remove(at: indexPath[0])
         case 2:                                 // Pontot akarunk eltávolítani
-            groups[indexPath[0]].children.remove(at: indexPath[1])
+            selectedGroups[indexPath[0]].children.remove(at: indexPath[1])
         case 3:                                 // Élet akarunk eltávolítani
-            groups[indexPath[0]].children[indexPath[1]].children.remove(at: indexPath[2])
+            selectedGroups[indexPath[0]].children[indexPath[1]].children.remove(at: indexPath[2])
         default:
             return
         }
         
         // Letiltjuk a gráfelemek hozzáadását, ha már nincsenek megfelelő pntok vagy csoportok
         let appDelegate = NSApplication.shared().delegate as! AppDelegate
-        if groups.count == 0 {
+        if selectedGroups.count == 0 {
             noGraph.isHidden = false
             addNode.isEnabled = false
             addEdge.isEnabled = false
             
             appDelegate.setNodeEnable(enable: false)
             appDelegate.setEdgeEnable(enable: false)
-        } else if groups[0].children.count<2 {
+        } else if selectedGroups[0].children.count<2 {
             addEdge.isEnabled = false
             
             appDelegate.setEdgeEnable(enable: false)
@@ -175,8 +176,6 @@ class graphViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
@@ -193,6 +192,9 @@ class graphViewController: NSViewController {
         addNode.isEnabled = false
         addEdge.isEnabled = false
 
+        
+        selectGraph.removeAllItems()
+        selectGraph.addItem(withTitle: "Untitled Graph")
         graphOutlineView.register(forDraggedTypes: [NSPasteboardTypeString])
     }
     
@@ -213,9 +215,9 @@ class graphViewController: NSViewController {
     }
     
     func addGroupWithData(name: String, maxGroupTime: Int, groupID: Int = -1)  {
-        groups.append(Group(name: name, maxGroupTime: maxGroupTime, groupID: groupID) as GraphElement)
+        selectedGroups.append(Group(name: name, maxGroupTime: maxGroupTime, groupID: groupID) as GraphElement)
         
-        if groups.count > 0 {
+        if selectedGroups.count > 0 {
             addNode.isEnabled = true
             addNodeMenuEnabled = true
             
@@ -240,7 +242,7 @@ class graphViewController: NSViewController {
         var sumEl: Int = 0
         var output = [Int : Bool]()
         
-        let numberOfGroups = groups.count
+        let numberOfGroups = selectedGroups.count
         let numberOfNodes = Node.currentNodeID
         
         do {
@@ -318,7 +320,7 @@ class graphViewController: NSViewController {
                             
                             nodeGroupDictionary[tmpnodeID] = nodeGroupID
                             //let index = groups.index(of: )
-                            let index = groups.index(where: { ($0 as! Group).groupID == nodeGroupID})!
+                            let index = selectedGroups.index(where: { ($0 as! Group).groupID == nodeGroupID})!
                             
                             for i in 0..<nodeOpTypeArray.count {
                                 if (nodeOpTypeArray[i].name == propArray2[1]) {
@@ -331,7 +333,7 @@ class graphViewController: NSViewController {
                                 nodeOpTypeArray.append(nodeOpType(name: propArray2[1], defaultWeight: nodeWeight))
                             }
                             output[tmpnodeID] = true
-                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[index] as! Group, nodeOpType: nodeOpType(name:propArray2[1] ,defaultWeight:nodeWeight), nodeID: tmpnodeID)
+                            addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: selectedGroups[index] as! Group, nodeOpType: nodeOpType(name:propArray2[1] ,defaultWeight:nodeWeight), nodeID: tmpnodeID)
                         }
                     } else if stringArray[1] == "->" {
                         edgeNode1ID = Int(stringArray[0])!
@@ -355,15 +357,15 @@ class graphViewController: NSViewController {
                             var index2N: Int = -1
                             var index2G: Int = -1
                             
-                            for i in 0..<groups.count {
-                                for k in 0..<groups[i].children.count {
-                                    if (groups[i].children[k] as! Node).nodeID == edgeNode1ID {
+                            for i in 0..<selectedGroups.count {
+                                for k in 0..<selectedGroups[i].children.count {
+                                    if (selectedGroups[i].children[k] as! Node).nodeID == edgeNode1ID {
                                         index1N = k
                                         index1G = i
                                         
                                     }
                                     
-                                    if (groups[i].children[k] as! Node).nodeID == edgeNode2ID {
+                                    if (selectedGroups[i].children[k] as! Node).nodeID == edgeNode2ID {
                                         index2N = k
                                         index2G = i
                                         
@@ -384,7 +386,7 @@ class graphViewController: NSViewController {
                                 edgeDataTypeArray.append(edgeDataType(name: propArray2[2], defaultWeight: edgeWeight))
                             }
                             
-                            let defaultString : String = "\(groups[index1G].children[index1N].name) - \(groups[index2G].children[index2N].name) él"
+                            let defaultString : String = "\(selectedGroups[index1G].children[index1N].name) - \(selectedGroups[index2G].children[index2N].name) él"
                             
                             if edgeWeight == 0 {
                                 print("Hiba van a forrás fájlban")
@@ -392,8 +394,8 @@ class graphViewController: NSViewController {
                             output[edgeNode1ID] = false
                             //Itt még a groups 0-t javítani kell
                             addEdgeWithData(name: defaultString, weight: edgeWeight, type: .none,
-                                            snode: groups[index1G].children[index1N] as! Node,
-                                            dnode: groups[index2G].children[index2N] as! Node)
+                                            snode: selectedGroups[index1G].children[index1N] as! Node,
+                                            dnode: selectedGroups[index2G].children[index2N] as! Node)
                             sumEl += edgeWeight
                         }
                     }
@@ -401,9 +403,9 @@ class graphViewController: NSViewController {
                 }
             }
             
-            for i in 0..<groups.count {
-                for j in 0..<groups[i].children.count {
-                    (groups[i].children[j] as! Node).output = output[(groups[i].children[j] as! Node).nodeID]!
+            for i in 0..<selectedGroups.count {
+                for j in 0..<selectedGroups[i].children.count {
+                    (selectedGroups[i].children[j] as! Node).output = output[(selectedGroups[i].children[j] as! Node).nodeID]!
                 }
             }
             
@@ -427,26 +429,33 @@ class graphViewController: NSViewController {
     }
     
     
-
+    @IBAction func selectOtherGroups(_ sender: Any) {
+        selectedGroups = allGroups[selectGraph.indexOfSelectedItem]
+    }
+    
     
     func doSynth()  {
 
         // Dekompozíció cégrehajtása
         let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
-        let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: groups, p:0.001)
+        let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p:0.001)
         guard nil != grouping  else {
             print("A Dekompozíció nem végződött el")
             return
         }
         
-        let oldGroups = groups
-        groups.removeAll()
-        groups = grouping!
+        allGroups.append(selectedGroups)
+        //groups.removeAll()
+        //groups = grouping!
+        allGroups.append(grouping!)
+        selectGraph.addItem(withTitle: "Decomposition")
+        selectGraph.selectItem(withTitle: "Decomposition")
+        selectedGroups = allGroups[1]
         
         var we: Int = 0
-        for group in 0..<groups.count {
-            for node in 0..<groups[group].children.count {
-                we += (groups[group].children[node] as! Node).weight
+        for group in 0..<selectedGroups.count {
+            for node in 0..<selectedGroups[group].children.count {
+                we += (selectedGroups[group].children[node] as! Node).weight
             }
         }
         print("Összes pont: \(we)")
@@ -473,7 +482,7 @@ class graphViewController: NSViewController {
 extension graphViewController: newNodeDelegate {
     func createNodeFromData(name: String, weight:Int, type:NodeType, groupIndex:Int, nodeOpType:nodeOpType) {
         
-        addNodeWithData(name: name, weight: weight, type: type, group: groups[groupIndex] as! Group, nodeOpType: nodeOpType)
+        addNodeWithData(name: name, weight: weight, type: type, group: selectedGroups[groupIndex] as! Group, nodeOpType: nodeOpType)
     }
 }
 
@@ -488,7 +497,7 @@ extension graphViewController: newGroupDelegate {
 extension graphViewController: newConnectionDelegate {
     func createConnectionFromData(name: String, weight:Int, type:EdgeType, node1Index:IndexPath, node2Index: IndexPath) {
         
-        addEdgeWithData(name: name, weight: weight, type: type, snode: groups[node1Index[0]].children[node1Index[1]] as! Node, dnode: groups[node2Index[0]].children[node2Index[1]] as! Node)
+        addEdgeWithData(name: name, weight: weight, type: type, snode: selectedGroups[node1Index[0]].children[node1Index[1]] as! Node, dnode: selectedGroups[node2Index[0]].children[node2Index[1]] as! Node)
         
     }
 }
@@ -597,28 +606,28 @@ extension graphViewController: NSOutlineViewDelegate {
         var path:IndexPath = (graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath
         switch path.count {
         case 1:
-            groupAttributesP1.name = groups[path[0]].name
-            groupAttributesP1.groupID = (groups[path[0]] as! Group).groupID
-            groupAttributesP1.maxTime = (groups[path[0]] as! Group).maxTime
+            groupAttributesP1.name = selectedGroups[path[0]].name
+            groupAttributesP1.groupID = (selectedGroups[path[0]] as! Group).groupID
+            groupAttributesP1.maxTime = (selectedGroups[path[0]] as! Group).maxTime
             
-            groupAttribute = groups[path[0]] as! Group
+            groupAttribute = selectedGroups[path[0]] as! Group
             
             NotificationCenter.default.post(name: Notification.Name("groupAttribute"), object: self)
         case 2:
-            nodeAttributesPl.name = groups[path[0]].children[path[1]].name
-            nodeAttributesPl.weight = (groups[path[0]].children[path[1]] as! Node).weight
-            nodeAttributesPl.nodeID = (groups[path[0]].children[path[1]] as! Node).nodeID
-            nodeAttributesPl.groupID = (groups[path[0]] as! Group).groupID
-            nodeAttributesPl.numberOfEdge = (groups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
+            nodeAttributesPl.name = selectedGroups[path[0]].children[path[1]].name
+            nodeAttributesPl.weight = (selectedGroups[path[0]].children[path[1]] as! Node).weight
+            nodeAttributesPl.nodeID = (selectedGroups[path[0]].children[path[1]] as! Node).nodeID
+            nodeAttributesPl.groupID = (selectedGroups[path[0]] as! Group).groupID
+            nodeAttributesPl.numberOfEdge = (selectedGroups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
             //nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType!
             
-            nodeAttribute = groups[path[0]].children[path[1]] as! Node
+            nodeAttribute = selectedGroups[path[0]].children[path[1]] as! Node
             
             NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
         case 3:
-            edgeAttributesP1.name = groups[path[0]].children[path[1]].children[path[2]].name
-            edgeAttributesP1.edgeID = (groups[path[0]].children[path[1]].children[path[2]] as! Edge).edgeID
-            edgeAttributesP1.weight = (groups[path[0]].children[path[1]].children[path[2]] as! Edge).weight
+            edgeAttributesP1.name = selectedGroups[path[0]].children[path[1]].children[path[2]].name
+            edgeAttributesP1.edgeID = (selectedGroups[path[0]].children[path[1]].children[path[2]] as! Edge).edgeID
+            edgeAttributesP1.weight = (selectedGroups[path[0]].children[path[1]].children[path[2]] as! Edge).weight
             NotificationCenter.default.post(name: Notification.Name("edgeAttribute"), object: self)
         default:
             print("Hiba az attribútumszerkesztőben")

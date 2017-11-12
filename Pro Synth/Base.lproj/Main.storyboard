@@ -1057,7 +1057,7 @@
                                     </button>
                                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="e92-Nc-8vx">
                                         <rect key="frame" x="18" y="731" width="265" height="26"/>
-                                        <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="JzF-gV-Dgj" id="bWd-rS-Rvd">
+                                        <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="JzF-gV-Dgj" id="bWd-rS-Rvd">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" id="8f4-zY-srD">
@@ -1068,6 +1068,9 @@
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
+                                        <connections>
+                                            <action selector="selectOtherGroups:" target="OD2-ug-yoK" id="TnL-vS-Nce"/>
+                                        </connections>
                                     </popUpButton>
                                 </subviews>
                                 <constraints>
@@ -1122,12 +1125,13 @@
                         <outlet property="graphScrollView" destination="mB6-xo-caf" id="5FR-mH-nes"/>
                         <outlet property="graphTreeController" destination="nd2-DW-BnD" id="nan-at-kD3"/>
                         <outlet property="noGraph" destination="21t-4o-p46" id="YAy-HI-pT5"/>
+                        <outlet property="selectGraph" destination="e92-Nc-8vx" id="JVj-32-d3C"/>
                     </connections>
                 </viewController>
                 <customObject id="o2T-Ha-thG" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <treeController objectClassName="Pro Synth.GraphElement" childrenKeyPath="children" id="nd2-DW-BnD">
                     <connections>
-                        <binding destination="OD2-ug-yoK" name="contentArray" keyPath="self.groups" id="S0O-s7-Bcf"/>
+                        <binding destination="OD2-ug-yoK" name="contentArray" keyPath="self.selectedGroups" id="gvI-wW-uyQ"/>
                     </connections>
                 </treeController>
                 <menu autoenablesItems="NO" id="nej-Dq-0n4">
@@ -1160,7 +1164,7 @@
         <!--Main-->
         <scene sceneID="u6s-My-LYH">
             <objects>
-                <viewController title="Main" id="LGX-vd-Huz" sceneMemberID="viewController">
+                <viewController title="Main" id="LGX-vd-Huz" customClass="synthesisViewController" customModule="Pro_Synth" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="eiW-hQ-gFR">
                         <rect key="frame" x="0.0" y="0.0" width="694" height="758"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1270,7 +1274,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xZz-e2-aqd">
                                             <rect key="frame" x="246" y="83" width="37" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="qAz-Ce-W7w">
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="--" id="qAz-Ce-W7w">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1288,7 +1292,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0lb-tS-Qo6">
                                             <rect key="frame" x="246" y="58" width="37" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="GnD-kj-gco">
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="--" id="GnD-kj-gco">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1306,7 +1310,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z5p-gk-k2s">
                                             <rect key="frame" x="246" y="33" width="37" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="eaD-4O-eFc">
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="--" id="eaD-4O-eFc">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1388,7 +1392,7 @@
                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="252" id="qWI-SK-D36"/>
                                                 <constraint firstAttribute="width" constant="252" id="raY-yg-Yuj"/>
                                             </constraints>
-                                            <buttonCell key="cell" type="check" title="Include buffers in allocation estimation" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="IcK-ug-VJ8">
+                                            <buttonCell key="cell" type="check" title="Include buffers in allocation estimation" bezelStyle="regularSquare" imagePosition="left" inset="2" id="IcK-ug-VJ8">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -1399,7 +1403,7 @@
                                                 <constraint firstAttribute="height" constant="14" id="v0I-n7-Mj0"/>
                                                 <constraint firstAttribute="width" constant="286" id="zY2-Fr-tt2"/>
                                             </constraints>
-                                            <buttonCell key="cell" type="check" title="Choose first best-force cycle in case of a tie" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="6PM-eC-AID">
+                                            <buttonCell key="cell" type="check" title="Choose first best-force cycle in case of a tie" bezelStyle="regularSquare" imagePosition="left" inset="2" id="6PM-eC-AID">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -1410,7 +1414,7 @@
                                                 <constraint firstAttribute="height" constant="14" id="Djy-cP-aIE"/>
                                                 <constraint firstAttribute="width" constant="301" id="rHx-aT-dt2"/>
                                             </constraints>
-                                            <buttonCell key="cell" type="check" title="Delay scheduling operations with optimum ties" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="TYG-WQ-8de">
+                                            <buttonCell key="cell" type="check" title="Delay scheduling operations with optimum ties" bezelStyle="regularSquare" imagePosition="left" inset="2" id="TYG-WQ-8de">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -1419,8 +1423,8 @@
                                             <rect key="frame" x="20" y="92" width="616" height="5"/>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Hbf-ab-7YK">
-                                            <rect key="frame" x="244" y="34" width="37" height="17"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="zMi-xD-hxw">
+                                            <rect key="frame" x="244" y="34" width="17" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="--" id="zMi-xD-hxw">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1538,6 +1542,25 @@
                             <constraint firstItem="DBC-Gw-IUX" firstAttribute="top" secondItem="TQd-h2-t5J" secondAttribute="bottom" constant="20" id="y70-pr-zDi"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="DecomposingEnable" destination="DBC-Gw-IUX" id="BeT-Yd-Ebg"/>
+                        <outlet property="RSCU_Enable" destination="KIC-KO-8O9" id="jVi-tQ-WLh"/>
+                        <outlet property="SpectFDirLatency" destination="Hbf-ab-7YK" id="H4J-jg-dKC"/>
+                        <outlet property="SpectFDirParamD" destination="tPR-YQ-N3K" id="tyW-pk-2PK"/>
+                        <outlet property="SpectFDirParamP" destination="Lqe-me-N9T" id="zeh-X1-S4I"/>
+                        <outlet property="SpectFDirParamS" destination="ex0-mV-oXB" id="Jbg-Wv-xlL"/>
+                        <outlet property="SpectFDirRestartTime" destination="dWS-al-yiS" id="l5c-kC-rUD"/>
+                        <outlet property="SpectFDirSave" destination="u53-hy-aPr" id="ibX-KG-Fn5"/>
+                        <outlet property="SpectralForcedirEnable" destination="30h-Dd-cYs" id="6aE-fe-TkG"/>
+                        <outlet property="WNCutEnable" destination="DBC-Gw-IUX" id="R6g-mP-11Q"/>
+                        <outlet property="WNCutNumOfGroups" destination="xZz-e2-aqd" id="yBc-6c-FZB"/>
+                        <outlet property="WNCutNumOfNodes" destination="0lb-tS-Qo6" id="ccP-M7-Lkn"/>
+                        <outlet property="WNCutParameter" destination="FjC-Mm-IUX" id="2F6-1H-5YM"/>
+                        <outlet property="WNCutSave" destination="7XJ-qn-WAo" id="Kfp-C1-lRr"/>
+                        <outlet property="WNCutSumOfEWeights" destination="Z5p-gk-k2s" id="pX8-Jh-sde"/>
+                        <outlet property="WNCutWeighted" destination="yyI-wy-tuA" id="X4Z-yI-EnP"/>
+                        <outlet property="numOfGroups" destination="xZz-e2-aqd" id="bwz-ve-0em"/>
+                    </connections>
                 </viewController>
                 <customObject id="fJ0-A1-LFG" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -2999,6 +3022,6 @@ Gw
         <image name="NSGoRightTemplate" width="9" height="12"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
     </resources>
 </document>

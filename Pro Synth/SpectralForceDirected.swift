@@ -278,7 +278,7 @@ class SpectralForceDirected: NSObject {
         repeat {
             if w[type[i].type] != 0 {
                 max = 0
-                tot = Array(repeating: 0.0, count: restartTime)                // MARK:!!!
+                tot = Array(repeating: 0.0, count: restartTime)                // MARK:!!! csak az első körben tölti fel 0-ákkal, a többiben csak resizolja
                 for k in 0..<tot.count {
                     tot[k] = 0
                 }

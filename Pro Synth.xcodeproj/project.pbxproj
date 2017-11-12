@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B1A40241FB8E746004DBD2D /* synthesisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */; };
 		2BFE8A4A1FB277E600EDA589 /* WNCutDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */; };
 		2BFE8A4E1FB2785100EDA589 /* RSCU_LoopUnroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */; };
 		2BFE8A501FB2786600EDA589 /* SpectralForceDirected.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A4F1FB2786600EDA589 /* SpectralForceDirected.swift */; };
@@ -68,6 +69,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = synthesisViewController.swift; sourceTree = "<group>"; };
 		2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WNCutDecomposer.swift; sourceTree = "<group>"; };
 		2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSCU_LoopUnroller.swift; sourceTree = "<group>"; };
 		2BFE8A4F1FB2786600EDA589 /* SpectralForceDirected.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectralForceDirected.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				3F226A651F75C80A004733A8 /* Attribute */,
 				3F2924831F45A11600F3130E /* ViewController.swift */,
 				3FB5BC7D1F817253006A2A72 /* SplitViewController.swift */,
+				2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -483,6 +486,7 @@
 				3F2924B41F45A47E00F3130E /* welcomeScreenViewController.swift in Sources */,
 				3F5FFF7B1F6E8FDF00D5AF06 /* nodeGlobalAttributeViewController.swift in Sources */,
 				7B671D0D1F5E96B300EED265 /* newConnectionManual.swift in Sources */,
+				2B1A40241FB8E746004DBD2D /* synthesisViewController.swift in Sources */,
 				3F5FFF771F6DCB2C00D5AF06 /* noSelectionViewController.swift in Sources */,
 				7B1B75591F8F88E8004973F2 /* WNCut.swift in Sources */,
 				3F226A601F75C3BE004733A8 /* nodeEdgesAttributeViewController.swift in Sources */,
