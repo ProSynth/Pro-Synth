@@ -12,6 +12,7 @@ class CNode: NSObject {
     
     let id: Int!
     let type: String!
+    let output: Bool!
     let latency: Int!
     var asap: Int
     var alap: Int
@@ -23,10 +24,11 @@ class CNode: NSObject {
     var prd         = [Int]()
     var nxt         = [Int]()
     
-    init(NodeID: Int, Name: String, Weight: Int) {
+    init(NodeID: Int, Name: String, Weight: Int, Output: Bool) {
         self.id = NodeID
         self.type = Name
         self.latency = Weight
+        self.output = Output
         
         self.asap = -1
         self.alap = -1

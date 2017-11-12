@@ -54,18 +54,34 @@ class SpectralForceDirected: NSObject {
     //!         TODO
     //////////////////////////////////////////////////////////////////////////////////////
     
-    // MARK: - Bemenet kezelés - ki kell találni
     func readInput() {
         var tmpNode: CNode
-        for i in 0..<groups[0].children.count {
-            let id = (groups[0].children[0] as! Node).nodeID
-            let weight = (groups[0].children[0] as! Node).weight
-            let name = groups[0].children[0].name
-            // Még más dolgokat is hozzá kell adni, és az éleket is
-            tmpNode = CNode(NodeID: id, Name: name, Weight: weight)
-            ops.append(tmpNode)
+        for i in 0..<groups.count {
+            for j in 0..<groups[i].children.count {
+                let id = (groups[i].children[j] as! Node).nodeID
+                let weight = (groups[i].children[j] as! Node).weight
+                let name = groups[i].children[j].name
+                let output = (groups[i].children[j] as! Node).output
+                tmpNode = CNode(NodeID: id, Name: name, Weight: weight, Output: output)
+                ops.append(tmpNode)
+            }
         }
-        
+        for i in 0..<groups.count {
+            for j in 0..<groups[i].children.count {
+                for k in 0..<groups[i].children[j].children.count {
+                    let sNode = (groups[i].children[j].children[k] as! Edge).parentsNode.nodeID
+                    let dNode = (groups[i].children[j].children[k] as! Edge).parentdNode.nodeID
+                    ops[sNode].nxt.append(dNode)
+                }
+            }
+        }
+        for i in 0..<ops.count {
+            if !ops[i].output {
+                for j in 0..<ops[i].nxt.count {
+                    ops[ops[i].nxt[j]].prd.append(i)
+                }
+            }
+        }
     }
     
     

@@ -196,10 +196,10 @@ class graphViewController: NSViewController {
         graphOutlineView.register(forDraggedTypes: [NSPasteboardTypeString])
     }
     
-    func addEdgeWithData(name:String, weight:Int, type:EdgeType, node1:Node, node2:Node) {
-        let tmpEdge = Edge(name: name, weight: weight, parentNode1:node1, parentNode2:node2)
-        node1.children.append(tmpEdge as GraphElement)
-        node2.children.append(tmpEdge as GraphElement)
+    func addEdgeWithData(name:String, weight:Int, type:EdgeType, snode:Node, dnode:Node) {
+        let tmpEdge = Edge(name: name, weight: weight, parentNode1:snode, parentNode2:dnode)
+        snode.children.append(tmpEdge as GraphElement)
+        dnode.children.append(tmpEdge as GraphElement)
     }
     
     func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group, nodeOpType:nodeOpType, nodeID: Int = -1)  {
@@ -227,10 +227,18 @@ class graphViewController: NSViewController {
 
     }
     
-
+    //////////////////////////////////////////////////////////////////////////////////////
+    //!         Graphimport
+    //!===================================================================================
+    //!         Leírás: Itt lesz a gráf importálás szekció
+    //!
+    //!
+    //////////////////////////////////////////////////////////////////////////////////////
+    
     func importMethod() {
         
         var sumEl: Int = 0
+        var output = [Int : Bool]()
         
         let numberOfGroups = groups.count
         let numberOfNodes = Node.currentNodeID
@@ -322,7 +330,7 @@ class graphViewController: NSViewController {
                             } else {
                                 nodeOpTypeArray.append(nodeOpType(name: propArray2[1], defaultWeight: nodeWeight))
                             }
-                            
+                            output[tmpnodeID] = true
                             addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: groups[index] as! Group, nodeOpType: nodeOpType(name:propArray2[1] ,defaultWeight:nodeWeight), nodeID: tmpnodeID)
                         }
                     } else if stringArray[1] == "->" {
@@ -381,18 +389,30 @@ class graphViewController: NSViewController {
                             if edgeWeight == 0 {
                                 print("Hiba van a forrás fájlban")
                             }
-                            
+                            output[edgeNode1ID] = false
                             //Itt még a groups 0-t javítani kell
                             addEdgeWithData(name: defaultString, weight: edgeWeight, type: .none,
-                                            node1: groups[index1G].children[index1N] as! Node,
-                                            node2: groups[index2G].children[index2N] as! Node)
+                                            snode: groups[index1G].children[index1N] as! Node,
+                                            dnode: groups[index2G].children[index2N] as! Node)
                             sumEl += edgeWeight
                         }
                     }
                     
                 }
             }
-
+            
+            for i in 0..<groups.count {
+                for j in 0..<groups[i].children.count {
+                    (groups[i].children[j] as! Node).output = output[(groups[i].children[j] as! Node).nodeID]!
+                }
+            }
+            
+            for (key, value) in output {
+                if value == true {
+                    
+                }
+            }
+            
             print("Fájl vége")
             print(sumEl)
         } catch {
@@ -468,18 +488,12 @@ extension graphViewController: newGroupDelegate {
 extension graphViewController: newConnectionDelegate {
     func createConnectionFromData(name: String, weight:Int, type:EdgeType, node1Index:IndexPath, node2Index: IndexPath) {
         
-        addEdgeWithData(name: name, weight: weight, type: type, node1: groups[node1Index[0]].children[node1Index[1]] as! Node, node2: groups[node2Index[0]].children[node2Index[1]] as! Node)
+        addEdgeWithData(name: name, weight: weight, type: type, snode: groups[node1Index[0]].children[node1Index[1]] as! Node, dnode: groups[node2Index[0]].children[node2Index[1]] as! Node)
         
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-//!         Graphimport
-//!===================================================================================
-//!         Leírás: Itt lesz a gráf importálás szekció
-//!
-//!
-//////////////////////////////////////////////////////////////////////////////////////
+
 
 
 extension graphViewController: NSOutlineViewDataSource {

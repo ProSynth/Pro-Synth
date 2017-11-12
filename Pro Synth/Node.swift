@@ -28,6 +28,7 @@ class Node: GraphElement {
     var nodeID:Int
     var opType: nodeOpType?
     var spectrum: Double?
+    var output: Bool = false
 
 //////////////////////////////////////////////////////////////////////////////////////
 //!         Function
@@ -59,4 +60,7 @@ class Node: GraphElement {
         return self.weight
     }
 
+    func setOutput(from nodeId: Int) {
+        <#function body#>
+    }
 }
