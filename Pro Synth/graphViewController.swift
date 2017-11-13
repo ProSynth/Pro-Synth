@@ -430,7 +430,10 @@ class graphViewController: NSViewController {
     
     
     @IBAction func selectOtherGroups(_ sender: Any) {
-        selectedGroups = allGroups[selectGraph.indexOfSelectedItem]
+        if allGroups.count > 0 {
+           selectedGroups = allGroups[selectGraph.indexOfSelectedItem]
+        }
+        
     }
     
     
