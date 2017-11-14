@@ -241,6 +241,7 @@ class graphViewController: NSViewController {
         
         var sumEl: Int = 0
         var output = [Int : Bool]()
+        var input = [Int : Bool]()
         
         let numberOfGroups = selectedGroups.count
         let numberOfNodes = Node.currentNodeID
@@ -333,6 +334,7 @@ class graphViewController: NSViewController {
                                 nodeOpTypeArray.append(nodeOpType(name: propArray2[1], defaultWeight: nodeWeight))
                             }
                             output[tmpnodeID] = true
+                            input[tmpnodeID] = true
                             addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: selectedGroups[index] as! Group, nodeOpType: nodeOpType(name:propArray2[1] ,defaultWeight:nodeWeight), nodeID: tmpnodeID)
                         }
                     } else if stringArray[1] == "->" {
@@ -392,6 +394,7 @@ class graphViewController: NSViewController {
                                 print("Hiba van a forrás fájlban")
                             }
                             output[edgeNode1ID] = false
+                            input[edgeNode2ID] = false
                             //Itt még a groups 0-t javítani kell
                             addEdgeWithData(name: defaultString, weight: edgeWeight, type: .none,
                                             snode: selectedGroups[index1G].children[index1N] as! Node,
@@ -405,7 +408,13 @@ class graphViewController: NSViewController {
             
             for i in 0..<selectedGroups.count {
                 for j in 0..<selectedGroups[i].children.count {
-                    (selectedGroups[i].children[j] as! Node).output = output[(selectedGroups[i].children[j] as! Node).nodeID]!
+                    if output[(selectedGroups[i].children[j] as! Node).nodeID]! {
+                        (selectedGroups[i].children[j] as! Node).type = .Output
+                    } else if input[(selectedGroups[i].children[j] as! Node).nodeID]! {
+                        (selectedGroups[i].children[j] as! Node).type = .Input
+                    } else {
+                        (selectedGroups[i].children[j] as! Node).type = .Normal
+                    }
                 }
             }
             

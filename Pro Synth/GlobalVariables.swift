@@ -22,6 +22,11 @@ enum NodeType {
     case mul
     case none
 }
+enum IO {
+    case Normal
+    case Input
+    case Output
+}
 
 struct nodeAttributes {
     var name:String

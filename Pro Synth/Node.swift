@@ -28,8 +28,8 @@ class Node: GraphElement {
     var nodeID:Int
     var opType: nodeOpType?
     var spectrum: Double?
-    var output: Bool = false
     var startTime: Int? = nil
+    var type: IO        = .Normal
 
 //////////////////////////////////////////////////////////////////////////////////////
 //!         Function

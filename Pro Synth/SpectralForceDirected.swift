@@ -61,9 +61,9 @@ class SpectralForceDirected: NSObject {
                 let id = (groups[i].children[j] as! Node).nodeID
                 let weight = (groups[i].children[j] as! Node).weight
                 let name = groups[i].children[j].name
-                let output = (groups[i].children[j] as! Node).output
+                let IOType = (groups[i].children[j] as! Node).type
                 let indexPath = IndexPath(indexes:[i, j])                           //MARK: -!!!
-                tmpNode = CNode(NodeID: id, Name: name, Weight: weight, Output: output, groupPath: indexPath)
+                tmpNode = CNode(NodeID: id, Name: name, Weight: weight, type: IOType, groupPath: indexPath)
                 ops.append(tmpNode)
             }
         }
@@ -77,7 +77,7 @@ class SpectralForceDirected: NSObject {
             }
         }
         for i in 0..<ops.count {
-            if !ops[i].output {
+            if ops[i].IOTypeS != .Output {
                 for j in 0..<ops[i].nxt.count {
                     ops[ops[i].nxt[j]].prd.append(i)
                 }
@@ -85,6 +85,71 @@ class SpectralForceDirected: NSObject {
         }
     }
     
+    
+    func calculateAsapAlap(latencyTime: Int) {
+        
+        // Asap
+        for i in 0..<ops.count {
+            if ops[i].IOTypeS == .Input {
+                ops[i].asap = 0
+            }
+        }
+        for i in 0..<ops.count {
+            if ops[i].IOTypeS == .Input {
+                for j in 0..<ops[i].nxt.count {
+                    if ops[ops[i].nxt[j]].asap < ops[i].asap + ops[i].latency + 1 {
+                        ops[ops[i].nxt[j]].asap = ops[i].asap + ops[i].latency + 1
+                    }
+                }
+            }
+        }
+        var counter: Int = 1
+        while counter > 0 {
+            counter = 0
+            for i in 0..<ops.count {
+                if ops[i].IOTypeS == .Normal {
+                    counter += 1
+                    for j in 0..<ops[i].nxt.count {
+                        if ops[ops[i].nxt[j]].asap < (ops[i].asap + ops[i].latency + 1) {
+                            ops[ops[i].nxt[j]].asap = ops[i].asap + ops[i].latency + 1
+                        }
+                    }
+                    ops[i].IOTypeS = .Input
+                }
+            }
+        }
+
+        //Alap
+        for i in 0..<ops.count {
+            if ops[i].IOTypeL == .Output {
+                ops[i].alap = latencyTime - ops[i].latency
+            }
+        }
+        for i in 0..<ops.count {
+            if ops[i].IOTypeS == .Output {
+                for j in 0..<ops[i].prd.count {
+                    if (ops[ops[i].prd[j]].alap > (ops[i].alap - (ops[ops[i].prd[j]].latency + 1)) && ops[ops[i].prd[j]].alap == -1) {
+                        ops[ops[i].prd[j]].asap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
+                    }
+                }
+            }
+        }
+        counter = 1
+        while counter > 0 {
+            counter = 0
+            for i in 0..<ops.count {
+                if ops[i].IOTypeS == .Normal {
+                    counter += 1
+                    for j in 0..<ops[i].prd.count {
+                        if (ops[ops[i].prd[j]].alap > (ops[i].alap - (ops[ops[i].prd[j]].latency + 1)) && ops[ops[i].prd[j]].alap == -1) {
+                            ops[ops[i].prd[j]].asap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
+                        }
+                    }
+                    ops[i].IOTypeS = .Output
+                }
+            }
+        }
+    }
     
     //////////////////////////////////////////////////////////////////////////////////////
     //!         Function findL
@@ -802,9 +867,10 @@ class SpectralForceDirected: NSObject {
         return
     }
     
-    func DoProcess(restartTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement], latency: Int) {
+    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement], latency: Int) {
         self.restartTime = restartTime
         readInput()
+        calculateAsapAlap(latencyTime: latencyTime)
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE)
         writeBack()
         return (groups, l)
