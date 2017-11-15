@@ -834,9 +834,14 @@ class SpectralForceDirected: NSObject {
         
         // readInput()          Itt kell a bemenetet beadni
         
+        findL()
+        
         if restartTime == -1 {
             restartTime = l
         }
+        
+        ord = genOrder(ord: ops, p: p)
+        genwgt(type: &ops)
         
         print("## scheduling...")
         
