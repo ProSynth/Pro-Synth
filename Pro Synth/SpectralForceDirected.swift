@@ -72,17 +72,23 @@ class SpectralForceDirected: NSObject {
                 for k in 0..<groups[i].children[j].children.count {
                     let sNode = (groups[i].children[j].children[k] as! Edge).parentsNode.nodeID
                     let dNode = (groups[i].children[j].children[k] as! Edge).parentdNode.nodeID
-                    ops[sNode].nxt.append(dNode)
+                    if !ops[sNode].nxt.contains(dNode) {
+                        ops[sNode].nxt.append(dNode)
+                    }
+                    if !ops[dNode].prd.contains(sNode) {
+                        ops[dNode].prd.append(sNode)
+                    }
                 }
             }
         }
+        /*
         for i in 0..<ops.count {
             if ops[i].IOTypeS != .Output {
                 for j in 0..<ops[i].nxt.count {
                     ops[ops[i].nxt[j]].prd.append(i)
                 }
             }
-        }
+        }*/
     }
     
     
@@ -129,7 +135,7 @@ class SpectralForceDirected: NSObject {
             if ops[i].IOTypeS == .Output {
                 for j in 0..<ops[i].prd.count {
                     if (ops[ops[i].prd[j]].alap > (ops[i].alap - (ops[ops[i].prd[j]].latency + 1)) && ops[ops[i].prd[j]].alap == -1) {
-                        ops[ops[i].prd[j]].asap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
+                        ops[ops[i].prd[j]].alap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
                     }
                 }
             }
@@ -142,7 +148,7 @@ class SpectralForceDirected: NSObject {
                     counter += 1
                     for j in 0..<ops[i].prd.count {
                         if (ops[ops[i].prd[j]].alap > (ops[i].alap - (ops[ops[i].prd[j]].latency + 1)) && ops[ops[i].prd[j]].alap == -1) {
-                            ops[ops[i].prd[j]].asap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
+                            ops[ops[i].prd[j]].alap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
                         }
                     }
                     ops[i].IOTypeS = .Output
@@ -441,14 +447,19 @@ class SpectralForceDirected: NSObject {
     //!         Leírás: save initial ALAP times
     //!
     //////////////////////////////////////////////////////////////////////////////////////
-    
+    var rec: Int = 0
     private func saveAlap(e: CNode) {
+        if e.prd.isEmpty {
+            return
+        }
         for i in 0..<e.prd.count {
             ops[e.prd[i]].origAlap = ops[e.prd[i]].alap
             if !(ops[e.prd[i]].prd.isEmpty) {
                 saveAlap(e: ops[e.prd[i]])
+                rec += 1
             }
         }
+        print("\(rec). rekurzív hurok.")
     }
     
     
@@ -872,7 +883,7 @@ class SpectralForceDirected: NSObject {
         return
     }
     
-    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement], latency: Int) {
+    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement]?, latency: Int?) {
         self.restartTime = restartTime
         readInput()
         calculateAsapAlap(latencyTime: latencyTime)

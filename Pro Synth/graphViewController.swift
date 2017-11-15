@@ -449,20 +449,40 @@ class graphViewController: NSViewController {
     func doSynth()  {
 
         // Dekompozíció cégrehajtása
-        let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
-        let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p:0.001)
-        guard nil != grouping  else {
-            print("A Dekompozíció nem végződött el")
-            return
+        allGroups.append(selectedGroups)
+        var Case: Int = 2
+        switch Case {
+        case 1:
+            let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
+            let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p:0.001)
+            guard nil != grouping  else {
+                print("A Dekompozíció nem végződött el")
+                return
+            }
+            allGroups.append(grouping!)
+            selectGraph.addItem(withTitle: "Decomposition")
+            selectGraph.selectItem(withTitle: "Decomposition")
+            selectedGroups = allGroups[1]
+        case 2:
+            let proba: SpectralForceDirected = SpectralForceDirected(groups: allGroups[0])
+            let result = proba.DoProcess(restartTime: 50, latencyTime: 100, p: false, s: false, d: true)
+            guard nil != result.graph  else {
+                print("A Dekompozíció nem végződött el")
+                return
+            }
+            allGroups.append(result.graph!)
+            selectGraph.addItem(withTitle: "Scheduling")
+            selectGraph.selectItem(withTitle: "Scheduling")
+            selectedGroups = allGroups[1]
+        default:
+            print("Nem szintetizál a program")
         }
         
-        allGroups.append(selectedGroups)
+        
         //groups.removeAll()
         //groups = grouping!
-        allGroups.append(grouping!)
-        selectGraph.addItem(withTitle: "Decomposition")
-        selectGraph.selectItem(withTitle: "Decomposition")
-        selectedGroups = allGroups[1]
+        
+
         
         var we: Int = 0
         for group in 0..<selectedGroups.count {
@@ -471,6 +491,7 @@ class graphViewController: NSViewController {
             }
         }
         print("Összes pont: \(we)")
+        
         
     }
 
