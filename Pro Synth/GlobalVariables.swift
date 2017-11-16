@@ -28,6 +28,12 @@ enum IO {
     case Output
 }
 
+enum LoopType {
+    case None
+    case ACI
+    case Normal
+}
+
 struct nodeAttributes {
     var name:String
     var weight:Int

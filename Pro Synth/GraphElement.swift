@@ -22,7 +22,7 @@ import Cocoa
 
 class GraphElement: NSObject {
     dynamic var name: String
-    //dynamic var parent: GraphElement
+    dynamic var parent: GraphElement
     dynamic var children = [GraphElement] ()
     
 //////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ class GraphElement: NSObject {
 //!                 meghívjuk super.init() néven
 //////////////////////////////////////////////////////////////////////////////////////
     
-    init(name: String) {                            //Inicializáljuk a superclass-t a nevével
+    init(name: String, parent: GraphElement) {                            //Inicializáljuk a superclass-t a nevével
         self.name = name
     }
     

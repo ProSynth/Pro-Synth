@@ -23,6 +23,8 @@ class Group: GraphElement {
     static var  currentGroupID : Int = 0
     var groupID : Int                           //CsoportID, minden csoportnak különböző
     var maxTime: Int
+    var loop: LoopType
+    var loopCount: Int?
     
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +36,7 @@ class Group: GraphElement {
 //!                 TODO: numberOfNode rendes implementációja
 //////////////////////////////////////////////////////////////////////////////////////
     
-    init(name: String, maxGroupTime: Int, groupID: Int = -1) {
+    init(name: String, parent: GraphElement, maxGroupTime: Int, groupID: Int = -1, loop: LoopType = .None) {
         
         if groupID == (-1) {
             self.groupID = Group.currentGroupID
@@ -47,9 +49,10 @@ class Group: GraphElement {
         }
         print(self.groupID)
         self.maxTime = maxGroupTime
+        self.loop = loop
 
         self.numberOfNode = 0
-        super.init(name: name)
+        super.init(name: name, parent: parent)
     }
     
     func getGroupID() -> Int {

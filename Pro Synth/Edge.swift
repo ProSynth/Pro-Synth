@@ -48,7 +48,7 @@ class Edge: GraphElement {
         self.type = .none
         self.parentsNode = parentNode1
         self.parentdNode = parentNode2
-        super.init(name: name)
+        super.init(name: name, parent: parentsNode)
     }
     
     
