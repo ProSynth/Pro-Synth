@@ -163,7 +163,7 @@ class WNCutDecomposer: NSObject {
             
             
             // A kimeneti gráf struktúra feltöltése
-            destinationGroups.append(Group(name: "Group #\(group)", maxGroupTime: 0))           // Az adott, diszjunkt csoport létrehozása
+            destinationGroups.append(Group(name: "Group #\(group)", parent: nil, maxGroupTime: 0))           // Az adott, diszjunkt csoport létrehozása
             
 
             var indexes = [Int]()
@@ -201,7 +201,7 @@ class WNCutDecomposer: NSObject {
                     
                     
                     
-                    destinationGroups[group-1].children.append(Node(name: name, weight: 1, nodeOpType: .none))
+                    destinationGroups[group-1].children.append(Node(name: name, parent: nil, weight: 1, nodeOpType: .none))
                     // Élek hozzáadása
 
                     indexes.removeAll()

@@ -10,11 +10,13 @@ import Cocoa
 
 class RSCU_LoopUnroller: NSObject {
     
-    private var group: [GraphElement]
-    private var tmp: [GraphElement]
+    private var sourceGroup: [GraphElement]
+    private var tmp: [GraphElement]!
+    private var numOfParts: Int
     
-    init(group: [GraphElement]) {
-        self.group = group
+    init(into numOfParts: Int, with group: [GraphElement]) {
+        self.sourceGroup = group
+        self.numOfParts = numOfParts
         super.init()
     }
     
@@ -111,7 +113,22 @@ class RSCU_LoopUnroller: NSObject {
         return nil
     }
     
-    func DoDecomposition(NodeSpectrum: [Double], NodeGroup: [Int], NodeIDKodtabla: [Int], NodeIDOrig: [Int], param: Int) -> [GraphElement] {
+    
+    func EdgeHandling(nodes: inout [GraphElement]) {
+        // Do nothing
+    }
+    
+    func Decomposition(into n: Int, with nodes: [GraphElement]) -> [GraphElement]? {
+        var output = [GraphElement]()
+        
+        let sourceMatrix = pushMatrix(groups: nodes)
+        var loopDecompose: WNCut = WNCut(sizeOfMatrix: sourceMatrix.sizeOfmatrix, sourceMatrix: sourceMatrix.matrix)
+        let spectrum = loopDecompose.WNCut(weight: sourceMatrix.weight)
+        
+        let NodeIDKodtabla = spectrum.NodeIDCoder
+        let NodeSpectrum = spectrum.Spectrum
+        let NodeGroup = spectrum.Group
+        let NodeIDOrder = sourceMatrix.nodeIDorder
         
         var NodeDictionary = [Int : Double]()
         
@@ -119,7 +136,7 @@ class RSCU_LoopUnroller: NSObject {
         var nodeSpectrums = [Double]()
         
         for group in 1...(NodeGroup.max()!) {
-        
+            
             for i in 0..<NodeSpectrum.count {
                 //print("\(i). ciklusban van benne")
                 if NodeGroup[i] == group {
@@ -141,26 +158,112 @@ class RSCU_LoopUnroller: NSObject {
                 }
                 
             }
-            // Ezutána  Dictionaryban már az eredeti NodeID-hez tartozó spektrumok vannak
-            for i in 0..<NodeDictionary.count {
-                let tmp = NodeDictionary[i]
-                NodeDictionary.removeValue(forKey: i)
-                NodeDictionary[NodeIDOrig[i]] = tmp
-            }
-
+            
             // Itt kell kezelni az összeömnlesztést
+            
+        }
+        
+        //let sortedNodeDictionary = NodeDictionary.sorted{ $0.value < $1.value }
+        // Itt rendezzük őket sorrendbe, és kerülnek bele a szegmensekbe
+        var originalNodeIDDictionary = [Int : Double]()
+        
+        for i in 0..<NodeDictionary.count {
+            originalNodeIDDictionary[NodeIDOrder[i]] = NodeDictionary[i]
+        }
+        
+        var oldNewIDs = [Int : Int]()           // Régi ID, új ID
+        var newIDIndex = [Int]()                // Index az új ID-hoz az outputba
+        
+        let ct = originalNodeIDDictionary.count/n
+        let sortedOriginalNodeDictionary = originalNodeIDDictionary.sorted{ $0.value < $1.value }
+        
+        var counter: Int = 0
+        var sum: Double = 0
+        var sumWeight: Int = 0
+        var segmentedNodeIDs = [Int]()
+        for i in 0..<sortedOriginalNodeDictionary.count {
+
+
+            
+            if (counter == ct-1) {
+                
+                let avg = sum / Double(ct)
+
+                output.append(Node(name: "InternalElement\(i)", parent: nil, weight: sumWeight, nodeOpType: nil))
+                (output.last as! Node).spectrum = avg
+                let newNodeID = (output.last as! Node).nodeID
+                newIDIndex.append(newNodeID)
+                for j in 0..<segmentedNodeIDs.count {
+                    oldNewIDs[segmentedNodeIDs[j]] = newNodeID
+                }
+                
+                
+                // Reinit
+                sum = 0
+                counter = 0
+                sumWeight = 0
+                segmentedNodeIDs.removeAll()
+            }
+            
+
+            
+            sum += sortedOriginalNodeDictionary[i].value
+            sumWeight += (nodes[sortedOriginalNodeDictionary[i].key] as! Node).weight
+            segmentedNodeIDs.append(sortedOriginalNodeDictionary[i].key)
+            
+            
 
         }
         
+
+        // Az élek itt rendeződnek át, új élek keletkeznek
+        for j in 0..<nodes.count {
+            for k in 0..<nodes[j].children.count {
+                let edgeWeight = (nodes[j].children[k] as! Edge).weight
+                let sNodeID = (nodes[j].children[k] as! Edge).parentsNode.nodeID
+                let sNode = (nodes[j].children[k] as! Edge).parentsNode
+                let dNodeID = (nodes[j].children[k] as! Edge).parentdNode.nodeID
+                let dNode = (nodes[j].children[k] as! Edge).parentdNode
+                let firstExist = (oldNewIDs[sNodeID] != nil)
+                let secondExist = (oldNewIDs[dNodeID] != nil)
+
+                if firstExist {
+                    let ind = newIDIndex.index(of: oldNewIDs[sNodeID]!)!
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
+                } else if secondExist {
+                    let ind = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
+                    // A másik pontnál, ha nem jó a pushMatrix, lehet hiba
+                } else if firstExist && secondExist {
+                    if oldNewIDs[sNodeID] == oldNewIDs[dNodeID] {
+                        // Ilyenkor nincsenek csak, elhagyjuk az élt
+                    }
+                    let ind1 = newIDIndex.index(of: oldNewIDs[sNodeID]!)!
+                    let ind2 = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
+                    output[ind1].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node))
+                    output[ind2].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node))
+                } else if !firstExist && !secondExist {
+                    // Nem ide tartozik az él, ennek hibának kellene lennie
+                }
+                
+                
+            }
+        }
         
-        
+        if output.isEmpty {
+            return nil
+        } else {
+            return output
+        }
     }
     
-    func SegmentedUnroll(group: [GraphElement], inaLoop: Bool) -> [GraphElement]? {
+    func SegmentedUnroll(group: inout [GraphElement], inaLoop: Bool) -> [GraphElement]? {
         
         var input: [GraphElement] = group
         var noLoops: Bool!
         var firstOuterLoop = findFirstOutlerLoop(input: group)
+        var firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
+        var firstOuterLoopIndex = (firstOuterLoop?.index)!
         
         if nil != firstOuterLoop {
             noLoops = false
@@ -169,38 +272,53 @@ class RSCU_LoopUnroller: NSObject {
         }
         
         while !noLoops {
-            tmp = SegmentedUnroll(group: (firstOuterLoop?.outerLoop)!, inaLoop: true)!
-            for i in 0..<tmp.count {
-                input.append(tmp[i])
-            }
-            input.remove(at: (firstOuterLoop?.index)!)
-            firstOuterLoop = findFirstOutlerLoop(input: input, startId: (firstOuterLoop?.index)!)
-        }
-        
-        if inaLoop {
-            let inputVolt = input
-            let sourceMatrix = pushMatrix(groups: input)
-            var loopDecompose: WNCut = WNCut(sizeOfMatrix: sourceMatrix.sizeOfmatrix, sourceMatrix: sourceMatrix.matrix)
-            let spectrum = loopDecompose.WNCut(weight: sourceMatrix.weight)
+            tmp = SegmentedUnroll(group: &firstOuterLoopGrap, inaLoop: true)!
             
+            // új szegmensek beillesztése eggyel feljebb
+            let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
+            for j in 0..<loopCount {
+                for i in 0..<tmp.count {
+                    input.append(tmp[i])
+                }
+            }
+            group.remove(at: firstOuterLoopIndex)       // Hibás lehet az index
+            EdgeHandling(nodes: &group)                 // ÉLkezelést meg kell csinálni
+            
+            
+            // megnézzük, hogy ugyanazon a szinten van-e még loop
+            firstOuterLoop = findFirstOutlerLoop(input: group, startId: firstOuterLoopIndex)
+            firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
+            firstOuterLoopIndex = (firstOuterLoop?.index)!
+            
+            if nil != firstOuterLoop {
+                noLoops = false
+            } else {
+                noLoops = true
+            }
         }
         
-
-        
-        
-        
+        var outputGraph: [GraphElement]? = nil
+        if inaLoop {
+            outputGraph = Decomposition(into: numOfParts, with: input)
+            guard nil != outputGraph else {
+                let alert = NSAlert()
+                alert.messageText = "Hiba!"
+                alert.informativeText = "Nem sikerült végrehajtani a dekompozíciót"
+                alert.addButton(withTitle: "Ez van..")
+                return nil
+            }
+        } else {
+            outputGraph = input
+        }
+        return outputGraph
     }
     
-    func DoProcess(e: Int) -> [GraphElement] {
-        <#function body#>
+    func DoProcess() -> [GraphElement]? {
+        let destinationGraph = SegmentedUnroll(group: &sourceGroup, inaLoop: false)
+        guard nil != destinationGraph else {
+            return nil
+        }
+        return destinationGraph
     }
 }
 
-extension Array {
-    func splitBy(_ chunkSize: Int) -> [[Element]] {
-        return stride(from: 0, to: self.count, by: chunkSize).map({ (startIndex) -> [Element] in
-            let endIndex = (startIndex.advanced(by: chunkSize) > self.count) ? self.count-startIndex : chunkSize
-            return Array(self[startIndex..<startIndex.advanced(by: endIndex)])
-        })
-    }
-}

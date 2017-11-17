@@ -36,7 +36,7 @@ class Group: GraphElement {
 //!                 TODO: numberOfNode rendes implementációja
 //////////////////////////////////////////////////////////////////////////////////////
     
-    init(name: String, parent: GraphElement, maxGroupTime: Int, groupID: Int = -1, loop: LoopType = .None) {
+    init(name: String, parent: GraphElement?, maxGroupTime: Int, groupID: Int = -1, loop: LoopType = .None) {
         
         if groupID == (-1) {
             self.groupID = Group.currentGroupID

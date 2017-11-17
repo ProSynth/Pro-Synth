@@ -206,7 +206,7 @@ class graphViewController: NSViewController {
     
     func addNodeWithData(name:String, weight:Int, type:NodeType, group:Group, nodeOpType:nodeOpType, nodeID: Int = -1)  {
         
-        group.children.append(Node(name: name, weight: weight, nodeOpType: nodeOpType, nodeID: nodeID) as GraphElement)
+        group.children.append(Node(name: name, parent: group, weight: weight, nodeOpType: nodeOpType, nodeID: nodeID) as GraphElement)
         
         addEdge.isEnabled = true
         let appDelegate = NSApplication.shared().delegate as! AppDelegate
@@ -215,7 +215,7 @@ class graphViewController: NSViewController {
     }
     
     func addGroupWithData(name: String, maxGroupTime: Int, groupID: Int = -1)  {
-        selectedGroups.append(Group(name: name, maxGroupTime: maxGroupTime, groupID: groupID) as GraphElement)
+        selectedGroups.append(Group(name: name, parent: nil, maxGroupTime: maxGroupTime, groupID: groupID) as GraphElement)
         
         if selectedGroups.count > 0 {
             addNode.isEnabled = true
