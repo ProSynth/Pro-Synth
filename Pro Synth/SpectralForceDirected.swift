@@ -8,7 +8,7 @@
 
 import Cocoa
 
-let EPS: Float      = 0.05
+let EPS: Float      = 0.0005
 let USE_QI          = 1
 let USE_TI          = 0
 let VERBOSE         = false
@@ -42,7 +42,7 @@ class SpectralForceDirected: NSObject {
     var transferTimeInfo                    = [Int : [Int]]()
     var usageCache                          = [Int : [Float]]()
     var w                                   = [String : Int]()
-    
+    var latencytime                         = 1
     // CNode osztály példányosítása
     var ops                                 = [CNode]()
     
@@ -81,19 +81,23 @@ class SpectralForceDirected: NSObject {
                 }
             }
         }
-        /*
+        //find ins and outs (for real)
         for i in 0..<ops.count {
-            if ops[i].IOTypeS != .Output {
-                for j in 0..<ops[i].nxt.count {
-                    ops[ops[i].nxt[j]].prd.append(i)
-                }
+            ops[i].IOTypeS = .Normal
+            ops[i].IOTypeL = .Normal
+            if ops[i].prd.count == 0 {
+                ops[i].IOTypeS = .Input
             }
-        }*/
+            if ops[i].nxt.count == 0 {
+                ops[i].IOTypeL = .Output
+            }
+        }
+        
     }
     
     
     func calculateAsapAlap(latencyTime: Int) {
-        
+        latencytime = latencyTime
         // Asap
         for i in 0..<ops.count {
             if ops[i].IOTypeS == .Input {
@@ -103,8 +107,8 @@ class SpectralForceDirected: NSObject {
         for i in 0..<ops.count {
             if ops[i].IOTypeS == .Input {
                 for j in 0..<ops[i].nxt.count {
-                    if ops[ops[i].nxt[j]].asap < ops[i].asap + ops[i].latency + 1 {
-                        ops[ops[i].nxt[j]].asap = ops[i].asap + ops[i].latency + 1
+                    if ops[ops[i].nxt[j]].asap < ops[i].asap + ops[i].latency {
+                        ops[ops[i].nxt[j]].asap = ops[i].asap + ops[i].latency
                     }
                 }
             }
@@ -113,45 +117,61 @@ class SpectralForceDirected: NSObject {
         while counter > 0 {
             counter = 0
             for i in 0..<ops.count {
-                if ops[i].IOTypeS == .Normal {
-                    counter += 1
+                if ((ops[i].asap != -1))  {
+                    
                     for j in 0..<ops[i].nxt.count {
-                        if ops[ops[i].nxt[j]].asap < (ops[i].asap + ops[i].latency + 1) {
-                            ops[ops[i].nxt[j]].asap = ops[i].asap + ops[i].latency + 1
+                        if ops[ops[i].nxt[j]].asap < (ops[i].asap + ops[i].latency ) {
+                            ops[ops[i].nxt[j]].asap = ops[i].asap + ops[i].latency
+                            counter += 1
                         }
                     }
-                    ops[i].IOTypeS = .Input
+                    
                 }
             }
         }
-
+        
+        //get minimum possible latency, adjust accordingly
+        for i in 0..<ops.count {
+            if ((ops[i].asap+ops[i].latency) > latencytime)
+            {
+                latencytime = ops[i].asap+ops[i].latency
+                print("\(ops[i].id!). miatt a tartható latency megnőtt L=\(latencytime).")
+            }
+            
+        }
+        
         //Alap
         for i in 0..<ops.count {
             if ops[i].IOTypeL == .Output {
-                ops[i].alap = latencyTime - ops[i].latency
+                ops[i].alap = latencytime - ops[i].latency
             }
         }
         for i in 0..<ops.count {
-            if ops[i].IOTypeS == .Output {
+            if ((ops[i].IOTypeL == .Output)) {
                 for j in 0..<ops[i].prd.count {
-                    if (ops[ops[i].prd[j]].alap > (ops[i].alap - (ops[ops[i].prd[j]].latency + 1)) && ops[ops[i].prd[j]].alap == -1) {
-                        ops[ops[i].prd[j]].alap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
+                    if (ops[ops[i].prd[j]].alap > (ops[i].alap  - (ops[ops[i].prd[j]].latency)) || ops[ops[i].prd[j]].alap == -1) {
+                        ops[ops[i].prd[j]].alap = ops[i].alap  - (ops[ops[i].prd[j]].latency)
                     }
                 }
             }
         }
+        
+        
+        
+        
         counter = 1
         while counter > 0 {
             counter = 0
             for i in 0..<ops.count {
-                if ops[i].IOTypeS == .Normal {
-                    counter += 1
+                if ( (ops[i].alap != -1)) {
+                    
                     for j in 0..<ops[i].prd.count {
-                        if (ops[ops[i].prd[j]].alap > (ops[i].alap - (ops[ops[i].prd[j]].latency + 1)) && ops[ops[i].prd[j]].alap == -1) {
-                            ops[ops[i].prd[j]].alap = ops[i].alap - (ops[ops[i].prd[j]].latency + 1)
+                        if (ops[ops[i].prd[j]].alap > (ops[i].alap - (ops[ops[i].prd[j]].latency)) || ops[ops[i].prd[j]].alap == -1) {
+                            ops[ops[i].prd[j]].alap = ops[i].alap - (ops[ops[i].prd[j]].latency)
+                            counter += 1
                         }
                     }
-                    ops[i].IOTypeS = .Output
+                    
                 }
             }
         }
@@ -166,7 +186,7 @@ class SpectralForceDirected: NSObject {
     
     private func findL() {
         for i in 0..<ops.count {
-            if ((ops[i].alap + ops[i].latency) > 1) {
+            if ((ops[i].alap + ops[i].latency) > l) {
                 l = ops[i].alap + ops[i].latency
             }
         }
@@ -231,7 +251,7 @@ class SpectralForceDirected: NSObject {
         var nextAsap: Int
         var plusWgt: Float
         
-        follow = Array(repeating: 0.0, count: l)                // MARK:!!!
+        follow = Array(repeating: 0.0, count: 2*latencytime)                //ez nem 1
         for i in 0..<e.nxt.count {
             nextAsap = t + e.latency
             if follow[nextAsap] < wgt {
@@ -239,9 +259,12 @@ class SpectralForceDirected: NSObject {
             }
             if ((ops[e.nxt[i]].type != "Buffer") && (nextAsap >= ops[e.nxt[i]].asap)) {
                 plusWgt = wgt / (Float(1) + Float(ops[e.nxt[i]].alap) - Float(ops[e.nxt[i]].asap))
-                for j in 2..<ops[e.nxt[i]].latency {
-                    if follow[j + nextAsap-1] < plusWgt {
-                        follow[j + nextAsap-1] = plusWgt
+                if (ops[e.nxt[i]].latency > 2)
+                {
+                    for j in 2..<ops[e.nxt[i]].latency {
+                        if follow[j + nextAsap-1] < plusWgt {
+                            follow[j + nextAsap-1] = plusWgt
+                        }
                     }
                 }
             }
@@ -284,11 +307,12 @@ class SpectralForceDirected: NSObject {
     //!         Leírás: non-overlapped processor usage; caches result if required.
     //!
     //////////////////////////////////////////////////////////////////////////////////////
-
+    
     private func usageQm(e: CNode, wgt: Float = 1, useWhichTime: Int = USE_QI) -> [Float] {
         var tmp             = [Float]()
         var test: Bool      = true
-        if transferTimeInfo.index(forKey: e.id) != transferTimeInfo.endIndex {          // MARK:!!! Itt mi a fenét akart az eredeti szerző???
+        
+        if transferTimeInfo.index(forKey: e.id) != nil {          // MARK:!!! Itt mi a fenét akart az eredeti szerző???
             if transferTimeInfo[e.id]?.count == e.transfers.count {
                 for i in 0..<e.transfers.count {
                     if transferTimeInfo[e.id]![i] != e.transfers[i] {
@@ -300,22 +324,27 @@ class SpectralForceDirected: NSObject {
                 return usageCache[e.id]!
             }
         }
-        tmp.removeAll()
-        tmp.append(0)
+        
+        tmp = Array(repeating: 0.0, count: latencytime+1)
         for i in 0..<tmp.count {
             tmp[i] = 0
         }
-        for i in e.asap...e.alap {
-            for j in 0..<e.latency {
-                tmp[i+j] += wgt
-            }
-            if USE_TI != useWhichTime {
-                addIp(a: &tmp, b: build_qi(e: e, t: i, wgt: wgt))
+        if(e.asap<=e.alap){ //patch, majd meg kell nézni
+            
+            
+            for i in e.asap...e.alap {
+                for j in 0..<e.latency {
+                    tmp[i+j] += wgt
+                }
+                if USE_TI != useWhichTime {
+                    addIp(a: &tmp, b: build_qi(e: e, t: i, wgt: wgt))
+                }
             }
         }
         aFold(arr: &tmp)
         if !(e.transfers.isEmpty) {
             transferTimeInfo[e.id] = e.transfers
+            usageCache[e.id] = tmp
         }
         return tmp
     }
@@ -327,7 +356,7 @@ class SpectralForceDirected: NSObject {
     //!         Leírás: non-overlapped processor usage; caches result if required.
     //!
     //////////////////////////////////////////////////////////////////////////////////////
-   
+    
     private func buildC(c: inout [String : [Float]], max: inout Float, mean: inout Float, _type: [CNode]) {
         var u: [Float]
         var tot: [Float]
@@ -400,7 +429,7 @@ class SpectralForceDirected: NSObject {
     private func setAsap(elops: [Int], now: Int) {
         for i in 0..<elops.count {
             if (ops[elops[i]].asap < now) {
-                ops[elops[i]].alap = now
+                ops[elops[i]].asap = now
                 setAsap(elops: ops[elops[i]].nxt, now: now + ops[elops[i]].latency)
             }
         }
@@ -432,10 +461,12 @@ class SpectralForceDirected: NSObject {
     //////////////////////////////////////////////////////////////////////////////////////
     
     private func saveAsap(e: CNode) {
-        for i in 0..<e.nxt.count {
-            ops[e.nxt[i]].origAsap = ops[e.nxt[i]].asap
-            if !(ops[e.nxt[i]].nxt.isEmpty) {
-                saveAsap(e: ops[e.nxt[i]])
+        let locae = e
+        
+        for i in 0..<locae.nxt.count {
+            ops[locae.nxt[i]].origAsap = ops[locae.nxt[i]].asap
+            if !(ops[locae.nxt[i]].nxt.isEmpty) {
+                saveAsap(e: ops[locae.nxt[i]])
             }
         }
     }
@@ -449,17 +480,16 @@ class SpectralForceDirected: NSObject {
     //////////////////////////////////////////////////////////////////////////////////////
     var rec: Int = 0
     private func saveAlap(e: CNode) {
-        if e.prd.isEmpty {
-            return
-        }
-        for i in 0..<e.prd.count {
-            ops[e.prd[i]].origAlap = ops[e.prd[i]].alap
-            if !(ops[e.prd[i]].prd.isEmpty) {
-                saveAlap(e: ops[e.prd[i]])
+        let loce = e
+        
+        for i in 0..<loce.prd.count {
+            ops[loce.prd[i]].origAlap = ops[loce.prd[i]].alap
+            if !(ops[loce.prd[i]].prd.isEmpty) {
+                saveAlap(e: ops[loce.prd[i]])
                 rec += 1
             }
         }
-        print("\(rec). rekurzív hurok.")
+        //  print("\(rec). rekurzív hurok.")
     }
     
     
@@ -627,7 +657,7 @@ class SpectralForceDirected: NSObject {
     //!         Leírás: Gondolom majd itt kell módosítgatni
     //!
     //////////////////////////////////////////////////////////////////////////////////////
-
+    
     private func forcedir(delayties: Bool, fixed: inout Int, tofix: inout Int, ord: [CNode]) -> [CNode] {           // argv-k nincsenek átadve, egyelőre nem biztos, hogy most kell
         var e: CNode
         var nodeTmp: CNode
@@ -687,13 +717,13 @@ class SpectralForceDirected: NSObject {
             list.removeLast()                           // MARK:!!!
             if e.asap == e.alap {
                 fixed += 1
-                print("## skipping node \(e.id).\n## \(fixed)/\(tofix) done.")
+                print("## skipping node \(e.id!).\n## \(fixed)/\(tofix) done.")
                 forceChange.append(0)
             }
             else {
                 bestTimes.removeAll()
                 bestFce = PLUS_INF_FCE
-                print("## testing node \(e.id)(\(e.asap) to \(e.alap)")
+                print("## testing node \(e.id!)(\(e.asap) to \(e.alap)")
                 
                 saveAsap(e: e)
                 saveAlap(e: e)
@@ -726,7 +756,7 @@ class SpectralForceDirected: NSObject {
                     //MARK: -XXXXXXXXXXXXXXIttkellkiegészíteniXXXXXXXXXXXXX
                     cdc(c: &c, newC: &newC, fce: &fce)          // calculate force
                     if (argV) {
-                        print("## F : \(fce)        # node\(e.id)           \(i)")
+                        print("## F : \(fce)        # node\(e.id!)           \(i)")
                     }
                     if fce < (bestFce+EPS) {
                         updateBestTime(fce: fce, bestFce: bestFce, t: i, bestTimes: &bestTimes)
@@ -737,17 +767,17 @@ class SpectralForceDirected: NSObject {
                 }
                 
                 if (delayties && (bestTimes.count >= 2) && ((tofix-fixed) > 1)) {
-                    print("## tie node \(e.id) delayed")
+                    print("## tie node \(e.id!) delayed")
                     delayed.append(e)
                 }
                 else {
                     if (delayties && (bestTimes.count >= 2) && ((tofix-fixed) == 1)) {
-                        print("## no use delaying node \(e.id) even if tied")
+                        print("## no use delaying node \(e.id!) even if tied")
                         for i in 0..<delayed.count {
-                            print("node \(delayed[i].id) ,")
+                            print("node \(delayed[i].id!) ,")
                         }
                     }
-                    print("## node \(e.id) best in cycles \(bestTimes[bestIndex])")
+                    print("## node \(e.id!) best in cycles \(bestTimes[bestIndex])")
                     
                     forceChange.append(bestFce)
                     
@@ -769,19 +799,19 @@ class SpectralForceDirected: NSObject {
         if delayed.count == 0 {
             // Kiírás fájlba, vagy.. ugye nem oda.....
         }
-        if argV {
-            print("## force changes were ")
-            for i in 0..<forceChange.count {
-                print("\(forceChange[i]),")
-            }
-            print("## mean of used processors by steps ")
-            for i in 0..<meanChange.count {
-                print("\(meanChange[i]),")
-            }
-            print("## max of used processors by steps ")
-            for i in 0..<maxChange.count {
-                print("\(maxChange[i]),")
-            }
+        //if argV {
+        print("## force changes were ")
+        for i in 0..<forceChange.count {
+            print("\(forceChange[i]),")
+        }
+        print("## mean of used processors by steps ")
+        for i in 0..<meanChange.count {
+            print("\(meanChange[i]),")
+        }
+        print("## max of used processors by steps ")
+        for i in 0..<maxChange.count {
+            print("\(maxChange[i]),")
+            //     }
         }
         return delayed
     }
@@ -798,7 +828,7 @@ class SpectralForceDirected: NSObject {
         var i: Int = 0
         var tmp = [String: Int]()
         repeat {
-            if w.index(forKey: type[i].type) == w.endIndex {
+            if w.index(forKey: type[i].type) == nil {
                 w.updateValue(1, forKey: type[i].type)
             }
             i += 1
@@ -831,7 +861,7 @@ class SpectralForceDirected: NSObject {
     //! d :  delay scheduling operations with optimum ties
     //! v :  increase detail level in output
     //////////////////////////////////////////////////////////////////////////////////////
-
+    
     func mainAlgorithm(p: Bool, s: Bool, d: Bool, v: Bool) {
         var ord         = [CNode]()
         var delayed     = [CNode]()
@@ -877,7 +907,7 @@ class SpectralForceDirected: NSObject {
             }
         }
         else {
-            forcedir(delayties: false, fixed: &tofix, tofix: &fixed, ord: ord)
+            forcedir(delayties: false, fixed: &fixed, tofix: &tofix, ord: ord)
         }
         testArg = -1
         return
@@ -885,6 +915,7 @@ class SpectralForceDirected: NSObject {
     
     func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement]?, latency: Int?) {
         self.restartTime = restartTime
+        self.latencytime = latencyTime
         readInput()
         calculateAsapAlap(latencyTime: latencyTime)
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE)
@@ -892,3 +923,4 @@ class SpectralForceDirected: NSObject {
         return (groups, l)
     }
 }
+
