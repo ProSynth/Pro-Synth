@@ -239,9 +239,11 @@ class graphViewController: NSViewController {
     //////////////////////////////////////////////////////////////////////////////////////
     
     func importXMLMethod() {
+        self.noGraph.isHidden = true
         let parser = graphXMLParser()
         parser.parseFeed(url: importGraphPath!) { (selectedGroups) in
             self.selectedGroups = selectedGroups
+            
             
             OperationQueue.main.addOperation {
                 self.graphOutlineView.reloadData()

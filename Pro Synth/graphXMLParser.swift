@@ -13,6 +13,9 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     
     var tmpGraphGroups = [[GraphElement]]()
     var tmpGroup = [GraphElement]()
+    var nodeForEdge = [Node]()
+    
+    var indexTable = [Int : Int]()
     
     var tmpNode: Node!
     
@@ -59,6 +62,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                 }
                 tmpLocalGroup = Group(name: tmpName, parent: nil, maxGroupTime: 0)
                 tmpGroup.append(tmpLocalGroup)
+                //indexTable[tmpId] = tmpGroup.count-1
                 break
             case "loop":
                 if let id = attributeDict["id"] {
@@ -77,8 +81,9 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                 } else {
                     lType = .ACI
                 }
-                tmpLocalGroup = Group(name: "Group", parent: nil, maxGroupTime: 0, groupID: tmpId, loop: lType)
+                tmpLocalGroup = Group(name: "Loop", parent: nil, maxGroupTime: 0, groupID: tmpId, loop: lType)
                 tmpGroup.append(tmpLocalGroup)
+                //indexTable[tmpId] = tmpGroup.count-1
                 break
             default:
                 if let name = attributeDict["ctype"] {
@@ -91,6 +96,8 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                 }
                 tmpNode = Node(name: tmpName, parent: nil, weight: 1, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
                 tmpGroup.append(tmpNode)
+                nodeForEdge.append(tmpNode)
+                indexTable[tmpId] = nodeForEdge.count-1
                 break
             }
 
@@ -107,7 +114,38 @@ class graphXMLParser: NSObject, XMLParserDelegate {
             }
             tmpNode = Node(name: tmpName, parent: nil, weight: 1, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
             tmpGroup.append(tmpNode)
+            nodeForEdge.append(tmpNode)
+            indexTable[tmpId] = nodeForEdge.count-1
         }
+    }
+    
+    func parseEdge(attributes attributeDict: [String : String] = [:]) {
+        
+        var dnodeID: Int!
+        var snodeID: Int!
+        if let dnode = attributeDict["dnode"] {
+            if let c = Int(dnode) {
+                dnodeID = c
+            }
+        }
+        if let snode = attributeDict["snode"] {
+            if let c = Int(snode) {
+                snodeID = c
+            }
+        }
+        guard nil != dnodeID else {
+            print("Élparserhiba")
+            return
+        }
+        guard nil != snodeID else {
+            print("Élparserhiba")
+            return
+        }
+        let indexSNode = indexTable[snodeID]
+        let indexDNode = indexTable[dnodeID]
+        
+        let tmpEdge = Edge(name: "Él", weight: 1, parentNode1: nodeForEdge[indexSNode!], parentNode2: nodeForEdge[indexDNode!])
+        nodeForEdge[indexSNode!].children.append(tmpEdge)
     }
     
     // MARK: - XML Parser Delegate
@@ -133,6 +171,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
             parseNode(attributes: attributeDict)
             break
         case "edge":
+            parseEdge(attributes: attributeDict)
             break
         case "pipe":
             tmpGroup.append(Group(name: "Főcsoport", parent: nil, maxGroupTime: 0))
@@ -150,6 +189,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         switch elementName {
         case "eog":
+            //indexTable.removeAll()
             for i in 0..<tmpGroup.count {
                 tmpGraphGroups.last?.last?.children.append(tmpGroup[i])
             }
