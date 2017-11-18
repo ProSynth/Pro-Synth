@@ -1488,37 +1488,46 @@
                                 <font key="titleFont" size="12" name=".AppleSystemUIFont"/>
                             </box>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DBC-Gw-IUX">
-                                <rect key="frame" x="613" y="694" width="63" height="18"/>
+                                <rect key="frame" x="658" y="695" width="18" height="16"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="59" id="BH3-S1-Hp8"/>
+                                    <constraint firstAttribute="width" constant="15" id="BH3-S1-Hp8"/>
                                     <constraint firstAttribute="height" constant="14" id="krS-eq-u0W"/>
                                 </constraints>
-                                <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="aUc-1j-cKZ">
+                                <buttonCell key="cell" type="radio" title="WNCut" bezelStyle="regularSquare" imagePosition="right" inset="2" id="aUc-1j-cKZ">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="SynthSelect:" target="LGX-vd-Huz" id="8LB-OW-X7x"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KIC-KO-8O9">
-                                <rect key="frame" x="613" y="444" width="63" height="18"/>
+                                <rect key="frame" x="658" y="445" width="18" height="16"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="59" id="5Bj-2x-UEm"/>
+                                    <constraint firstAttribute="width" constant="15" id="5Bj-2x-UEm"/>
                                     <constraint firstAttribute="height" constant="14" id="WNO-Ca-dob"/>
                                 </constraints>
-                                <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="W49-iT-PTs">
+                                <buttonCell key="cell" type="radio" title="RSCU" bezelStyle="regularSquare" imagePosition="right" inset="2" id="W49-iT-PTs">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="SynthSelect:" target="LGX-vd-Huz" id="CZV-7V-6kI"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="30h-Dd-cYs">
-                                <rect key="frame" x="613" y="224" width="63" height="18"/>
+                                <rect key="frame" x="658" y="225" width="18" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="14" id="VzL-TO-cWe"/>
-                                    <constraint firstAttribute="width" constant="59" id="WTE-hc-ZtP"/>
+                                    <constraint firstAttribute="width" constant="15" id="WTE-hc-ZtP"/>
                                 </constraints>
-                                <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Dq5-iZ-mdZ">
+                                <buttonCell key="cell" type="radio" title="SFDS" bezelStyle="regularSquare" imagePosition="right" inset="2" id="Dq5-iZ-mdZ">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="SynthSelect:" target="LGX-vd-Huz" id="RlG-Bp-uR0"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
@@ -3028,6 +3037,6 @@ Gw
         <image name="NSGoRightTemplate" width="9" height="12"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
     </resources>
 </document>

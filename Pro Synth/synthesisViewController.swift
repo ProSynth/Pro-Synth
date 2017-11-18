@@ -10,9 +10,21 @@ import Cocoa
 
 class synthesisViewController: NSViewController {
 
-    @IBOutlet weak var WNCutEnable: NSButton!
-    @IBOutlet weak var RSCU_Enable: NSButton!
-    @IBOutlet weak var SpectralForcedirEnable: NSButton!
+    @IBAction func SynthSelect(_ sender: NSButton) {
+        switch sender.title {
+        case "WNCut":
+            synthProcess = .WNCut
+        case "RSCU":
+            synthProcess = .RSCU
+            break
+        case "SFDS":
+            synthProcess = .SFDS
+            break
+        default:
+            break
+        }
+    }
+    
     
     @IBOutlet weak var WNCutParameter: NSTextField!
     @IBOutlet weak var WNCutWeighted: NSButton!

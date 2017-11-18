@@ -473,8 +473,8 @@ class graphViewController: NSViewController {
         // Dekompozíció cégrehajtása
         allGroups.append(selectedGroups)
         var Case: Int = 2
-        switch Case {
-        case 1:
+        switch synthProcess {
+        case .WNCut?:
             let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
             let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p:0.001)
             guard nil != grouping  else {
@@ -485,7 +485,7 @@ class graphViewController: NSViewController {
             selectGraph.addItem(withTitle: "Decomposition")
             selectGraph.selectItem(withTitle: "Decomposition")
             selectedGroups = allGroups[1]
-        case 2:
+        case .SFDS?:
             let proba: SpectralForceDirected = SpectralForceDirected(groups: allGroups[0])
             let result = proba.DoProcess(restartTime: 50, latencyTime: 100, p: false, s: false, d: true)
             guard nil != result.graph  else {
@@ -496,6 +496,18 @@ class graphViewController: NSViewController {
             selectGraph.addItem(withTitle: "Scheduling")
             selectGraph.selectItem(withTitle: "Scheduling")
             selectedGroups = allGroups[1]
+        case .RSCU?:
+            let RSCULoopUnroller: RSCU_LoopUnroller = RSCU_LoopUnroller(into: 4, with: selectedGroups)
+            let rscuResult = RSCULoopUnroller.DoProcess()
+            guard nil != rscuResult else {
+                print("A Hurokkibontás nem végződött el")
+                return
+            }
+            allGroups.append(rscuResult!)
+            selectGraph.addItem(withTitle: "Loop Unrolling")
+            selectGraph.selectItem(withTitle: "Loop Unrolling")
+            selectedGroups = allGroups[1]
+            break
         default:
             print("Nem szintetizál a program")
         }

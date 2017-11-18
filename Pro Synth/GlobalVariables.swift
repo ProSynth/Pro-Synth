@@ -34,6 +34,12 @@ enum LoopType {
     case Normal
 }
 
+enum SynthType {
+    case WNCut
+    case RSCU
+    case SFDS
+}
+
 struct nodeAttributes {
     var name:String
     var weight:Int
@@ -100,6 +106,8 @@ class nodeOpType {
         self.defaultWeight = defaultWeight
     }
 }
+
+var synthProcess: SynthType? = nil
 
 var edgeDataTypeArray = [edgeDataType]()
 var nodeOpTypeArray = [nodeOpType]()
