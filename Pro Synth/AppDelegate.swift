@@ -45,6 +45,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
     }
 
+    @IBAction func importXMLGraph(_ sender: NSMenuItem) {
+        let myFiledialog = NSOpenPanel()
+        myFiledialog.prompt = "Import graph"
+        //myFiledialog.worksWhenModal = true
+        myFiledialog.allowsMultipleSelection = false
+        myFiledialog.canChooseDirectories = false
+        myFiledialog.canChooseFiles = true
+        myFiledialog.allowedFileTypes = ["xml"]
+        myFiledialog.beginSheetModal(for: NSApplication.shared().mainWindow!, completionHandler: { num in
+            if num == NSModalResponseOK {
+                importGraphPath = myFiledialog.url
+                NotificationCenter.default.post(name: Notification.Name("importXMLGraphMethod"), object: self)
+            } else {
+                print("nothing chosen")
+            }
+        })
+    }
+    
     @IBAction func addNodeFromMenu(_ sender: NSMenuItem) {
         NotificationCenter.default.post(name: Notification.Name("hotKeyNode"), object: self)
 

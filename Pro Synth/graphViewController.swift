@@ -181,6 +181,7 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.importXMLMethod), name: Notification.Name("importXMLGraphMethod"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
 
@@ -227,6 +228,25 @@ class graphViewController: NSViewController {
             noGraph.isHidden = true
         }
 
+    }
+    
+    //////////////////////////////////////////////////////////////////////////////////////
+    //!         Graphimport
+    //!===================================================================================
+    //!         Leírás: Itt lesz az XML typusú gráf importálás szekció
+    //!
+    //!
+    //////////////////////////////////////////////////////////////////////////////////////
+    
+    func importXMLMethod() {
+        let parser = graphXMLParser()
+        parser.parseFeed(url: importGraphPath!) { (selectedGroups) in
+            self.selectedGroups = selectedGroups
+            
+            OperationQueue.main.addOperation {
+                self.graphOutlineView.reloadData()
+            }
+        }
     }
     
     //////////////////////////////////////////////////////////////////////////////////////

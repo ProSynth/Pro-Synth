@@ -21,6 +21,8 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     var tmpWeight: Int = 0
     var tmpCount: Int = 0
     
+    var firstEog: Bool = true
+    
     private var parserCompletionHandler: (([GraphElement]) -> Void)?
     
     func parseFeed(url: URL, completionHandler: (([GraphElement]) -> Void)?)  {
@@ -47,27 +49,54 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     }
     
     func parseNode(attributes attributeDict: [String : String] = [:]) {
-        if let type = attributeDict["loop"] {
-            var lType: LoopType
-            if let id = attributeDict["id"] {
-                if let c = Int(id) {
-                    tmpId = c
+        var lType: LoopType
+        var tmpLocalGroup: Group!
+        if let type = attributeDict["class"] {
+            switch type {
+            case "function":
+                if let name = attributeDict["name"] {
+                    tmpName = name
                 }
-            }
-            if let id = attributeDict["count"] {
-                if let c = Int(id) {
-                    tmpCount = c
-                    lType = .Normal
+                tmpLocalGroup = Group(name: tmpName, parent: nil, maxGroupTime: 0)
+                tmpGroup.append(tmpLocalGroup)
+                break
+            case "loop":
+                if let id = attributeDict["id"] {
+                    if let c = Int(id) {
+                        tmpId = c
+                    }
+                }
+                if let id = attributeDict["count"] {
+                    if let c = Int(id) {
+                        tmpCount = c
+                        lType = .Normal
+                    } else {
+                        lType = .ACI
+                    }
+                    
                 } else {
                     lType = .ACI
                 }
-            
-            } else {
-                lType = .ACI
+                tmpLocalGroup = Group(name: "Group", parent: nil, maxGroupTime: 0, groupID: tmpId, loop: lType)
+                tmpGroup.append(tmpLocalGroup)
+                break
+            default:
+                if let name = attributeDict["ctype"] {
+                    tmpName = name
+                }
+                if let id = attributeDict["id"] {
+                    if let c = Int(id) {
+                        tmpId = c
+                    }
+                }
+                tmpNode = Node(name: tmpName, parent: nil, weight: 1, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
+                tmpGroup.append(tmpNode)
+                break
             }
-            let tmpLocaalGroup = Group(name: "Group", parent: nil, maxGroupTime: 0, groupID: tmpId, loop: lType)
-            tmpGroup.append(tmpLocaalGroup)
-        } else {
+
+            
+        }
+        else {
             if let name = attributeDict["ctype"] {
                 tmpName = name
             }
@@ -76,7 +105,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                     tmpId = c
                 }
             }
-            tmpNode = Node(name: tmpName, parent: nil, weight: 1, nodeOpType: nil, nodeID: tmpId)
+            tmpNode = Node(name: tmpName, parent: nil, weight: 1, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
             tmpGroup.append(tmpNode)
         }
     }
@@ -86,12 +115,28 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
         switch elementName {
         case "eog":
+            var referenceGroup = [GraphElement]()
+            for i in 0..<tmpGroup.count {
+                referenceGroup.append(tmpGroup[i])
+            }
+            tmpGraphGroups.append(referenceGroup)
             tmpGroup.removeAll()
-            break
-        case "node":
+            //tmpGraphGroups.append([])
+            
+            
+            
+                
+                firstEog = false
             
             break
+        case "node":
+            parseNode(attributes: attributeDict)
+            break
         case "edge":
+            break
+        case "pipe":
+            tmpGroup.append(Group(name: "Főcsoport", parent: nil, maxGroupTime: 0))
+            //tmpGraphGroups.append([Group(name: "Főcsoport", parent: nil, maxGroupTime: 0)])
             break
         default:
             break
@@ -105,9 +150,22 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         switch elementName {
         case "eog":
-            <#code#>
+            for i in 0..<tmpGroup.count {
+                tmpGraphGroups.last?.last?.children.append(tmpGroup[i])
+            }
+            tmpGroup.removeAll()
+            for i in 0..<(tmpGraphGroups.last?.count)! {
+                tmpGroup.append(tmpGraphGroups.last![i])
+            }
+            if tmpGraphGroups.count == 1 {
+                
+            } else {
+                tmpGraphGroups.removeLast()
+            }
             break
         case "node":
+            break
+        case "pipe":
             break
         default:
             break
@@ -115,6 +173,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     }
     
     func parserDidEndDocument(_ parser: XMLParser) {
+        groups = tmpGraphGroups[0]
         parserCompletionHandler?(groups)
     }
     
