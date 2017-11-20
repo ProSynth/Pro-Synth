@@ -82,6 +82,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                     lType = .ACI
                 }
                 tmpLocalGroup = Group(name: "Loop", parent: nil, maxGroupTime: 0, groupID: tmpId, loop: lType)
+                tmpLocalGroup.loopCount = tmpCount
                 tmpGroup.append(tmpLocalGroup)
                 //indexTable[tmpId] = tmpGroup.count-1
                 break
@@ -94,7 +95,12 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                         tmpId = c
                     }
                 }
-                tmpNode = Node(name: tmpName, parent: nil, weight: 1, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
+                if let id = attributeDict["latency"] {
+                    if let c = Int(id) {
+                        tmpWeight = c
+                    }
+                }
+                tmpNode = Node(name: tmpName, parent: nil, weight: tmpWeight, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
                 tmpGroup.append(tmpNode)
                 nodeForEdge.append(tmpNode)
                 indexTable[tmpId] = nodeForEdge.count-1
@@ -112,7 +118,12 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                     tmpId = c
                 }
             }
-            tmpNode = Node(name: tmpName, parent: nil, weight: 1, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
+            if let id = attributeDict["latency"] {
+                if let c = Int(id) {
+                    tmpWeight = c
+                }
+            }
+            tmpNode = Node(name: tmpName, parent: nil, weight: tmpWeight, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
             tmpGroup.append(tmpNode)
             nodeForEdge.append(tmpNode)
             indexTable[tmpId] = nodeForEdge.count-1
@@ -133,6 +144,11 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                 snodeID = c
             }
         }
+        if let snode = attributeDict["weight"] {
+            if let c = Int(snode) {
+                tmpWeight = c
+            }
+        }
         guard nil != dnodeID else {
             print("Élparserhiba")
             return
@@ -144,7 +160,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
         let indexSNode = indexTable[snodeID]
         let indexDNode = indexTable[dnodeID]
         
-        let tmpEdge = Edge(name: "Él", weight: 1, parentNode1: nodeForEdge[indexSNode!], parentNode2: nodeForEdge[indexDNode!])
+        let tmpEdge = Edge(name: "Él", weight: tmpWeight, parentNode1: nodeForEdge[indexSNode!], parentNode2: nodeForEdge[indexDNode!])
         nodeForEdge[indexSNode!].children.append(tmpEdge)
     }
     

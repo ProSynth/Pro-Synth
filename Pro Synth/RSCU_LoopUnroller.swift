@@ -49,6 +49,12 @@ class RSCU_LoopUnroller: NSObject {
                 } else {
                     weight.append(1)
                 }
+            if groups[i].children.count == 0 {
+                print("A \(i). pontnak nincs egyetlen éle sem, vagy 0 súlyú élei vannak")
+            }
+            if i == 5 {
+                print("break")
+            }
                 for k in 0..<groups[i].children.count {
                     let parent1 = (groups[i].children[k] as! Edge).parentsNode
                     let parent2 = (groups[i].children[k] as! Edge).parentdNode
@@ -78,21 +84,25 @@ class RSCU_LoopUnroller: NSObject {
             var rowSum : Double = 0
             for i in (j*sizeOfMatrix)..<((j+1)*sizeOfMatrix) {
                 rowSum = rowSum + Matrix[i]
+
             }
             Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
+            if rowSum == 0 {
+                print("Már a mátrixpusholónál 0 van a főátlóban \(j)")
+            }
         }
-        
+        /*
         for i in 0..<sizeOfMatrix {
             for j in 0..<sizeOfMatrix {
                 print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
             }
             print("\n")
         }
-        
+        */
         return (Matrix, sizeOfMatrix, weight, NodeIDs)
     }
     
-    func findFirstOutlerLoop(input: [GraphElement], startId: Int = 0) -> (outerLoop: [GraphElement], index: Int)? {
+    func findFirstOutlerLoop(input: [GraphElement], startId: Int = 0) -> (outerLoop: [GraphElement], index: Int, loopCount: Int)? {
         
         for i in 0..<input.count {
             if (input[i] is Group) {
@@ -106,7 +116,7 @@ class RSCU_LoopUnroller: NSObject {
                     break
                 case .Normal:
                     print("Hurkot talált")
-                    return (input[i].children, i)
+                    return (input[i].children, i, (input[i] as! Group).loopCount!)
                     break               // csinálni kell
                 case .None:
                     print("Nem loopról van szó, de csoport")
@@ -124,10 +134,97 @@ class RSCU_LoopUnroller: NSObject {
         // Do nothing
     }
     
-    func Decomposition(into n: Int, with nodes: [GraphElement]) -> [GraphElement]? {
+    func Decomposition(into n: Int, with nodes: [GraphElement], LoopCount times: Int = 1) -> [GraphElement]? {
+        
+        var multipliedGraph = [GraphElement]()
+        for i in 0..<nodes.count {
+            multipliedGraph.append(nodes[i])
+        }
+        
+        var loopCount = times
+        //var outpIndexOldID = [Int : Int]()
+        var copyIndexIDTable = [Int]()
+        var Edges = [Edge]()
+        let until = multipliedGraph.count
+        
+        for i in 0..<nodes.count {
+            for j in 0..<multipliedGraph[i].children.count {
+                Edges.append(multipliedGraph[i].children[j] as! Edge)
+                //let name = output[i].children[j].name
+                //let weight = (output[i].children[j] as! Edge).weight
+                
+            }
+        }
+        
+        for k in 0..<loopCount-1 {
+            let offseft: Int = multipliedGraph.count
+            for i in 0..<nodes.count {
+                let name = multipliedGraph[i].name
+                let id = (multipliedGraph[i] as! Node).nodeID
+                let weight = (multipliedGraph[i] as! Node).weight
+                multipliedGraph.append(Node(name: name, parent: nil, weight: weight, nodeOpType: nil))
+                copyIndexIDTable.append(id)
+                //outpIndexOldID[id] = multipliedGraph.count-1
+            }
+            
+            for i in 0..<Edges.count {
+                let tmpDNode = Edges[i].parentdNode
+                let tmpDNodeID = Edges[i].parentdNode.nodeID
+                let tmpSNode = Edges[i].parentsNode
+                let tmpSNodeID = Edges[i].parentsNode.nodeID
+                let name = Edges[i].name
+                let weight = Edges[i].weight
+                var newDParentIndex: Int!
+                var newSParentIndex: Int!
+                var SExist: Bool = false
+                var DExist: Bool = false
+                if copyIndexIDTable.contains(tmpDNodeID) {
+                    DExist = true
+                }
+                if copyIndexIDTable.contains(tmpSNodeID) {
+                    SExist = true
+                }
+                /*if nil != outpIndexOldID[tmpDNodeID] {
+                    DExist = true
+                }
+                if nil != outpIndexOldID[tmpSNodeID] {
+                    SExist = true
+                }*/
+                if DExist && SExist {
+                    newDParentIndex = copyIndexIDTable.index(of: tmpDNodeID)! + offseft
+                    newSParentIndex = copyIndexIDTable.index(of: tmpSNodeID)! + offseft
+                    //newDParentIndex = outpIndexOldID[tmpDNodeID]!
+                    //newSParentIndex = outpIndexOldID[tmpSNodeID]!
+                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: multipliedGraph[newDParentIndex] as! Node)
+                    multipliedGraph[newDParentIndex].children.append(tmpEdge)
+                    multipliedGraph[newSParentIndex].children.append(tmpEdge)
+                } else if SExist {
+                    newSParentIndex = copyIndexIDTable.index(of: tmpSNodeID)! + offseft
+                    //newSParentIndex = outpIndexOldID[tmpSNodeID]!
+                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: tmpDNode )
+                    multipliedGraph[newSParentIndex].children.append(tmpEdge)
+                    tmpDNode.children.append(tmpEdge)
+                } else if DExist {
+                    newDParentIndex = copyIndexIDTable.index(of: tmpDNodeID)! + offseft
+                    //newDParentIndex = outpIndexOldID[tmpDNodeID]!
+                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: tmpSNode , parentNode2: multipliedGraph[newDParentIndex] as! Node)
+                    multipliedGraph[newDParentIndex].children.append(tmpEdge)
+                    tmpSNode.children.append(tmpEdge)
+                } else {
+                    // Hiba
+                    print("Az él nem ide tartozik")
+                }
+                
+            }
+            //outpIndexOldID.removeAll()
+            copyIndexIDTable.removeAll()
+        }
+        
+        
+        
         var output = [GraphElement]()
         print("Dekompozíciót hajt végre")
-        let sourceMatrix = pushMatrix(groups: nodes)
+        let sourceMatrix = pushMatrix(groups: multipliedGraph)
         var loopDecompose: WNCut = WNCut(sizeOfMatrix: sourceMatrix.sizeOfmatrix, sourceMatrix: sourceMatrix.matrix)
         let spectrum = loopDecompose.WNCut(weight: sourceMatrix.weight)
         
@@ -196,6 +293,7 @@ class RSCU_LoopUnroller: NSObject {
                 let avg = sum / Double(ct)
 
                 output.append(Node(name: "InternalElement\(i)", parent: nil, weight: sumWeight, nodeOpType: nil))
+                
                 (output.last as! Node).spectrum = avg
                 let newNodeID = (output.last as! Node).nodeID
                 newIDIndex.append(newNodeID)
@@ -214,22 +312,24 @@ class RSCU_LoopUnroller: NSObject {
 
             
             sum += sortedOriginalNodeDictionary[i].value
-            sumWeight += (nodes[sortedOriginalNodeDictionary[i].key] as! Node).weight
+            let ID = sortedOriginalNodeDictionary[i].key
+            
+            sumWeight += (multipliedGraph[NodeIDOrder.index(of: ID)!] as! Node).weight
             segmentedNodeIDs.append(sortedOriginalNodeDictionary[i].key)
             
             
-
+            counter += 1
         }
         
 
         // Az élek itt rendeződnek át, új élek keletkeznek
-        for j in 0..<nodes.count {
-            for k in 0..<nodes[j].children.count {
-                let edgeWeight = (nodes[j].children[k] as! Edge).weight
-                let sNodeID = (nodes[j].children[k] as! Edge).parentsNode.nodeID
-                let sNode = (nodes[j].children[k] as! Edge).parentsNode
-                let dNodeID = (nodes[j].children[k] as! Edge).parentdNode.nodeID
-                let dNode = (nodes[j].children[k] as! Edge).parentdNode
+        for j in 0..<multipliedGraph.count {
+            for k in 0..<multipliedGraph[j].children.count {
+                let edgeWeight = (multipliedGraph[j].children[k] as! Edge).weight
+                let sNodeID = (multipliedGraph[j].children[k] as! Edge).parentsNode.nodeID
+                let sNode = (multipliedGraph[j].children[k] as! Edge).parentsNode
+                let dNodeID = (multipliedGraph[j].children[k] as! Edge).parentdNode.nodeID
+                let dNode = (multipliedGraph[j].children[k] as! Edge).parentdNode
                 let firstExist = (oldNewIDs[sNodeID] != nil)
                 let secondExist = (oldNewIDs[dNodeID] != nil)
 
@@ -256,14 +356,18 @@ class RSCU_LoopUnroller: NSObject {
             }
         }
         
+        
         if output.isEmpty {
+            print("Rosszul végzett a dekompozícióval")
             return nil
         } else {
+            
+            print("Végzett a dekompozícióval")
             return output
         }
     }
     
-    func SegmentedUnroll(group: inout [GraphElement], inaLoop: Bool) -> [GraphElement]? {
+    func SegmentedUnroll(group: inout [GraphElement], inaLoop: Bool = false, loopCount: Int = 0) -> [GraphElement]? {
         
         var input: [GraphElement] = group
         var outputGraph: [GraphElement]? = nil
@@ -275,19 +379,21 @@ class RSCU_LoopUnroller: NSObject {
             noLoops = false
             var firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
             var firstOuterLoopIndex = (firstOuterLoop?.index)!
+            var fristOuterLoopCount = (firstOuterLoop?.loopCount)!
             while !noLoops {
-                tmp = SegmentedUnroll(group: &firstOuterLoopGrap, inaLoop: true)!
+                tmp = SegmentedUnroll(group: &firstOuterLoopGrap, inaLoop: true, loopCount: fristOuterLoopCount)!
                 
                 // új szegmensek beillesztése eggyel feljebb
-                let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
-                for j in 0..<loopCount {
-                    for i in 0..<tmp.count {
-                        input.append(tmp[i])
-                    }
+                //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
+                
+                for i in 0..<tmp.count {
+                    group.append(tmp[i])
                 }
+                
                 group.remove(at: firstOuterLoopIndex)       // Hibás lehet az index
                 EdgeHandling(nodes: &group)                 // ÉLkezelést meg kell csinálni
-                
+       
+
                 
                 // megnézzük, hogy ugyanazon a szinten van-e még loop
                 firstOuterLoop = findFirstOutlerLoop(input: group, startId: firstOuterLoopIndex)
@@ -297,6 +403,7 @@ class RSCU_LoopUnroller: NSObject {
                     noLoops = false
                     firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
                     firstOuterLoopIndex = (firstOuterLoop?.index)!
+                    fristOuterLoopCount = (firstOuterLoop?.loopCount)!
                 } else {
                     noLoops = true
                 }
@@ -304,7 +411,8 @@ class RSCU_LoopUnroller: NSObject {
         } else {
             noLoops = true
             if inaLoop {
-                outputGraph = Decomposition(into: numOfParts, with: input)
+                //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
+                outputGraph = Decomposition(into: numOfParts, with: input, LoopCount: loopCount)
                 guard nil != outputGraph else {
                     let alert = NSAlert()
                     alert.messageText = "Hiba!"
@@ -325,7 +433,7 @@ class RSCU_LoopUnroller: NSObject {
     }
     
     func DoProcess() -> [GraphElement]? {
-        let destinationGraph = SegmentedUnroll(group: &sourceGroup, inaLoop: false)
+        let destinationGraph = SegmentedUnroll(group: &sourceGroup)
         guard nil != destinationGraph else {
             print("Nem sikerült a szintézis")
             return nil

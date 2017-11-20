@@ -2544,7 +2544,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="pl7-yj-aZl">
-                                    <rect key="frame" x="1" y="7" width="0.0" height="16"/>
+                                    <rect key="frame" x="1" y="8" width="0.0" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="b0P-qy-VmT">
@@ -2841,11 +2841,11 @@ Gw
                                 <rect key="frame" x="18" y="62" width="247" height="157"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="p3i-sN-dzH">
-                                    <rect key="frame" x="1" y="0.0" width="245" height="156"/>
+                                    <rect key="frame" x="1" y="0.0" width="245" height="141"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="RbZ-WX-ua7" viewBased="YES" id="hQd-qz-YIp">
-                                            <rect key="frame" x="0.0" y="0.0" width="249" height="133"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="249" height="118"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2931,7 +2931,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="dsQ-m4-nBn">
-                                    <rect key="frame" x="1" y="140" width="245" height="16"/>
+                                    <rect key="frame" x="1" y="141" width="245" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="pL0-Qc-KNV">
@@ -3037,6 +3037,6 @@ Gw
         <image name="NSGoRightTemplate" width="9" height="12"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
+        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
     </resources>
 </document>

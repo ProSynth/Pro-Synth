@@ -55,6 +55,8 @@ class WNCut: NSObject {
             }
         }
         
+
+        
         for i in 0..<sizeOfMatrix {
             DiagVector[i] = sqrt(Diag[i])       // Gyökvonás elemenként
         }
@@ -62,7 +64,11 @@ class WNCut: NSObject {
         for i in 0..<sizeOfMatrix {
             DiagVector[i] = 1/DiagVector[i]       // A vektor invertálása
         }
-        
+        for i in 0..<sizeOfMatrix {
+            if DiagVector[i] == 0 {
+                print("A főátlóban 0 van")
+            }
+        }
         for i in 0..<sizeOfMatrix {                 // Diagonális Mátrix készítése
             for j in 0..<sizeOfMatrix {
                 if i == j {

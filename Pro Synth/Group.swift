@@ -24,7 +24,7 @@ class Group: GraphElement {
     var groupID : Int                           //CsoportID, minden csoportnak különböző
     var maxTime: Int
     var loop: LoopType
-    var loopCount: Int?
+    var loopCount: Int? = nil
     
 
 //////////////////////////////////////////////////////////////////////////////////////

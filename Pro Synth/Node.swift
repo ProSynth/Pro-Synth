@@ -50,7 +50,9 @@ class Node: GraphElement {
             self.nodeID = nodeID
         } else {
             self.nodeID = nodeID
-            Node.currentNodeID = nodeID
+            if Node.currentNodeID < nodeID {
+               Node.currentNodeID = nodeID
+            } 
         }
         self.opType? = nodeOpType!
         self.weight = weight
