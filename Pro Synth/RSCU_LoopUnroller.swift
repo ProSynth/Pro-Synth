@@ -410,23 +410,23 @@ class RSCU_LoopUnroller: NSObject {
             }
         } else {
             noLoops = true
-            if inaLoop {
-                //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
-                outputGraph = Decomposition(into: numOfParts, with: input, LoopCount: loopCount)
-                guard nil != outputGraph else {
-                    print("A rekurzív függvény visszatérési értéke nil")
-                    let alert = NSAlert()
-                    alert.messageText = "Hiba!"
-                    alert.informativeText = "Nem sikerült végrehajtani a dekompozíciót"
-                    alert.addButton(withTitle: "Ez van..")
-                    return nil
-                }
-            } else {
-                outputGraph = input
-            }
+            
         }
         
-
+        if inaLoop {
+            //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
+            outputGraph = Decomposition(into: numOfParts, with: input, LoopCount: loopCount)
+            guard nil != outputGraph else {
+                print("A rekurzív függvény visszatérési értéke nil")
+                let alert = NSAlert()
+                alert.messageText = "Hiba!"
+                alert.informativeText = "Nem sikerült végrehajtani a dekompozíciót"
+                alert.addButton(withTitle: "Ez van..")
+                return nil
+            }
+        } else {
+            outputGraph = input
+        }
         
         
 
