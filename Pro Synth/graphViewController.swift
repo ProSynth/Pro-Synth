@@ -487,7 +487,7 @@ class graphViewController: NSViewController {
             selectedGroups = allGroups[1]
         case .SFDS?:
             let proba: SpectralForceDirected = SpectralForceDirected(groups: allGroups[0])
-            let result = proba.DoProcess(restartTime: 50, latencyTime: 100, p: false, s: false, d: true)
+            let result = proba.DoProcess(restartTime: 50, latencyTime: 100, p: false, s: false, d: false)
             guard nil != result.graph  else {
                 print("A Dekompozíció nem végződött el")
                 return

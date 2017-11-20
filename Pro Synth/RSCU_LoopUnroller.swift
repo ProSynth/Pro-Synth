@@ -367,12 +367,12 @@ class RSCU_LoopUnroller: NSObject {
         }
     }
     
-    func SegmentedUnroll(group: inout [GraphElement], inaLoop: Bool = false, loopCount: Int = 0) -> [GraphElement]? {
+    func SegmentedUnroll(group: [GraphElement], inaLoop: Bool = false, loopCount: Int = 0) -> [GraphElement]? {
         
         var input: [GraphElement] = group
         var outputGraph: [GraphElement]? = nil
         var noLoops: Bool!
-        var firstOuterLoop = findFirstOutlerLoop(input: group)
+        var firstOuterLoop = findFirstOutlerLoop(input: input)
 
         
         if nil != firstOuterLoop {
@@ -381,22 +381,22 @@ class RSCU_LoopUnroller: NSObject {
             var firstOuterLoopIndex = (firstOuterLoop?.index)!
             var fristOuterLoopCount = (firstOuterLoop?.loopCount)!
             while !noLoops {
-                tmp = SegmentedUnroll(group: &firstOuterLoopGrap, inaLoop: true, loopCount: fristOuterLoopCount)!
+                tmp = SegmentedUnroll(group: firstOuterLoopGrap, inaLoop: true, loopCount: fristOuterLoopCount)!
                 
                 // új szegmensek beillesztése eggyel feljebb
                 //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
                 
                 for i in 0..<tmp.count {
-                    group.append(tmp[i])
+                    input.append(tmp[i])
                 }
                 
-                group.remove(at: firstOuterLoopIndex)       // Hibás lehet az index
-                EdgeHandling(nodes: &group)                 // ÉLkezelést meg kell csinálni
+                input.remove(at: firstOuterLoopIndex)       // Hibás lehet az index
+                //EdgeHandling(nodes: &input)                 // ÉLkezelést meg kell csinálni
        
 
                 
                 // megnézzük, hogy ugyanazon a szinten van-e még loop
-                firstOuterLoop = findFirstOutlerLoop(input: group, startId: firstOuterLoopIndex)
+                firstOuterLoop = findFirstOutlerLoop(input: input, startId: firstOuterLoopIndex)
 
                 
                 if nil != firstOuterLoop {
@@ -414,6 +414,7 @@ class RSCU_LoopUnroller: NSObject {
                 //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
                 outputGraph = Decomposition(into: numOfParts, with: input, LoopCount: loopCount)
                 guard nil != outputGraph else {
+                    print("A rekurzív függvény visszatérési értéke nil")
                     let alert = NSAlert()
                     alert.messageText = "Hiba!"
                     alert.informativeText = "Nem sikerült végrehajtani a dekompozíciót"
@@ -433,7 +434,7 @@ class RSCU_LoopUnroller: NSObject {
     }
     
     func DoProcess() -> [GraphElement]? {
-        let destinationGraph = SegmentedUnroll(group: &sourceGroup)
+        let destinationGraph = SegmentedUnroll(group: sourceGroup)
         guard nil != destinationGraph else {
             print("Nem sikerült a szintézis")
             return nil
