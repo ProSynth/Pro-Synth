@@ -60,9 +60,12 @@ class RSCU_LoopUnroller: NSObject {
                     if NodeIDs.contains(parent2.nodeID) {
                         newID2 = NodeIDs.index(of: parent2.nodeID)
                     }
+                    if (nil != newID1) && (nil != newID2) {
+                        Matrix[newID2*sizeOfMatrix + newID1] = (-1*(Double((groups[i].children[k] as! Edge).weight)))
+                        Matrix[newID1*sizeOfMatrix + newID2] = (-1*(Double((groups[i].children[k] as! Edge).weight)))
+                    }
                     
-                    Matrix[newID2*sizeOfMatrix + newID1] = (-1*(Double((groups[i].children[k] as! Edge).weight)))
-                    Matrix[newID1*sizeOfMatrix + newID2] = (-1*(Double((groups[i].children[k] as! Edge).weight)))
+
                     
                     // Mi van, ha két pont között több él is van?
                 }
@@ -90,6 +93,7 @@ class RSCU_LoopUnroller: NSObject {
     }
     
     func findFirstOutlerLoop(input: [GraphElement], startId: Int = 0) -> (outerLoop: [GraphElement], index: Int)? {
+        
         for i in 0..<input.count {
             if (input[i] is Group) {
                 switch (input[i] as! Group).loop {
@@ -101,9 +105,11 @@ class RSCU_LoopUnroller: NSObject {
                     return nil
                     break
                 case .Normal:
+                    print("Hurkot talált")
                     return (input[i].children, i)
                     break               // csinálni kell
                 case .None:
+                    print("Nem loopról van szó, de csoport")
                     break
                 default:
                     break
@@ -120,7 +126,7 @@ class RSCU_LoopUnroller: NSObject {
     
     func Decomposition(into n: Int, with nodes: [GraphElement]) -> [GraphElement]? {
         var output = [GraphElement]()
-        
+        print("Dekompozíciót hajt végre")
         let sourceMatrix = pushMatrix(groups: nodes)
         var loopDecompose: WNCut = WNCut(sizeOfMatrix: sourceMatrix.sizeOfmatrix, sourceMatrix: sourceMatrix.matrix)
         let spectrum = loopDecompose.WNCut(weight: sourceMatrix.weight)
@@ -260,62 +266,68 @@ class RSCU_LoopUnroller: NSObject {
     func SegmentedUnroll(group: inout [GraphElement], inaLoop: Bool) -> [GraphElement]? {
         
         var input: [GraphElement] = group
+        var outputGraph: [GraphElement]? = nil
         var noLoops: Bool!
         var firstOuterLoop = findFirstOutlerLoop(input: group)
-        var firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
-        var firstOuterLoopIndex = (firstOuterLoop?.index)!
+
         
         if nil != firstOuterLoop {
             noLoops = false
-        } else {
-            noLoops = true
-        }
-        
-        while !noLoops {
-            tmp = SegmentedUnroll(group: &firstOuterLoopGrap, inaLoop: true)!
-            
-            // új szegmensek beillesztése eggyel feljebb
-            let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
-            for j in 0..<loopCount {
-                for i in 0..<tmp.count {
-                    input.append(tmp[i])
+            var firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
+            var firstOuterLoopIndex = (firstOuterLoop?.index)!
+            while !noLoops {
+                tmp = SegmentedUnroll(group: &firstOuterLoopGrap, inaLoop: true)!
+                
+                // új szegmensek beillesztése eggyel feljebb
+                let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
+                for j in 0..<loopCount {
+                    for i in 0..<tmp.count {
+                        input.append(tmp[i])
+                    }
+                }
+                group.remove(at: firstOuterLoopIndex)       // Hibás lehet az index
+                EdgeHandling(nodes: &group)                 // ÉLkezelést meg kell csinálni
+                
+                
+                // megnézzük, hogy ugyanazon a szinten van-e még loop
+                firstOuterLoop = findFirstOutlerLoop(input: group, startId: firstOuterLoopIndex)
+
+                
+                if nil != firstOuterLoop {
+                    noLoops = false
+                    firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
+                    firstOuterLoopIndex = (firstOuterLoop?.index)!
+                } else {
+                    noLoops = true
                 }
             }
-            group.remove(at: firstOuterLoopIndex)       // Hibás lehet az index
-            EdgeHandling(nodes: &group)                 // ÉLkezelést meg kell csinálni
-            
-            
-            // megnézzük, hogy ugyanazon a szinten van-e még loop
-            firstOuterLoop = findFirstOutlerLoop(input: group, startId: firstOuterLoopIndex)
-            firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
-            firstOuterLoopIndex = (firstOuterLoop?.index)!
-            
-            if nil != firstOuterLoop {
-                noLoops = false
+        } else {
+            noLoops = true
+            if inaLoop {
+                outputGraph = Decomposition(into: numOfParts, with: input)
+                guard nil != outputGraph else {
+                    let alert = NSAlert()
+                    alert.messageText = "Hiba!"
+                    alert.informativeText = "Nem sikerült végrehajtani a dekompozíciót"
+                    alert.addButton(withTitle: "Ez van..")
+                    return nil
+                }
             } else {
-                noLoops = true
+                outputGraph = input
             }
         }
         
-        var outputGraph: [GraphElement]? = nil
-        if inaLoop {
-            outputGraph = Decomposition(into: numOfParts, with: input)
-            guard nil != outputGraph else {
-                let alert = NSAlert()
-                alert.messageText = "Hiba!"
-                alert.informativeText = "Nem sikerült végrehajtani a dekompozíciót"
-                alert.addButton(withTitle: "Ez van..")
-                return nil
-            }
-        } else {
-            outputGraph = input
-        }
+
+        
+        
+
         return outputGraph
     }
     
     func DoProcess() -> [GraphElement]? {
         let destinationGraph = SegmentedUnroll(group: &sourceGroup, inaLoop: false)
         guard nil != destinationGraph else {
+            print("Nem sikerült a szintézis")
             return nil
         }
         return destinationGraph

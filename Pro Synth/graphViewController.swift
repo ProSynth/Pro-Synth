@@ -497,7 +497,7 @@ class graphViewController: NSViewController {
             selectGraph.selectItem(withTitle: "Scheduling")
             selectedGroups = allGroups[1]
         case .RSCU?:
-            let RSCULoopUnroller: RSCU_LoopUnroller = RSCU_LoopUnroller(into: 4, with: selectedGroups)
+            let RSCULoopUnroller: RSCU_LoopUnroller = RSCU_LoopUnroller(into: 4, with: selectedGroups[0].children[0].children)
             let rscuResult = RSCULoopUnroller.DoProcess()
             guard nil != rscuResult else {
                 print("A Hurokkibontás nem végződött el")
@@ -517,7 +517,7 @@ class graphViewController: NSViewController {
         //groups = grouping!
         
 
-        
+        /*
         var we: Int = 0
         for group in 0..<selectedGroups.count {
             for node in 0..<selectedGroups[group].children.count {
@@ -525,7 +525,7 @@ class graphViewController: NSViewController {
             }
         }
         print("Összes pont: \(we)")
-        
+        */
         
     }
 
