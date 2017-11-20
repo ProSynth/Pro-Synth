@@ -333,14 +333,7 @@ class RSCU_LoopUnroller: NSObject {
                 let firstExist = (oldNewIDs[sNodeID] != nil)
                 let secondExist = (oldNewIDs[dNodeID] != nil)
 
-                if firstExist {
-                    let ind = newIDIndex.index(of: oldNewIDs[sNodeID]!)!
-                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
-                } else if secondExist {
-                    let ind = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
-                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
-                    // A másik pontnál, ha nem jó a pushMatrix, lehet hiba
-                } else if firstExist && secondExist {
+                if firstExist && secondExist {
                     if oldNewIDs[sNodeID] == oldNewIDs[dNodeID] {
                         // Ilyenkor nincsenek csak, elhagyjuk az élt
                     }
@@ -348,6 +341,13 @@ class RSCU_LoopUnroller: NSObject {
                     let ind2 = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
                     output[ind1].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node))
                     output[ind2].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node))
+                 } else if firstExist {
+                    let ind = newIDIndex.index(of: oldNewIDs[sNodeID]!)!
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
+                 } else if secondExist {
+                    let ind = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
+                    // A másik pontnál, ha nem jó a pushMatrix, lehet hiba
                 } else if !firstExist && !secondExist {
                     // Nem ide tartozik az él, ennek hibának kellene lennie
                 }
