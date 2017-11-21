@@ -52,7 +52,7 @@ class RSCU_LoopUnroller: NSObject {
             if groups[i].children.count == 0 {
                 print("A \(i). pontnak nincs egyetlen éle sem, vagy 0 súlyú élei vannak")
             }
-            if i == 5 {
+            if i == 8 {
                 print("break")
             }
                 for k in 0..<groups[i].children.count {
@@ -156,6 +156,8 @@ class RSCU_LoopUnroller: NSObject {
             }
         }
         
+        
+        
         for k in 0..<loopCount-1 {
             let offseft: Int = multipliedGraph.count
             for i in 0..<nodes.count {
@@ -172,6 +174,9 @@ class RSCU_LoopUnroller: NSObject {
                 let tmpDNodeID = Edges[i].parentdNode.nodeID
                 let tmpSNode = Edges[i].parentsNode
                 let tmpSNodeID = Edges[i].parentsNode.nodeID
+                if tmpSNodeID == 4300 && tmpDNodeID == 2300 {
+                    print("Itt ez megvan")
+                }
                 let name = Edges[i].name
                 let weight = Edges[i].weight
                 var newDParentIndex: Int!
@@ -330,6 +335,9 @@ class RSCU_LoopUnroller: NSObject {
                 let sNode = (multipliedGraph[j].children[k] as! Edge).parentsNode
                 let dNodeID = (multipliedGraph[j].children[k] as! Edge).parentdNode.nodeID
                 let dNode = (multipliedGraph[j].children[k] as! Edge).parentdNode
+                if sNodeID == 4300 && dNodeID == 2300 {
+                    print("Dekompozíciónál is megvan még")
+                }
                 let firstExist = (oldNewIDs[sNodeID] != nil)
                 let secondExist = (oldNewIDs[dNodeID] != nil)
 
@@ -343,10 +351,12 @@ class RSCU_LoopUnroller: NSObject {
                     output[ind2].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node))
                  } else if firstExist {
                     let ind = newIDIndex.index(of: oldNewIDs[sNodeID]!)!
-                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
+                    dNode.children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
                  } else if secondExist {
                     let ind = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
-                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
+                    sNode.children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
                     // A másik pontnál, ha nem jó a pushMatrix, lehet hiba
                 } else if !firstExist && !secondExist {
                     // Nem ide tartozik az él, ennek hibának kellene lennie
@@ -354,6 +364,7 @@ class RSCU_LoopUnroller: NSObject {
                 
                 
             }
+            print("Éleket átrendezte")
         }
         
         

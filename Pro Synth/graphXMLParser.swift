@@ -162,6 +162,8 @@ class graphXMLParser: NSObject, XMLParserDelegate {
         
         let tmpEdge = Edge(name: "Él", weight: tmpWeight, parentNode1: nodeForEdge[indexSNode!], parentNode2: nodeForEdge[indexDNode!])
         nodeForEdge[indexSNode!].children.append(tmpEdge)
+        nodeForEdge[indexDNode!].children.append(tmpEdge)
+        
     }
     
     // MARK: - XML Parser Delegate

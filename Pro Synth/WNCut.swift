@@ -298,8 +298,8 @@ class WNCut: NSObject {
                     let klikk_weight = n/d
                     
                     
-                    for j in weightCounter...weightCounter+weight[i] {
-                        for k in weightCounter...weightCounter+weight[i] {
+                    for j in weightCounter..<weightCounter+weight[i] {
+                        for k in weightCounter..<weightCounter+weight[i] {
                             if j != k {
                                 destinationMatrix[j][k] = -klikk_weight
                             }
