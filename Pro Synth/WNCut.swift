@@ -55,7 +55,7 @@ class WNCut: NSObject {
             }
         }
         
-
+        print("Spektrumgenerátor: A Laplace mátrix készítése folyamatban...")
         
         for i in 0..<sizeOfMatrix {
             DiagVector[i] = sqrt(Diag[i])       // Gyökvonás elemenként
@@ -66,7 +66,7 @@ class WNCut: NSObject {
         }
         for i in 0..<sizeOfMatrix {
             if DiagVector[i] == 0 {
-                print("A főátlóban 0 van")
+                print("Spektrumgenerátor: A Laplace mátrix generáló a főátlóban 0-át talált!")
             }
         }
         for i in 0..<sizeOfMatrix {                 // Diagonális Mátrix készítése
@@ -82,7 +82,7 @@ class WNCut: NSObject {
         
         for i in 0..<(sizeOfMatrix*sizeOfMatrix) {
             if LaplaceMatrix[i].isNaN {
-                print("Nem szám is van benne")
+                print("Spektrumgenerátor: A Laplace mátrix generáló Not a Number-t talált a számok között!")
             }
         }
         
@@ -275,12 +275,14 @@ class WNCut: NSObject {
     // Kimenet: A bővített mátrix, és mérete
     private func MatrixExpansion(sMatrix: [Double], sizeOfsMatrix: Int, weight: [Int]) -> (dMatrix: [Double], sizeOfdMatrix: Int) {
         // Bemenet újradefiniálása
+        print("Spektrumgenerátor: A Mátrix kibővítése folyamatban...")
         var sizeOfdMatrix: Int          = 0
         for i in 0..<weight.count {
             sizeOfdMatrix += weight[i]
         }
         var destinationMatrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfdMatrix), count: sizeOfdMatrix)
         
+        print("Spektrumgenerátor: A kibővített mátrix mérete: \(sizeOfdMatrix).")
         
         var trace: Double = 0
         for i in 0..<sizeOfsMatrix{
@@ -289,6 +291,8 @@ class WNCut: NSObject {
         
         let maxWeight: Int = weight.max()!
         var weightCounter: Int = 0
+        
+        let wCount = weight.count
         
         for i in 0..<weight.count {
             if weight[i] > 0 {
@@ -317,8 +321,9 @@ class WNCut: NSObject {
                 
                 weightCounter += weight[i]
             } else {
-                print("Van 0-ás súlyú pont a mátrixban")
+                print("Spektrumgenerátor: Van 0-ás súlyú pont a mátrixban.")
             }
+            print("Spektrumgenerátor: Mátrix bővítés: \(i+1)/\(wCount) kész.")
         }
         
         // A főátló feltöltése
@@ -337,7 +342,7 @@ class WNCut: NSObject {
                 dMatrix[i*sizeOfdMatrix+j] = destinationMatrix[i][j]
             }
         }
-        
+        print("Spektrumgenerátor: Mátrix bővítése kész.")
         return (dMatrix,sizeOfdMatrix)
     }
     
@@ -440,6 +445,43 @@ class WNCut: NSObject {
         return (eigVector, group)
     }
     
+    func FastEigSystemSolver(sourcematrix: [Double], sizeOfMatrix: Int) -> [Double] {
+        print("Spektrumgenerátor: Sajátértékrendszer megoldás folyamatban...")
+        var info: __CLPK_integer                            = __CLPK_integer(0)
+        var CLPKsizeOfMatrix: __CLPK_integer                = __CLPK_integer(sizeOfMatrix)
+        let jobz                                            = UnsafeMutablePointer(mutating: ("V" as NSString).utf8String)
+        let uplo                                            = UnsafeMutablePointer(mutating: ("L" as NSString).utf8String)
+        var lwork: __CLPK_integer                           = __CLPK_integer(-1)
+        var S_Matrix: [__CLPK_doublereal]                   = Array(repeatElement(__CLPK_doublereal(0), count: sizeOfMatrix*sizeOfMatrix))
+        var work = [Double] (repeating:0.0, count: 1)
+        var w = [Double] (repeating:0.0, count: sizeOfMatrix)
+        var minEigValueVectorIndex: Int = 0
+        
+        S_Matrix = sourcematrix
+        
+        dsyev_(jobz, uplo, &CLPKsizeOfMatrix, &S_Matrix, &CLPKsizeOfMatrix, &w, &work, &lwork, &info)
+        var work2 = [Double] (repeating:0.0, count: Int(work[0]))
+        dsyev_(jobz, uplo, &CLPKsizeOfMatrix, &S_Matrix, &CLPKsizeOfMatrix, &w, &work2, &lwork, &info)
+        
+        for i in 0..<sizeOfMatrix {
+            if ((w[i] < 0)  || (w[i] < 1e-10)) {
+                
+            }
+            else {
+                minEigValue = w[i]
+                minEigValueVectorIndex = i
+                break
+            }
+        }
+        
+        var eigVector = [Double]()
+        for i in 0..<sizeOfMatrix {
+            eigVector.append(S_Matrix[minEigValueVectorIndex*sizeOfMatrix+i])
+        }
+        print("Spektrumgenerátor: Sajátérték: \(minEigValue)")
+        return eigVector
+    }
+    
     func NCut() -> (Spectrum: [Double], Group: [Int]) {
         // Inicializálás
         T_Matrix = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
@@ -501,7 +543,7 @@ class WNCut: NSObject {
         
         var NodeIDCoder: [Int] = []
         for i in 0..<weight.count {
-            for j in 0..<weight[i] {
+            for _ in 0..<weight[i] {
                 NodeIDCoder.append(i)
             }
         }
@@ -512,7 +554,29 @@ class WNCut: NSObject {
     }
     
     
+    func FastWNCut(weight: [Int]) -> (Spectrum: [Double], Group: [Int], NodeIDCoder: [Int]) {
+        
+        
+        let EMatrix = MatrixExpansion(sMatrix: sourceMatrix, sizeOfsMatrix: g_sizeOfMatrix, weight: weight)
+        e_sizeOfMatrix = EMatrix.sizeOfdMatrix
 
+        T_Matrix = Array(repeating: Array(repeating: 0.0, count: e_sizeOfMatrix), count: e_sizeOfMatrix)
+        
+        let LEMatrix = makeLaplace(matrix: EMatrix.dMatrix, sizeOfMatrix: e_sizeOfMatrix)
+        
+        let spectrum = FastEigSystemSolver(sourcematrix: LEMatrix, sizeOfMatrix: e_sizeOfMatrix)
+        
+        var NodeIDCoder: [Int] = []
+        for i in 0..<weight.count {
+            for _ in 0..<weight[i] {
+                NodeIDCoder.append(i)
+            }
+        }
+        
+        let group = [Int] (repeating:0, count: e_sizeOfMatrix)
+        
+        return (spectrum, group, NodeIDCoder)
+    }
     
 
 }

@@ -22,7 +22,7 @@ class RSCU_LoopUnroller: NSObject {
     
     
     func pushMatrix(groups: [GraphElement]) -> (matrix: [Double], sizeOfmatrix: Int, weight: [Int], nodeIDorder: [Int]) {
-        
+        print("Hurokkezelő: Mátrixxá alakítás..")
         var NodeIDs = [Int]()
         for i in 0..<groups.count {
             NodeIDs.append((groups[i] as! Node).nodeID)
@@ -30,9 +30,6 @@ class RSCU_LoopUnroller: NSObject {
         
         var weight: [Int] = []
         let sizeOfMatrix : Int = groups.count
-        /*for i in 0..<groups.count {             // Összeszámolja az összes pontot a gráfban
-            sizeOfMatrix += groups[i].children.count
-        }*/
         var Matrix: [Double] = Array(repeating: 0.0, count: sizeOfMatrix*sizeOfMatrix)
         Matrix.removeAll()
         for i in 0..<sizeOfMatrix*sizeOfMatrix {
@@ -42,19 +39,13 @@ class RSCU_LoopUnroller: NSObject {
         
         
         for i in 0..<groups.count {
-            //for j in 0..<groups[i].children.count {
+           
                 let currentWeight = (groups[i] as! Node).weight
                 if currentWeight > 1 {
                     weight.append(currentWeight)
                 } else {
                     weight.append(1)
                 }
-            if groups[i].children.count == 0 {
-                print("A \(i). pontnak nincs egyetlen éle sem, vagy 0 súlyú élei vannak")
-            }
-            if i == 8 {
-                print("break")
-            }
                 for k in 0..<groups[i].children.count {
                     let parent1 = (groups[i].children[k] as! Edge).parentsNode
                     let parent2 = (groups[i].children[k] as! Edge).parentdNode
@@ -73,9 +64,8 @@ class RSCU_LoopUnroller: NSObject {
                     
 
                     
-                    // Mi van, ha két pont között több él is van?
                 }
-            //}
+           
         }
         
         
@@ -91,14 +81,6 @@ class RSCU_LoopUnroller: NSObject {
                 print("Már a mátrixpusholónál 0 van a főátlóban \(j)")
             }
         }
-        /*
-        for i in 0..<sizeOfMatrix {
-            for j in 0..<sizeOfMatrix {
-                print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
-            }
-            print("\n")
-        }
-        */
         return (Matrix, sizeOfMatrix, weight, NodeIDs)
     }
     
@@ -113,13 +95,11 @@ class RSCU_LoopUnroller: NSObject {
                     alert.informativeText = "Adatfüggő iteratív hurkot találtam :-( Ezt még nem tudom kezelni... Ezért leállok."
                     alert.addButton(withTitle: "OK")
                     return nil
-                    break
                 case .Normal:
-                    print("Hurkot talált")
+                    print("Hurokkezelő: Hurkot talált")
                     return (input[i].children, i, (input[i] as! Group).loopCount!)
-                    break               // csinálni kell
                 case .None:
-                    print("Nem loopról van szó, de csoport")
+                    print("Hurokkezelő: Csoportot talált")
                     break
                 default:
                     break
@@ -130,19 +110,15 @@ class RSCU_LoopUnroller: NSObject {
     }
     
     
-    func EdgeHandling(nodes: inout [GraphElement]) {
-        // Do nothing
-    }
-    
     func Decomposition(into n: Int, with nodes: [GraphElement], LoopCount times: Int = 1) -> [GraphElement]? {
         
+        print("Hurokkezelő: Hurok kitekerése folyamatban..")
         var multipliedGraph = [GraphElement]()
         for i in 0..<nodes.count {
             multipliedGraph.append(nodes[i])
         }
         
         var loopCount = times
-        //var outpIndexOldID = [Int : Int]()
         var copyIndexIDTable = [Int]()
         var Edges = [Edge]()
         let until = multipliedGraph.count
@@ -150,9 +126,6 @@ class RSCU_LoopUnroller: NSObject {
         for i in 0..<nodes.count {
             for j in 0..<multipliedGraph[i].children.count {
                 Edges.append(multipliedGraph[i].children[j] as! Edge)
-                //let name = output[i].children[j].name
-                //let weight = (output[i].children[j] as! Edge).weight
-                
             }
         }
         
@@ -166,7 +139,6 @@ class RSCU_LoopUnroller: NSObject {
                 let weight = (multipliedGraph[i] as! Node).weight
                 multipliedGraph.append(Node(name: name, parent: nil, weight: weight, nodeOpType: nil))
                 copyIndexIDTable.append(id)
-                //outpIndexOldID[id] = multipliedGraph.count-1
             }
             
             for i in 0..<Edges.count {
@@ -174,9 +146,6 @@ class RSCU_LoopUnroller: NSObject {
                 let tmpDNodeID = Edges[i].parentdNode.nodeID
                 let tmpSNode = Edges[i].parentsNode
                 let tmpSNodeID = Edges[i].parentsNode.nodeID
-                if tmpSNodeID == 4300 && tmpDNodeID == 2300 {
-                    print("Itt ez megvan")
-                }
                 let name = Edges[i].name
                 let weight = Edges[i].weight
                 var newDParentIndex: Int!
@@ -189,35 +158,26 @@ class RSCU_LoopUnroller: NSObject {
                 if copyIndexIDTable.contains(tmpSNodeID) {
                     SExist = true
                 }
-                /*if nil != outpIndexOldID[tmpDNodeID] {
-                    DExist = true
-                }
-                if nil != outpIndexOldID[tmpSNodeID] {
-                    SExist = true
-                }*/
                 if DExist && SExist {
                     newDParentIndex = copyIndexIDTable.index(of: tmpDNodeID)! + offseft
                     newSParentIndex = copyIndexIDTable.index(of: tmpSNodeID)! + offseft
-                    //newDParentIndex = outpIndexOldID[tmpDNodeID]!
-                    //newSParentIndex = outpIndexOldID[tmpSNodeID]!
                     let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: multipliedGraph[newDParentIndex] as! Node)
                     multipliedGraph[newDParentIndex].children.append(tmpEdge)
                     multipliedGraph[newSParentIndex].children.append(tmpEdge)
                 } else if SExist {
                     newSParentIndex = copyIndexIDTable.index(of: tmpSNodeID)! + offseft
-                    //newSParentIndex = outpIndexOldID[tmpSNodeID]!
+        
                     let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: tmpDNode )
                     multipliedGraph[newSParentIndex].children.append(tmpEdge)
                     tmpDNode.children.append(tmpEdge)
                 } else if DExist {
                     newDParentIndex = copyIndexIDTable.index(of: tmpDNodeID)! + offseft
-                    //newDParentIndex = outpIndexOldID[tmpDNodeID]!
                     let tmpEdge = Edge(name: name, weight: weight, parentNode1: tmpSNode , parentNode2: multipliedGraph[newDParentIndex] as! Node)
                     multipliedGraph[newDParentIndex].children.append(tmpEdge)
                     tmpSNode.children.append(tmpEdge)
                 } else {
                     // Hiba
-                    print("Az él nem ide tartozik")
+                    print("Hurokkezelő: Hiba a ciklus többszörözésében!")
                 }
                 
             }
@@ -226,12 +186,11 @@ class RSCU_LoopUnroller: NSObject {
         }
         
         
-        
         var output = [GraphElement]()
-        print("Dekompozíciót hajt végre")
+        print("Hurokkezelő: Dekompozíció folyamatban..")
         let sourceMatrix = pushMatrix(groups: multipliedGraph)
         var loopDecompose: WNCut = WNCut(sizeOfMatrix: sourceMatrix.sizeOfmatrix, sourceMatrix: sourceMatrix.matrix)
-        let spectrum = loopDecompose.WNCut(weight: sourceMatrix.weight)
+        let spectrum = loopDecompose.FastWNCut(weight: sourceMatrix.weight)
         
         let NodeIDKodtabla = spectrum.NodeIDCoder
         let NodeSpectrum = spectrum.Spectrum
@@ -243,36 +202,29 @@ class RSCU_LoopUnroller: NSObject {
         var nodeCounter: Int = 0
         var nodeSpectrums = [Double]()
         
-        for group in 1...(NodeGroup.max()!) {
-            
-            for i in 0..<NodeSpectrum.count {
-                //print("\(i). ciklusban van benne")
-                if NodeGroup[i] == group {
-                    //print("Feltétel teljesül")
-                    if NodeDictionary[NodeIDKodtabla[i]] != nil {                   // Ha létezik már olyan NodeID-jű pont, akkor átlagot veszünk
-                        //print("Meglévő pont integrálása")
-                        nodeSpectrums.append(NodeSpectrum[i])
-                        nodeCounter += 1
-                        let avg = (nodeSpectrums.reduce(0,+))/Double(nodeCounter)
-                        NodeDictionary[NodeIDKodtabla[i]] = avg
-                    } else {
-                        //print("Új pont                        ÚJ!!!!")
-                        NodeDictionary[NodeIDKodtabla[i]] = NodeSpectrum[i]
-                        nodeSpectrums.removeAll()
-                        nodeSpectrums.append(NodeSpectrum[i])
-                        nodeCounter = 1
-                    }
-                    
-                }
+     
+        
+        for i in 0..<NodeSpectrum.count {
+
+            if NodeDictionary[NodeIDKodtabla[i]] != nil {                   // Ha létezik már olyan NodeID-jű pont, akkor átlagot veszünk
                 
+                nodeSpectrums.append(NodeSpectrum[i])
+                nodeCounter += 1
+                let avg = (nodeSpectrums.reduce(0,+))/Double(nodeCounter)
+                NodeDictionary[NodeIDKodtabla[i]] = avg
+            } else {
+                
+                NodeDictionary[NodeIDKodtabla[i]] = NodeSpectrum[i]
+                nodeSpectrums.removeAll()
+                nodeSpectrums.append(NodeSpectrum[i])
+                nodeCounter = 1
             }
             
-            // Itt kell kezelni az összeömnlesztést
+     
             
         }
         
-        //let sortedNodeDictionary = NodeDictionary.sorted{ $0.value < $1.value }
-        // Itt rendezzük őket sorrendbe, és kerülnek bele a szegmensekbe
+
         var originalNodeIDDictionary = [Int : Double]()
         
         for i in 0..<NodeDictionary.count {
@@ -326,6 +278,7 @@ class RSCU_LoopUnroller: NSObject {
             counter += 1
         }
         
+        print("Hurokkezelő: Élek átrendezése az új szegmensekhez folyamatban..")
 
         // Az élek itt rendeződnek át, új élek keletkeznek
         for j in 0..<multipliedGraph.count {
@@ -335,9 +288,7 @@ class RSCU_LoopUnroller: NSObject {
                 let sNode = (multipliedGraph[j].children[k] as! Edge).parentsNode
                 let dNodeID = (multipliedGraph[j].children[k] as! Edge).parentdNode.nodeID
                 let dNode = (multipliedGraph[j].children[k] as! Edge).parentdNode
-                if sNodeID == 4300 && dNodeID == 2300 {
-                    print("Dekompozíciónál is megvan még")
-                }
+
                 let firstExist = (oldNewIDs[sNodeID] != nil)
                 let secondExist = (oldNewIDs[dNodeID] != nil)
 
@@ -357,23 +308,22 @@ class RSCU_LoopUnroller: NSObject {
                     let ind = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
                     output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
                     sNode.children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
-                    // A másik pontnál, ha nem jó a pushMatrix, lehet hiba
                 } else if !firstExist && !secondExist {
                     // Nem ide tartozik az él, ennek hibának kellene lennie
                 }
                 
                 
             }
-            print("Éleket átrendezte")
+            
         }
         
         
         if output.isEmpty {
-            print("Rosszul végzett a dekompozícióval")
+            print("Hurokkezelő: A dekompozíció és szegmensek rendezése közben hibát talált az algoritmus, az j szegmensek nem jöttek létre")
             return nil
         } else {
             
-            print("Végzett a dekompozícióval")
+            print("Hurokkezelő: Dekompozíció befejezve.")
             return output
         }
     }
@@ -393,7 +343,7 @@ class RSCU_LoopUnroller: NSObject {
             var fristOuterLoopCount = (firstOuterLoop?.loopCount)!
             while !noLoops {
                 tmp = SegmentedUnroll(group: firstOuterLoopGrap, inaLoop: true, loopCount: fristOuterLoopCount)!
-                
+                print("Hurokkezelő: Kibontás folyamatban...")
                 // új szegmensek beillesztése eggyel feljebb
                 //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
                 
