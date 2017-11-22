@@ -11,7 +11,7 @@ import Cocoa
 let EPS: Float      = 0.0005
 let USE_QI          = 1
 let USE_TI          = 0
-let VERBOSE         = false
+let VERBOSE         = true
 
 // Arguments:
 // p :  include buffers in allocation estimation
@@ -46,6 +46,7 @@ class SpectralForceDirected: NSObject {
     // CNode osztály példányosítása
     var ops                                 = [CNode]()
     
+    var spektrum: (Spectrum: [Double], Group: [Int], NodeIDCoder: [Int])!
     
     //////////////////////////////////////////////////////////////////////////////////////
     //!         Function readInput
@@ -405,7 +406,7 @@ class SpectralForceDirected: NSObject {
                 mean = mean/Float(tot.count)
                 
                 for k in 0..<tot.count {
-                    tot[k] = abs(tot[k]-mean)                   //difference from original force directed scheduler
+                    tot[k] = tot[k]//abs(tot[k]-mean)                   //difference from original force directed scheduler
                 }
                 if i <= type.count {
                     i -= 1
@@ -602,10 +603,10 @@ class SpectralForceDirected: NSObject {
     //////////////////////////////////////////////////////////////////////////////////////
     // MARK: - Referenciával kell meghívni!!!
     private func updateBestTime(fce: Float, bestFce: Float, t: Int, bestTimes: inout [Int]) -> [Int] {
-        if fce >= bestFce + EPS {
+        if fce >= bestFce{
             print("update_best_time() should not be called now")
         }
-        if abs(fce-bestFce) > EPS {
+        if abs(fce-bestFce) > (EPS) {
             bestTimes.removeAll()
         }
         bestTimes.append(t)
@@ -670,6 +671,8 @@ class SpectralForceDirected: NSObject {
         var forceChange         = [Float]()
         var maxChange           = [Float]()
         
+        var cpuusage            = [Float]()
+        
         var c                   = [String : [Float]]()
         var newC                = [String : [Float]]()
         
@@ -723,6 +726,7 @@ class SpectralForceDirected: NSObject {
             else {
                 bestTimes.removeAll()
                 bestFce = PLUS_INF_FCE
+                
                 print("## testing node \(e.id!)(\(e.asap) to \(e.alap)")
                 
                 saveAsap(e: e)
@@ -737,9 +741,11 @@ class SpectralForceDirected: NSObject {
                 
                 ts = e.asap
                 tl = e.alap
+                bestTimes.append(ts)
                 
                 for i in ts...tl {
                     fce = 0
+                    bestIndex = 0
                     
                     ops[e.id].asap = i
                     ops[e.id].alap = i
@@ -753,12 +759,41 @@ class SpectralForceDirected: NSObject {
                     
                     buildC(c: &newC, max: &max, mean: &mean, _type: ops)
                     
+                    
+                    
+                    
                     //MARK: -XXXXXXXXXXXXXXIttkellkiegészíteniXXXXXXXXXXXXX
                     cdc(c: &c, newC: &newC, fce: &fce)          // calculate force
+                    
+                    let sajatspect = spektrum.Spectrum[spektrum.NodeIDCoder.index(of: e.id!)!]
+                    let sajatgroup = spektrum.Group[spektrum.NodeIDCoder.index(of: e.id!)!]
+                    
+                    for k in 0..<ops.count{
+                        if e.id != ops[k].id{
+                            
+                            
+                            let kspect = spektrum.Spectrum[spektrum.NodeIDCoder.index(of: ops[k].id!)!]
+                            let kgroup = spektrum.Group[spektrum.NodeIDCoder.index(of: ops[k].id!)!]
+                            if (kgroup == sajatgroup)
+                            {
+                                for j in e.asap...(e.asap+e.latency){
+                                    
+                                    if ((ops[k].asap == ops[k].alap) && (ops[k].asap<=j) && (ops[k].asap+ops[k].latency>=j)){
+                                        
+                                        fce = fce + fce * Float(1 / (kspect-sajatspect) / (kspect-sajatspect))
+                                        
+                                    }
+                                    
+                                }
+                            }
+                        }
+                        
+                    }
+                    
                     if (argV) {
                         print("## F : \(fce)        # node\(e.id!)           \(i)")
                     }
-                    if fce < (bestFce+EPS) {
+                    if fce < (bestFce) {
                         updateBestTime(fce: fce, bestFce: bestFce, t: i, bestTimes: &bestTimes)
                         bestFce = fce
                     }
@@ -800,6 +835,8 @@ class SpectralForceDirected: NSObject {
             // Kiírás fájlba, vagy.. ugye nem oda.....
         }
         //if argV {
+        
+        
         print("## force changes were ")
         for i in 0..<forceChange.count {
             print("\(forceChange[i]),")
@@ -813,6 +850,20 @@ class SpectralForceDirected: NSObject {
             print("\(maxChange[i]),")
             //     }
         }
+        print("## processors used by steps ")
+        for i in 0..<latencytime
+        {
+            cpuusage.append(0)
+            for j in 0..<ops.count
+            {
+                if ((ops[j].asap <= i) && (ops[j].asap+ops[j].latency >= i))
+                {
+                    cpuusage[i]=cpuusage[i]+1
+                }
+            }
+            print("\(cpuusage[i]),")
+        }
+        
         return delayed
     }
     
@@ -913,9 +964,74 @@ class SpectralForceDirected: NSObject {
         return
     }
     
+    func pushMatrix(groups: [GraphElement]) -> (matrix: [Double], sizeOfmatrix: Int, weight: [Int]) {
+        
+        var weight: [Int] = []
+        var sizeOfMatrix : Int = 0
+        for i in 0..<groups.count {             // Összeszámolja az összes pontot a gráfban
+            sizeOfMatrix += groups[i].children.count
+        }
+        var Matrix: [Double] = Array(repeating: 0.0, count: sizeOfMatrix*sizeOfMatrix)
+        Matrix.removeAll()
+        for i in 0..<sizeOfMatrix*sizeOfMatrix {
+            Matrix.append(0)
+        }
+        
+        
+        for i in 0..<groups.count {
+            for j in 0..<groups[i].children.count {
+                let currentWeight = (groups[i].children[j] as! Node).weight
+                if currentWeight > 1 {
+                    weight.append(currentWeight)
+                } else {
+                    weight.append(1)
+                }
+                for k in 0..<groups[i].children[j].children.count {
+                    let parent1 = (groups[i].children[j].children[k] as! Edge).parentsNode
+                    let parent2 = (groups[i].children[j].children[k] as! Edge).parentdNode
+                    
+                    
+                    Matrix[parent2.nodeID*sizeOfMatrix + parent1.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
+                    Matrix[parent1.nodeID*sizeOfMatrix + parent2.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
+                    
+                    // Mi van, ha két pont között több él is van?
+                }
+            }
+        }
+        
+        
+        
+        for j in 0..<sizeOfMatrix {
+            var rowSum : Double = 0
+            for i in (j*sizeOfMatrix)..<((j+1)*sizeOfMatrix) {
+                rowSum = rowSum + Matrix[i]
+            }
+            Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
+        }
+        
+        for i in 0..<sizeOfMatrix {
+            for j in 0..<sizeOfMatrix {
+                print("\(Matrix[i*sizeOfMatrix+j]), ",terminator:"")
+            }
+            print("\n")
+        }
+        
+        return (Matrix, sizeOfMatrix, weight)
+    }
+    
     func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement]?, latency: Int?) {
         self.restartTime = restartTime
         self.latencytime = latencyTime
+        
+        let matrixStruct = pushMatrix(groups: groups)
+        
+        
+        let WNCutsched: WNCut = WNCut(sizeOfMatrix: matrixStruct.sizeOfmatrix, sourceMatrix: matrixStruct.matrix)
+        
+        spektrum = WNCutsched.WNCut(weight: matrixStruct.weight)
+        
+        
+        
         readInput()
         calculateAsapAlap(latencyTime: latencyTime)
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE)
@@ -923,4 +1039,3 @@ class SpectralForceDirected: NSObject {
         return (groups, l)
     }
 }
-

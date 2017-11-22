@@ -177,6 +177,8 @@ class graphViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        logWindow.addLog(log: "Saját szöveget adunk hozzá")
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)

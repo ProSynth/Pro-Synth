@@ -808,6 +808,22 @@
                                     </textField>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="BE8E335C-0542-4838-8AD3-3F22ECBBC71C" label="Toolbar Item" paletteLabel="Toolbar Item" tag="-1" image="NSPreferencesGeneral" id="8sF-a1-M9z"/>
+                                <toolbarItem implicitItemIdentifier="B27EBAA8-0E3E-47E1-B5C7-B5FF492E81E1" label="Custom View" paletteLabel="Custom View" id="yze-eY-X97">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="82" height="19"/>
+                                    <size key="maxSize" width="82" height="19"/>
+                                    <button key="view" verticalHuggingPriority="750" id="9nN-Qs-3RC">
+                                        <rect key="frame" x="0.0" y="14" width="82" height="19"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="roundRect" title="Log Window" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Rwx-2A-jKI">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="cellTitle"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <segue destination="JeH-8l-5I8" kind="show" id="fcj-Pv-syp"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="ysV-lQ-lZJ"/>
@@ -817,6 +833,7 @@
                                 <toolbarItem reference="F7T-PS-zGR"/>
                                 <toolbarItem reference="ueF-Bx-BVU"/>
                                 <toolbarItem reference="8sF-a1-M9z"/>
+                                <toolbarItem reference="yze-eY-X97"/>
                                 <toolbarItem reference="ysV-lQ-lZJ"/>
                                 <toolbarItem reference="wWg-1a-pUT"/>
                             </defaultToolbarItems>
@@ -2150,6 +2167,98 @@ Gw
             </objects>
             <point key="canvasLocation" x="2066.5" y="1866"/>
         </scene>
+        <!--Log Window-->
+        <scene sceneID="Mlb-zR-bG2">
+            <objects>
+                <customObject id="Tbr-Sd-IQB" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <viewController id="JeH-8l-5I8" customClass="logWindow" customModule="Pro_Synth" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="Seb-Rp-fj5">
+                        <rect key="frame" x="0.0" y="0.0" width="873" height="671"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <scrollView wantsLayer="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ve9-Kf-Msk">
+                                <rect key="frame" x="0.0" y="25" width="873" height="646"/>
+                                <clipView key="contentView" id="hpV-J2-gNN">
+                                    <rect key="frame" x="0.0" y="0.0" width="873" height="646"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="jPS-ip-Bsm">
+                                            <rect key="frame" x="0.0" y="-1" width="873" height="646"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <size key="minSize" width="873" height="646"/>
+                                            <size key="maxSize" width="873" height="10000000"/>
+                                            <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        </textView>
+                                    </subviews>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="c4A-jk-MH1">
+                                    <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="39y-3X-e0k">
+                                    <rect key="frame" x="857" y="0.0" width="16" height="646"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                            <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bBQ-z4-IgF">
+                                <rect key="frame" x="603" y="-1" width="269" height="24"/>
+                                <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="ev5-em-Hw0">
+                                    <font key="font" metaFont="system"/>
+                                    <segments>
+                                        <segment label="Low" width="87"/>
+                                        <segment label="Middle" width="87" selected="YES" tag="1"/>
+                                        <segment label="High" width="87"/>
+                                    </segments>
+                                </segmentedCell>
+                            </segmentedControl>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="L8m-JQ-8Dd">
+                                <rect key="frame" x="3" y="3" width="22" height="19"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="22" id="aFO-3I-tfD"/>
+                                </constraints>
+                                <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="Dustbin" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="ShI-fD-QX3">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="deleteLog:" target="JeH-8l-5I8" id="ydo-LZ-Aca"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="R1S-rp-vJo">
+                                <rect key="frame" x="544" y="4" width="55" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Detailed" id="QBx-6W-YVO">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="L8m-JQ-8Dd" secondAttribute="bottom" constant="3" id="5AY-gi-sf6"/>
+                            <constraint firstItem="bBQ-z4-IgF" firstAttribute="top" secondItem="Ve9-Kf-Msk" secondAttribute="bottom" constant="3" id="Acb-6P-BUf"/>
+                            <constraint firstItem="L8m-JQ-8Dd" firstAttribute="top" secondItem="Ve9-Kf-Msk" secondAttribute="bottom" constant="3" id="BnO-5K-XjV"/>
+                            <constraint firstItem="L8m-JQ-8Dd" firstAttribute="leading" secondItem="Seb-Rp-fj5" secondAttribute="leading" constant="3" id="E6l-qJ-kHF"/>
+                            <constraint firstAttribute="trailing" secondItem="bBQ-z4-IgF" secondAttribute="trailing" constant="3" id="J3T-mY-A2v"/>
+                            <constraint firstAttribute="trailing" secondItem="Ve9-Kf-Msk" secondAttribute="trailing" id="WeW-Ss-C76"/>
+                            <constraint firstAttribute="bottom" secondItem="R1S-rp-vJo" secondAttribute="bottom" constant="4" id="Wwo-Qn-qcF"/>
+                            <constraint firstAttribute="bottom" secondItem="bBQ-z4-IgF" secondAttribute="bottom" constant="1" id="caP-yI-J5R"/>
+                            <constraint firstItem="bBQ-z4-IgF" firstAttribute="leading" secondItem="R1S-rp-vJo" secondAttribute="trailing" constant="8" id="nIr-pc-3Vo"/>
+                            <constraint firstItem="Ve9-Kf-Msk" firstAttribute="leading" secondItem="Seb-Rp-fj5" secondAttribute="leading" id="ngt-lo-EVU"/>
+                            <constraint firstItem="R1S-rp-vJo" firstAttribute="top" secondItem="Ve9-Kf-Msk" secondAttribute="bottom" constant="4" id="p3P-51-i7g"/>
+                            <constraint firstItem="Ve9-Kf-Msk" firstAttribute="top" secondItem="Seb-Rp-fj5" secondAttribute="top" id="qSK-GA-ahL"/>
+                            <constraint firstAttribute="bottom" secondItem="Ve9-Kf-Msk" secondAttribute="bottom" constant="25" id="xWa-L1-8wE"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="logText" destination="Ve9-Kf-Msk" id="H9C-Kx-t06"/>
+                        <outlet property="logTextView" destination="jPS-ip-Bsm" id="Ov6-vq-WHM"/>
+                    </connections>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="1983.5" y="98.5"/>
+        </scene>
         <!--Node Attribute View Controller-->
         <scene sceneID="iY7-qm-zfz">
             <objects>
@@ -2544,7 +2653,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="pl7-yj-aZl">
-                                    <rect key="frame" x="1" y="8" width="0.0" height="15"/>
+                                    <rect key="frame" x="1" y="7" width="0.0" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="b0P-qy-VmT">
@@ -2841,11 +2950,11 @@ Gw
                                 <rect key="frame" x="18" y="62" width="247" height="157"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="p3i-sN-dzH">
-                                    <rect key="frame" x="1" y="0.0" width="245" height="141"/>
+                                    <rect key="frame" x="1" y="0.0" width="245" height="156"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="RbZ-WX-ua7" viewBased="YES" id="hQd-qz-YIp">
-                                            <rect key="frame" x="0.0" y="0.0" width="249" height="118"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="249" height="133"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2931,7 +3040,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="dsQ-m4-nBn">
-                                    <rect key="frame" x="1" y="141" width="245" height="15"/>
+                                    <rect key="frame" x="1" y="140" width="245" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="pL0-Qc-KNV">
@@ -3030,6 +3139,7 @@ Gw
         </scene>
     </scenes>
     <resources>
+        <image name="Dustbin" width="210" height="210"/>
         <image name="NSActionTemplate" width="14" height="14"/>
         <image name="NSAddTemplate" width="11" height="11"/>
         <image name="NSEnterFullScreenTemplate" width="15" height="15"/>
@@ -3037,6 +3147,6 @@ Gw
         <image name="NSGoRightTemplate" width="9" height="12"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
     </resources>
 </document>
