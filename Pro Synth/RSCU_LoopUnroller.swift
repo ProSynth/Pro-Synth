@@ -23,6 +23,7 @@ class RSCU_LoopUnroller: NSObject {
     
     func pushMatrix(groups: [GraphElement]) -> (matrix: [Double], sizeOfmatrix: Int, weight: [Int], nodeIDorder: [Int]) {
         print("Hurokkezelő: Mátrixxá alakítás..")
+        Log?.Print(log: "## Hurokkezelő: Mátrixxá alakítás..", detailed: .Normal)
         var NodeIDs = [Int]()
         for i in 0..<groups.count {
             NodeIDs.append((groups[i] as! Node).nodeID)
@@ -79,6 +80,7 @@ class RSCU_LoopUnroller: NSObject {
             Matrix[j+(j*sizeOfMatrix)] = (-1)*rowSum
             if rowSum == 0 {
                 print("Már a mátrixpusholónál 0 van a főátlóban \(j)")
+                Log?.Print(log: "## Hurokkezelő: Hiba történt a mátrix készítésénél, a \(j) sorban.", detailed: .Low)
             }
         }
         return (Matrix, sizeOfMatrix, weight, NodeIDs)
@@ -97,9 +99,11 @@ class RSCU_LoopUnroller: NSObject {
                     return nil
                 case .Normal:
                     print("Hurokkezelő: Hurkot talált")
+                    Log?.Print(log: "## Hurokkezelő: Hurkot talált.", detailed: .Low)
                     return (input[i].children, i, (input[i] as! Group).loopCount!)
                 case .None:
                     print("Hurokkezelő: Csoportot talált")
+                     Log?.Print(log: "## Hurokkezelő: Csoportot talált.", detailed: .Normal)
                     break
                 default:
                     break
@@ -113,6 +117,7 @@ class RSCU_LoopUnroller: NSObject {
     func Decomposition(into n: Int, with nodes: [GraphElement], LoopCount times: Int = 1) -> [GraphElement]? {
         
         print("Hurokkezelő: Hurok kitekerése folyamatban..")
+        Log?.Print(log: "## Hurokkezelő: Hurok kitekerése folyamatban..", detailed: .Low)
         var multipliedGraph = [GraphElement]()
         for i in 0..<nodes.count {
             multipliedGraph.append(nodes[i])
@@ -178,6 +183,7 @@ class RSCU_LoopUnroller: NSObject {
                 } else {
                     // Hiba
                     print("Hurokkezelő: Hiba a ciklus többszörözésében!")
+                    Log?.Print(log: "## Hurokkezelő: Hiba a ciklus többszörözésében!", detailed: .Low)
                 }
                 
             }
@@ -188,6 +194,7 @@ class RSCU_LoopUnroller: NSObject {
         
         var output = [GraphElement]()
         print("Hurokkezelő: Dekompozíció folyamatban..")
+        Log?.Print(log: "## Hurokkezelő: Dekompozíció folyamatban..", detailed: .Low)
         let sourceMatrix = pushMatrix(groups: multipliedGraph)
         var loopDecompose: WNCut = WNCut(sizeOfMatrix: sourceMatrix.sizeOfmatrix, sourceMatrix: sourceMatrix.matrix)
         let spectrum = loopDecompose.FastWNCut(weight: sourceMatrix.weight)
@@ -279,9 +286,11 @@ class RSCU_LoopUnroller: NSObject {
         }
         
         print("Hurokkezelő: Élek átrendezése az új szegmensekhez folyamatban..")
+        Log?.Print(log: "## Hurokkezelő: Élek átrendezése az új szegmensekhez folyamatban..", detailed: .Low)
 
         // Az élek itt rendeződnek át, új élek keletkeznek
         for j in 0..<multipliedGraph.count {
+            Log?.Print(log: "## Hurokkezelő: Élek átrendezése \(j)/\(multipliedGraph.count) kész.", detailed: .High)
             for k in 0..<multipliedGraph[j].children.count {
                 let edgeWeight = (multipliedGraph[j].children[k] as! Edge).weight
                 let sNodeID = (multipliedGraph[j].children[k] as! Edge).parentsNode.nodeID
@@ -320,10 +329,12 @@ class RSCU_LoopUnroller: NSObject {
         
         if output.isEmpty {
             print("Hurokkezelő: A dekompozíció és szegmensek rendezése közben hibát talált az algoritmus, az j szegmensek nem jöttek létre")
+            Log?.Print(log: "## Hurokkezelő: A dekompozíció és szegmensek rendezése közben hibát talált az algoritmus, az j szegmensek nem jöttek létreó!", detailed: .Low)
             return nil
         } else {
             
             print("Hurokkezelő: Dekompozíció befejezve.")
+            Log?.Print(log: "## Hurokkezelő: Dekompozíció befejezve.", detailed: .Low)
             return output
         }
     }
@@ -344,18 +355,16 @@ class RSCU_LoopUnroller: NSObject {
             while !noLoops {
                 tmp = SegmentedUnroll(group: firstOuterLoopGrap, inaLoop: true, loopCount: fristOuterLoopCount)!
                 print("Hurokkezelő: Kibontás folyamatban...")
-                // új szegmensek beillesztése eggyel feljebb
-                //let loopCount: Int = 1       // Azt, hogy hányszor fut le a hurok, még be kell állítani
+                Log?.Print(log: "## Hurokkezelő: Kibontás folyamatban...", detailed: .Low)
+
                 
                 for i in 0..<tmp.count {
                     input.append(tmp[i])
                 }
                 
                 input.remove(at: firstOuterLoopIndex)       // Hibás lehet az index
-                //EdgeHandling(nodes: &input)                 // ÉLkezelést meg kell csinálni
-       
-
-                
+            
+    
                 // megnézzük, hogy ugyanazon a szinten van-e még loop
                 firstOuterLoop = findFirstOutlerLoop(input: input, startId: firstOuterLoopIndex)
 
@@ -379,6 +388,7 @@ class RSCU_LoopUnroller: NSObject {
             outputGraph = Decomposition(into: numOfParts, with: input, LoopCount: loopCount)
             guard nil != outputGraph else {
                 print("A rekurzív függvény visszatérési értéke nil")
+                Log?.Print(log: "## Hurokkezelő: A rekurzív függvény visszatérési értéke nil!", detailed: .Low)
                 let alert = NSAlert()
                 alert.messageText = "Hiba!"
                 alert.informativeText = "Nem sikerült végrehajtani a dekompozíciót"
@@ -398,6 +408,7 @@ class RSCU_LoopUnroller: NSObject {
         let destinationGraph = SegmentedUnroll(group: sourceGroup)
         guard nil != destinationGraph else {
             print("Nem sikerült a szintézis")
+            Log?.Print(log: "## Hurokkezelő: Nem sikerült a szintézis!", detailed: .Low)
             return nil
         }
         return destinationGraph

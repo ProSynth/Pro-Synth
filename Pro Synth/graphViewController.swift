@@ -177,7 +177,7 @@ class graphViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        logWindow.addLog(log: "Saját szöveget adunk hozzá")
+        //logWindow.addLog(log: "Saját szöveget adunk hozzá")
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
@@ -489,7 +489,7 @@ class graphViewController: NSViewController {
             selectedGroups = allGroups[1]
         case .SFDS?:
             let proba: SpectralForceDirected = SpectralForceDirected(groups: allGroups[0])
-            let result = proba.DoProcess(restartTime: 50, latencyTime: 100, p: false, s: false, d: false)
+            let result = proba.DoProcess(restartTime: 500, latencyTime: 700, p: false, s: false, d: false)
             guard nil != result.graph  else {
                 print("A Dekompozíció nem végződött el")
                 return

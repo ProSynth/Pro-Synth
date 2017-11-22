@@ -25,6 +25,9 @@ class synthesisViewController: NSViewController {
         }
     }
     
+    @IBAction func log(_ sender: Any) {
+        //logVC?.addLog2(log: "Saját üzenetet adunk át\n")
+    }
     
     @IBOutlet weak var WNCutParameter: NSTextField!
     @IBOutlet weak var WNCutWeighted: NSButton!

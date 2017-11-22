@@ -11,11 +11,18 @@ import Cocoa
 class WindowController: NSWindowController {
 
     @IBOutlet weak var sidebars: NSSegmentedControl!
-
+    var logWindowController: NSWindowController?
+    var logViewController: logWindow?
     
     override func windowDidLoad() {
         super.windowDidLoad()
-    
+        if logWindowController == nil {
+            let storyboard = NSStoryboard(name: "Main", bundle: nil)
+            logWindowController = storyboard.instantiateController(withIdentifier: "LogWindow") as? NSWindowController
+            logViewController = logWindowController?.contentViewController as? logWindow
+            Log = logViewController
+            logWindowController?.close()
+        }
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
         window?.titleVisibility = .hidden
     }
@@ -37,6 +44,11 @@ class WindowController: NSWindowController {
     
     @IBAction func start(_ sender: NSToolbarItem) {
         NotificationCenter.default.post(name: Notification.Name("startSynth"), object: self)
+    }
+    @IBAction func openLogWindow(_ sender: Any) {
+        if logWindowController != nil {
+            logWindowController?.showWindow(sender)
+        }
     }
     
 }

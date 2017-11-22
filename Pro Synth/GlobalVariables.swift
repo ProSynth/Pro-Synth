@@ -40,6 +40,12 @@ enum SynthType {
     case SFDS
 }
 
+enum Detail: Int {
+    case Low            = 0
+    case Normal         = 1
+    case High           = 2
+}
+
 struct nodeAttributes {
     var name:String
     var weight:Int
@@ -120,7 +126,7 @@ var groupAttribute:Group = Group(name: "Attribútum", parent: nil, maxGroupTime:
 var nodeAttribute:Node = Node(name: " ", parent: nil, weight: -1, nodeOpType: nodeOpTypeArray[0], nodeID: -2)
 
 
-
+var Log: logWindow?
 
 
 

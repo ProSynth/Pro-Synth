@@ -233,6 +233,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     func parserDidEndDocument(_ parser: XMLParser) {
         groups = tmpGraphGroups[0]
         parserCompletionHandler?(groups)
+        Log?.Print(log: "## XML Parser: Fájl beolvasva.", detailed: .Normal)
     }
     
     func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {

@@ -10,6 +10,7 @@ import Cocoa
 
 class logWindow: NSViewController {
 
+    @IBOutlet weak var detailSelector: NSSegmentedControl!
     @IBOutlet weak var logText: NSScrollView!
     @IBOutlet var logTextView: NSTextView!
     static var localLog: String!
@@ -26,8 +27,7 @@ class logWindow: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-        NotificationCenter.default.addObserver(self, selector: #selector(self.addLocalLog), name: Notification.Name("addLog"), object: nil)
-        logTextView.textStorage?.append(NSAttributedString(string: "Pro Synth up and running\nCreated by \nGyörgy Rácz & Gergő Markovits \n© IIT BME"))
+        logTextView.textStorage?.append(NSAttributedString(string: "Pro Synth up and running\nCreated by \nGyörgy Rácz & Gergő Markovits \n© IIT BME\n"))
     }
     
     override func viewDidAppear() {
@@ -35,16 +35,40 @@ class logWindow: NSViewController {
         self.view.window?.title = "Pro Synth - Log Window"
     }
     
-    func addLocalLog() {
-        let tmpLog = logWindow.localLog
-        self.logTextView.textStorage?.append(NSAttributedString(string: tmpLog!))
-    }
-    
-    static public func addLog(log: String) {
-        localLog = log
+    func Print2(log: String, detailed: Detail = .High) {
+        //let text = log + "\n"
+
+        self.logTextView.textStorage?.append(NSAttributedString(string: log))
+        self.logTextView.textStorage?.append(NSAttributedString(string: "\n"))
+        if detailed.rawValue >= detailSelector.selectedSegment {
+            
+            
+        }
         
-        NotificationCenter.default.post(name: Notification.Name("addLog"), object: self)
-        
     }
-    
+    func Print(log: String, detailed: Detail = .High) {
+        DispatchQueue.global().async(execute: {
+            if let view = self.logTextView {
+                view.appendText(line: log)
+            }
+            })
+
+    }
+}
+
+extension NSTextView {
+    func appendText(line: String) {
+        
+     
+            DispatchQueue.main.async {
+                //let attrDict = [NSFontAttributeName: NSFont.systemFont(ofSize: 18.0)]
+                let astring = NSAttributedString(string: "\(line)\n")
+                self.textStorage?.append(astring)
+                let loc = self.string?.lengthOfBytes(using: String.Encoding.utf8)
+                
+                let range = NSRange(location: loc!, length: 0)
+                self.scrollRangeToVisible(range)
+            }
+      
+    }
 }

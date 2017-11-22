@@ -7,6 +7,8 @@
 //
 
 import Cocoa
+import Accelerate
+import simd
 
 let EPS: Float      = 0.0005
 let USE_QI          = 1
@@ -227,8 +229,9 @@ class SpectralForceDirected: NSObject {
         var tmp     = [Float]()
         if arr.count > restartTime {                            //no folding required if arr.size()<=restartTime
             var i: Int = 0
-            tmp = Array(repeating: 0.0, count: restartTime)     // MARK:!!!
-            for j in 0..<tmp.count {
+            tmp = Array(repeating: 0.0, count: restartTime)
+            // inicializálatlan tömb, sebersségnövelés céllal
+            for j in 0..<restartTime {
                 tmp[i] += arr[j]
                 i += 1
                 if i == restartTime {                           //avoid modulo in the loop
@@ -327,9 +330,9 @@ class SpectralForceDirected: NSObject {
         }
         
         tmp = Array(repeating: 0.0, count: latencytime+1)
-        for i in 0..<tmp.count {
-            tmp[i] = 0
-        }
+        //for i in 0..<tmp.count {
+        //    tmp[i] = 0
+        //} //ez már nem kell, a fordító gyorsabban inicializál
         if(e.asap<=e.alap){ //patch, majd meg kell nézni
             
             
@@ -376,11 +379,13 @@ class SpectralForceDirected: NSObject {
             }
         }
         
+        tot = Array(repeating: 0.0, count: restartTime)
+        
         repeat {
             if w[type[i].type] != 0 {
                 max = 0
-                tot = Array(repeating: 0.0, count: restartTime)                // MARK:!!! csak az első körben tölti fel 0-ákkal, a többiben csak resizolja
-                for k in 0..<tot.count {
+                
+                for k in 0..<restartTime {
                     tot[k] = 0
                 }
                 repeat {
@@ -565,6 +570,7 @@ class SpectralForceDirected: NSObject {
     
     private func amul(a: [Float], b: [Float]) -> Float {
         var tmp: Float = 0
+        
         for i in 0..<a.count {
             tmp += a[i]*b[i]
         }
@@ -587,8 +593,22 @@ class SpectralForceDirected: NSObject {
             if key != String(0) {
                 var newErt = (key: "", value: [Float(0.0), Float(0.0)])
                 newErt = newC[newC.index(pIterNewC, offsetBy: i)]
-                tmp = aadd(a: newErt.value, b: value)
-                fce += (Float(w[key]!)*amul(a: value, b: tmp))
+                
+                var maxIdx: Int!
+                if newErt.value.count <= value.count {                                 // MARK:!!!
+                    maxIdx = newErt.value.count
+                } else {
+                    maxIdx = value.count
+                }
+                
+                tmp = value
+                
+                catlas_saxpby(Int32(maxIdx), Float(1), newErt.value, Int32(1), Float(1), &tmp, Int32(1))
+                
+                //tmp =    aadd(a: newErt.value, b: value)
+                //fce += (Float(w[key]!)*amul(a: value, b: tmp))
+                
+                fce += (Float(w[key]!))*cblas_sdot(Int32(value.count), value, Int32(1), tmp, Int32(1))
             }
             i += 1
         }
@@ -659,7 +679,7 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    private func forcedir(delayties: Bool, fixed: inout Int, tofix: inout Int, ord: [CNode]) -> [CNode] {           // argv-k nincsenek átadve, egyelőre nem biztos, hogy most kell
+    private func forcedir(delayties: Bool, fixed: inout Int, tofix: inout Int, ord: [CNode], spect: Bool = true) -> [CNode] {           // argv-k nincsenek átadve, egyelőre nem biztos, hogy most kell
         var e: CNode
         var nodeTmp: CNode
         
@@ -765,29 +785,32 @@ class SpectralForceDirected: NSObject {
                     //MARK: -XXXXXXXXXXXXXXIttkellkiegészíteniXXXXXXXXXXXXX
                     cdc(c: &c, newC: &newC, fce: &fce)          // calculate force
                     
-                    let sajatspect = spektrum.Spectrum[spektrum.NodeIDCoder.index(of: e.id!)!]
-                    let sajatgroup = spektrum.Group[spektrum.NodeIDCoder.index(of: e.id!)!]
-                    
-                    for k in 0..<ops.count{
-                        if e.id != ops[k].id{
-                            
-                            
-                            let kspect = spektrum.Spectrum[spektrum.NodeIDCoder.index(of: ops[k].id!)!]
-                            let kgroup = spektrum.Group[spektrum.NodeIDCoder.index(of: ops[k].id!)!]
-                            if (kgroup == sajatgroup)
-                            {
-                                for j in e.asap...(e.asap+e.latency){
-                                    
-                                    if ((ops[k].asap == ops[k].alap) && (ops[k].asap<=j) && (ops[k].asap+ops[k].latency>=j)){
+                    if spect
+                    {
+                        let sajatspect = spektrum.Spectrum[spektrum.NodeIDCoder.index(of: e.id!)!]
+                        let sajatgroup = spektrum.Group[spektrum.NodeIDCoder.index(of: e.id!)!]
+                        
+                        for k in 0..<ops.count{
+                            if e.id != ops[k].id{
+                                
+                                
+                                let kspect = spektrum.Spectrum[spektrum.NodeIDCoder.index(of: ops[k].id!)!]
+                                let kgroup = spektrum.Group[spektrum.NodeIDCoder.index(of: ops[k].id!)!]
+                                if (kgroup == sajatgroup)
+                                {
+                                    for j in e.asap...(e.asap+e.latency){
                                         
-                                        fce = fce + fce * Float(1 / (kspect-sajatspect) / (kspect-sajatspect))
+                                        if ((ops[k].asap == ops[k].alap) && (ops[k].asap<=j) && (ops[k].asap+ops[k].latency>=j)){
+                                            
+                                            fce = fce + fce * Float(1 / (kspect-sajatspect) / (kspect-sajatspect))
+                                            
+                                        }
                                         
                                     }
-                                    
                                 }
                             }
+                            
                         }
-                        
                     }
                     
                     if (argV) {
@@ -913,7 +936,7 @@ class SpectralForceDirected: NSObject {
     //! v :  increase detail level in output
     //////////////////////////////////////////////////////////////////////////////////////
     
-    func mainAlgorithm(p: Bool, s: Bool, d: Bool, v: Bool) {
+    func mainAlgorithm(p: Bool, s: Bool, d: Bool, v: Bool, spect: Bool = true) {
         var ord         = [CNode]()
         var delayed     = [CNode]()
         
@@ -942,7 +965,7 @@ class SpectralForceDirected: NSObject {
         if d {
             testArg = 0
             
-            delayed = forcedir(delayties: true, fixed: &fixed, tofix: &tofix, ord: ord)
+            delayed = forcedir(delayties: true, fixed: &fixed, tofix: &tofix, ord: ord, spect: spect)
             
             while ((delayed.count > 0) && (roundstone < maxdelayrounds)) {
                 print("## resolving ties (round \(roundstone)")
@@ -958,7 +981,7 @@ class SpectralForceDirected: NSObject {
             }
         }
         else {
-            forcedir(delayties: false, fixed: &fixed, tofix: &tofix, ord: ord)
+            forcedir(delayties: false, fixed: &fixed, tofix: &tofix, ord: ord, spect: spect)
         }
         testArg = -1
         return
@@ -1019,7 +1042,7 @@ class SpectralForceDirected: NSObject {
         return (Matrix, sizeOfMatrix, weight)
     }
     
-    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool) -> (graph: [GraphElement]?, latency: Int?) {
+    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool, spect: Bool = true) -> (graph: [GraphElement]?, latency: Int?) {
         self.restartTime = restartTime
         self.latencytime = latencyTime
         
@@ -1034,8 +1057,9 @@ class SpectralForceDirected: NSObject {
         
         readInput()
         calculateAsapAlap(latencyTime: latencyTime)
-        mainAlgorithm(p: p, s: s, d: d, v: VERBOSE)
+        mainAlgorithm(p: p, s: s, d: d, v: VERBOSE, spect: spect)
         writeBack()
         return (groups, l)
     }
 }
+

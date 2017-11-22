@@ -821,7 +821,7 @@
                                         </buttonCell>
                                     </button>
                                     <connections>
-                                        <segue destination="JeH-8l-5I8" kind="show" id="fcj-Pv-syp"/>
+                                        <action selector="openLogWindow:" target="jGA-0Y-lOj" id="Sag-DI-bCx"/>
                                     </connections>
                                 </toolbarItem>
                             </allowedToolbarItems>
@@ -1362,6 +1362,19 @@
                                 <view key="contentView" id="ifd-mc-vNB">
                                     <rect key="frame" x="2" y="2" width="656" height="185"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kja-uU-xP5">
+                                            <rect key="frame" x="199" y="99" width="81" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="xwT-Ne-zYY">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="log:" target="LGX-vd-Huz" id="1KE-ej-5en"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
                                 </view>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="32W-gF-eGz"/>
@@ -2167,6 +2180,27 @@ Gw
             </objects>
             <point key="canvasLocation" x="2066.5" y="1866"/>
         </scene>
+        <!--Window Controller-->
+        <scene sceneID="Uwx-Tq-RQJ">
+            <objects>
+                <windowController storyboardIdentifier="LogWindow" id="hfa-j5-hEe" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="ST7-Ad-Pff">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="-1626" y="313" width="480" height="270"/>
+                        <rect key="screenRect" x="-1920" y="0.0" width="1920" height="1057"/>
+                        <connections>
+                            <outlet property="delegate" destination="hfa-j5-hEe" id="grz-Kw-fTQ"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="JeH-8l-5I8" kind="relationship" relationship="window.shadowedContentViewController" id="59M-WP-VFW"/>
+                    </connections>
+                </windowController>
+                <customObject id="dUR-T9-ZA4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1768" y="-514"/>
+        </scene>
         <!--Log Window-->
         <scene sceneID="Mlb-zR-bG2">
             <objects>
@@ -2179,14 +2213,14 @@ Gw
                             <scrollView wantsLayer="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ve9-Kf-Msk">
                                 <rect key="frame" x="0.0" y="25" width="873" height="646"/>
                                 <clipView key="contentView" id="hpV-J2-gNN">
-                                    <rect key="frame" x="0.0" y="0.0" width="873" height="646"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="858" height="646"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="jPS-ip-Bsm">
-                                            <rect key="frame" x="0.0" y="-1" width="873" height="646"/>
+                                            <rect key="frame" x="0.0" y="-1" width="858" height="646"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="873" height="646"/>
+                                            <size key="minSize" width="858" height="646"/>
                                             <size key="maxSize" width="873" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         </textView>
@@ -2198,7 +2232,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="39y-3X-e0k">
-                                    <rect key="frame" x="857" y="0.0" width="16" height="646"/>
+                                    <rect key="frame" x="858" y="0.0" width="15" height="646"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -2252,6 +2286,7 @@ Gw
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="detailSelector" destination="bBQ-z4-IgF" id="ayU-kc-PuC"/>
                         <outlet property="logText" destination="Ve9-Kf-Msk" id="H9C-Kx-t06"/>
                         <outlet property="logTextView" destination="jPS-ip-Bsm" id="Ov6-vq-WHM"/>
                     </connections>
@@ -2950,11 +2985,11 @@ Gw
                                 <rect key="frame" x="18" y="62" width="247" height="157"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="p3i-sN-dzH">
-                                    <rect key="frame" x="1" y="0.0" width="245" height="156"/>
+                                    <rect key="frame" x="1" y="0.0" width="245" height="141"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="RbZ-WX-ua7" viewBased="YES" id="hQd-qz-YIp">
-                                            <rect key="frame" x="0.0" y="0.0" width="249" height="133"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="249" height="118"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -3040,7 +3075,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="dsQ-m4-nBn">
-                                    <rect key="frame" x="1" y="140" width="245" height="16"/>
+                                    <rect key="frame" x="1" y="141" width="245" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="pL0-Qc-KNV">
