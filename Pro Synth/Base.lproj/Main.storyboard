@@ -921,7 +921,7 @@
                                                     <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn width="297" minWidth="16" maxWidth="1000" id="jNb-fh-MMF">
+                                                        <tableColumn identifier="" width="297" minWidth="16" maxWidth="1000" id="jNb-fh-MMF">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2213,14 +2213,14 @@ Gw
                             <scrollView wantsLayer="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ve9-Kf-Msk">
                                 <rect key="frame" x="0.0" y="25" width="873" height="646"/>
                                 <clipView key="contentView" id="hpV-J2-gNN">
-                                    <rect key="frame" x="0.0" y="0.0" width="858" height="646"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="873" height="646"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="jPS-ip-Bsm">
-                                            <rect key="frame" x="0.0" y="-1" width="858" height="646"/>
+                                            <rect key="frame" x="0.0" y="-1" width="873" height="646"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="858" height="646"/>
+                                            <size key="minSize" width="873" height="646"/>
                                             <size key="maxSize" width="873" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         </textView>
@@ -2232,12 +2232,12 @@ Gw
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="39y-3X-e0k">
-                                    <rect key="frame" x="858" y="0.0" width="15" height="646"/>
+                                    <rect key="frame" x="857" y="0.0" width="16" height="646"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
                             <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bBQ-z4-IgF">
-                                <rect key="frame" x="603" y="-1" width="269" height="24"/>
+                                <rect key="frame" x="605" y="-1" width="267" height="24"/>
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="ev5-em-Hw0">
                                     <font key="font" metaFont="system"/>
                                     <segments>
@@ -2261,7 +2261,7 @@ Gw
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="R1S-rp-vJo">
-                                <rect key="frame" x="544" y="4" width="55" height="17"/>
+                                <rect key="frame" x="546" y="4" width="55" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Detailed" id="QBx-6W-YVO">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2608,7 +2608,7 @@ Gw
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn width="118" minWidth="40" maxWidth="1000" id="EEa-IA-gSn">
+                                                <tableColumn identifier="" width="118" minWidth="40" maxWidth="1000" id="EEa-IA-gSn">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Node">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2644,7 +2644,7 @@ Gw
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn width="159" minWidth="40" maxWidth="1000" id="N7J-9g-jmr">
+                                                <tableColumn identifier="" width="159" minWidth="40" maxWidth="1000" id="N7J-9g-jmr">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="# of connected Edge">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2985,17 +2985,17 @@ Gw
                                 <rect key="frame" x="18" y="62" width="247" height="157"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="p3i-sN-dzH">
-                                    <rect key="frame" x="1" y="0.0" width="245" height="141"/>
+                                    <rect key="frame" x="1" y="0.0" width="245" height="156"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="RbZ-WX-ua7" viewBased="YES" id="hQd-qz-YIp">
-                                            <rect key="frame" x="0.0" y="0.0" width="249" height="118"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="249" height="133"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn width="118" minWidth="40" maxWidth="1000" id="hXk-RD-pzH">
+                                                <tableColumn identifier="" width="118" minWidth="40" maxWidth="1000" id="hXk-RD-pzH">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Edges">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -3031,7 +3031,7 @@ Gw
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn width="125" minWidth="40" maxWidth="1000" id="nED-WZ-1Hr">
+                                                <tableColumn identifier="" width="125" minWidth="40" maxWidth="1000" id="nED-WZ-1Hr">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Weight">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -3075,7 +3075,7 @@ Gw
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="dsQ-m4-nBn">
-                                    <rect key="frame" x="1" y="141" width="245" height="15"/>
+                                    <rect key="frame" x="1" y="140" width="245" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="pL0-Qc-KNV">

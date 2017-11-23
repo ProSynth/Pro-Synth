@@ -56,6 +56,7 @@ class WNCut: NSObject {
         }
         
         print("Spektrumgenerátor: A Laplace mátrix készítése folyamatban...")
+        Log?.Print(log: "## Spektrumgenerátor: A Laplace mátrix készítése folyamatban...", detailed: .Low)
         
         for i in 0..<sizeOfMatrix {
             DiagVector[i] = sqrt(Diag[i])       // Gyökvonás elemenként
@@ -67,6 +68,7 @@ class WNCut: NSObject {
         for i in 0..<sizeOfMatrix {
             if DiagVector[i] == 0 {
                 print("Spektrumgenerátor: A Laplace mátrix generáló a főátlóban 0-át talált!")
+                Log?.Print(log: "## Spektrumgenerátor: A Laplace mátrix generáló a mátrix készítése közben a főátlóban 0-át talált. \nKritikus hiba!\nSzintézis sikertelen.", detailed: .Low)
             }
         }
         for i in 0..<sizeOfMatrix {                 // Diagonális Mátrix készítése
@@ -83,6 +85,7 @@ class WNCut: NSObject {
         for i in 0..<(sizeOfMatrix*sizeOfMatrix) {
             if LaplaceMatrix[i].isNaN {
                 print("Spektrumgenerátor: A Laplace mátrix generáló Not a Number-t talált a számok között!")
+                Log?.Print(log: "## Spektrumgenerátor: A Laplace mátrix generáló a mátrix készítése közben Not a Numbert talált.\nKritikus hiba!\nSzintézis sikertelen.", detailed: .Low)
             }
         }
         
@@ -135,7 +138,8 @@ class WNCut: NSObject {
     // Bemenet: A számolni kívánt mátrix, és mérete
     // Kimenet: A sajátvektor és a sajátérték
     private func Lanczos(sMatrix : [Double], sizeOfMatrix: Int, initVector: [Double], forcedTerminationStep: Int?) -> ([Double])? {
-        
+        Log?.Print(log: "## Spektrumgenerátor: Lánczos algoritmus folyamatban...", detailed: .Normal)
+        Log?.Print(log: "## Spektrumgenerátor: Memóriaterület foglalása folyamatban...", detailed: .High)
         /* Változók inicializálása */
         var v_prev = [Double](repeatElement(0x00, count: sizeOfMatrix))                     // Az előző felírt próbavektor
         var v = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
@@ -151,7 +155,7 @@ class WNCut: NSObject {
         
         /* Inicializálás */
         B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
-        
+        Log?.Print(log: "## Spektrumgenerátor: Tridiagonális mátrix készítése folyamatban...", detailed: .High)
         
         /* A ciklus */
         repeat {
@@ -178,8 +182,9 @@ class WNCut: NSObject {
             B_fault_norm = cblas_dnrm2(sizeOfMatrix32, &w_fault, 1)
             
             print("Ez a \(k)-adik kör, a sajátérték becslés:\(eig_value)")
+            Log?.Print(log: "## Spektrumgenerátor: Ez a \(k)-adik kör, a sajátérték becslés:\(eig_value)", detailed: .High)
             print("Ez a \(k)-adik kör, a hiba:\(B_fault_norm)")
-            //print("Sajátvektor: \(v)")
+            Log?.Print(log: "## Spektrumgenerátor: Ez a \(k)-adik kör, a hiba:\(B_fault_norm)", detailed: .High)
             
             T_Matrix[k-1][k-1] = eig_value
             if k < sizeOfMatrix {
@@ -199,6 +204,8 @@ class WNCut: NSObject {
     
     
     private func tridiagToEigValues(symTridiagMatrix: [Double], sizeOfMatrix:Int) -> [Double] {
+        Log?.Print(log: "## Spektrumgenerátor: Sajátértékrendszer megoldása folyamatban...", detailed: .Normal)
+        Log?.Print(log: "## Spektrumgenerátor: Memóriaterület foglalása folyamatban...", detailed: .High)
         var info: __CLPK_integer                            = __CLPK_integer(0)
         var CLPKsizeOfMatrix: __CLPK_integer                = __CLPK_integer(sizeOfMatrix)
         var numOfSuperdiagonals: __CLPK_integer             = __CLPK_integer(1)
@@ -223,7 +230,7 @@ class WNCut: NSObject {
         for i in 0..<sizeOfMatrix-1 {
             S_Matrix[sizeOfMatrix*i+1] = symTridiagMatrix[sizeOfMatrix+i]
         }
-
+        Log?.Print(log: "## Spektrumgenerátor: Számolás folyamatban...", detailed: .Normal)
         dsbev_(jobz,                                                    // Csak sajátértéket számoljon
             uplo,                                                    // A felső háromszög mátrixot számolja
             &CLPKsizeOfMatrix,                                       // A mátrix mérete
@@ -243,7 +250,7 @@ class WNCut: NSObject {
     // Bemenet: Az eddigi, egymásra merőleges sajátvektorok, azok száma és hossza
     // Kimenet: Az új próbavektor
     private func NewVector(sizeOfMatrix : Int) -> [Double] {
-        //var v = [Double](repeatElement(0x00, count: sizeOfMatrix))                          // A próbavektor
+
         var v_new = [Double]()      // A hibavektor, ami az új próbavektor irányát adja majd
         for i in 0..<sizeOfMatrix {
             v_new.append(Double(arc4random()))
@@ -251,20 +258,7 @@ class WNCut: NSObject {
         
         var v_norm: Double = 0x00
         var alpha: Double = 0x00
-        /*
-        for i in 0..<numberOfVectors {
-            var v : [Double] = eigVectors[i]
-            var v_mod = [Double](repeatElement(0x00, count: sizeOfMatrix))
-            var v_projection = [Double](repeatElement(0x00, count: sizeOfMatrix))
-            
-            v_norm = cblas_dnrm2(Int32(sizeOfMatrix), &v, 1)
-            vDSP_vsdivD(&v, 1, &v_norm, &v_mod, 1, UInt(sizeOfMatrix))
-            alpha = cblas_ddot(Int32(sizeOfMatrix), &v_mod, 1, &v_new, 1)
-            vDSP_vsmulD(&v_mod, 1, &alpha, &v_projection, 1, UInt(sizeOfMatrix))
-            // Kivonás
-            catlas_daxpby(Int32(sizeOfMatrix), -1, &v_projection, 1, 1, &v_new, 1)
-        }
- */
+
         return v_new
     }
     
@@ -276,6 +270,7 @@ class WNCut: NSObject {
     private func MatrixExpansion(sMatrix: [Double], sizeOfsMatrix: Int, weight: [Int]) -> (dMatrix: [Double], sizeOfdMatrix: Int) {
         // Bemenet újradefiniálása
         print("Spektrumgenerátor: A Mátrix kibővítése folyamatban...")
+        Log?.Print(log: "## Spektrumgenerátor: Mátrixbővítés folyamatban...", detailed: .Normal)
         var sizeOfdMatrix: Int          = 0
         for i in 0..<weight.count {
             sizeOfdMatrix += weight[i]
@@ -283,6 +278,7 @@ class WNCut: NSObject {
         var destinationMatrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfdMatrix), count: sizeOfdMatrix)
         
         print("Spektrumgenerátor: A kibővített mátrix mérete: \(sizeOfdMatrix).")
+        Log?.Print(log: "## Spektrumgenerátor: A kibővített mátrix mérete: \(sizeOfdMatrix).", detailed: .High)
         
         var trace: Double = 0
         for i in 0..<sizeOfsMatrix{
@@ -322,10 +318,14 @@ class WNCut: NSObject {
                 weightCounter += weight[i]
             } else {
                 print("Spektrumgenerátor: Van 0-ás súlyú pont a mátrixban.")
+                Log?.Print(log: "## Spektrumgenerátor: Van 0-ás súlyú pont a mátrixban.\nKritikus hiba!\nSzintézis sikertelen.", detailed: .Low)
             }
             print("Spektrumgenerátor: Mátrix bővítés: \(i+1)/\(wCount) kész.")
+            Log?.Print(log: "## Spektrumgenerátor: Mátrix bővítés: \(i+1)/\(wCount) kész.", detailed: .High)
+
+            
         }
-        
+        Log?.Print(log: "## Spektrumgenerátor: Főátló és adatok feltöltése folyamatban...", detailed: .High)
         // A főátló feltöltése
         for j in 0..<sizeOfdMatrix {
             var rowSum : Double = 0
@@ -343,6 +343,7 @@ class WNCut: NSObject {
             }
         }
         print("Spektrumgenerátor: Mátrix bővítése kész.")
+        Log?.Print(log: "## Spektrumgenerátor: Mátrix bővítése kész.", detailed: .Normal)
         return (dMatrix,sizeOfdMatrix)
     }
     
@@ -353,11 +354,12 @@ class WNCut: NSObject {
     // Bemenet: Az eredeti, laplacolt, súlyozott mátrix, a sajátérték, és a mátrix mérete
     // Kimenet: A sajátértékek, és sorrendjük
     private func GaussElimination(sMatrix: [Double], eigValue: Double, sizeOfMatrix: Int) -> (Spectrum: [Double], Group: [Int]) {
+        Log?.Print(log: "## Spektrumgenerátor: Gauss eliminálás kezdése...", detailed: .Normal)
         var eigVector: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
         var eigVectorTmp: [Double] = Array(repeating: 0.0, count: sizeOfMatrix)
         var eigVectorOrder: [Int] = Array(repeating: 0, count: sizeOfMatrix)
         var G_Matrix: [[Double]] = Array(repeating: Array(repeating: 0.0, count: sizeOfMatrix+2), count: sizeOfMatrix)
-        
+        Log?.Print(log: "## Spektrumgenerátor: Alsó háromszögmátrix kiürítése folyamatban...", detailed: .Normal)
         for i in 0..<sizeOfMatrix {
             for j in 0..<sizeOfMatrix {
                 G_Matrix[i][j] = sMatrix[i*sizeOfMatrix+j]
@@ -407,8 +409,9 @@ class WNCut: NSObject {
                     }
                 }
             }
+            Log?.Print(log: "## Spektrumgenerátor: Alsó háromszögmátrix kiürítése \(i+1)/\(sizeOfMatrix) kész.", detailed: .High)
         }
-        
+        Log?.Print(log: "## Spektrumgenerátor: A felső háromszögmátrix megoldása folyamatban...", detailed: .Normal)
         // A felső háromszögmátrix megoldása
         var csoport: Int = 1
         var groupTmp: [Int] = Array(repeating: 0, count: sizeOfMatrix)
@@ -435,6 +438,7 @@ class WNCut: NSObject {
             for k in stride(from: i-1, through: 0, by: -1) {
                 G_Matrix[k][sizeOfMatrix] -= G_Matrix[k][i] * eigVectorTmp[i]
             }
+            Log?.Print(log: "## Spektrumgenerátor: Felső háromszögmátrix megoldása \(i+1)/\(sizeOfMatrix) kész.", detailed: .High)
         }
         
         for i in 0..<eigVectorOrder.count {
@@ -447,6 +451,7 @@ class WNCut: NSObject {
     
     func FastEigSystemSolver(sourcematrix: [Double], sizeOfMatrix: Int) -> [Double] {
         print("Spektrumgenerátor: Sajátértékrendszer megoldás folyamatban...")
+        Log?.Print(log: "## Spektrumgenerátor: Gyors, de kevésbé pontos sajátértékrendszer megoldás folyamatban...", detailed: .Normal)
         var info: __CLPK_integer                            = __CLPK_integer(0)
         var CLPKsizeOfMatrix: __CLPK_integer                = __CLPK_integer(sizeOfMatrix)
         let jobz                                            = UnsafeMutablePointer(mutating: ("V" as NSString).utf8String)
@@ -479,11 +484,13 @@ class WNCut: NSObject {
             eigVector.append(S_Matrix[minEigValueVectorIndex*sizeOfMatrix+i])
         }
         print("Spektrumgenerátor: Sajátérték: \(minEigValue)")
+        Log?.Print(log: "## Spektrumgenerátor: Sajátérték: \(minEigValue)", detailed: .High)
         return eigVector
     }
     
     func NCut() -> (Spectrum: [Double], Group: [Int]) {
         // Inicializálás
+        
         T_Matrix = Array(repeating: Array(repeating: 0.0, count: g_sizeOfMatrix), count: g_sizeOfMatrix)
         
         let LMatrix = makeLaplace(matrix: sourceMatrix, sizeOfMatrix: g_sizeOfMatrix)

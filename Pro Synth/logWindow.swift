@@ -47,11 +47,14 @@ class logWindow: NSViewController {
         
     }
     func Print(log: String, detailed: Detail = .High) {
-        DispatchQueue.global().async(execute: {
-            if let view = self.logTextView {
-                view.appendText(line: log)
+        DispatchQueue.main.async {
+            if detailed.rawValue <= self.detailSelector.selectedSegment {
+                if let view = self.logTextView {
+                    view.appendText(line: log)
+                }
+                
             }
-            })
+        }
 
     }
 }
@@ -60,7 +63,7 @@ extension NSTextView {
     func appendText(line: String) {
         
      
-            DispatchQueue.main.async {
+        
                 //let attrDict = [NSFontAttributeName: NSFont.systemFont(ofSize: 18.0)]
                 let astring = NSAttributedString(string: "\(line)\n")
                 self.textStorage?.append(astring)
@@ -68,7 +71,7 @@ extension NSTextView {
                 
                 let range = NSRange(location: loc!, length: 0)
                 self.scrollRangeToVisible(range)
-            }
+            
       
     }
 }

@@ -99,7 +99,9 @@ class RSCU_LoopUnroller: NSObject {
                     return nil
                 case .Normal:
                     print("Hurokkezelő: Hurkot talált")
-                    Log?.Print(log: "## Hurokkezelő: Hurkot talált.", detailed: .Low)
+                    DispatchQueue.main.async {
+                        Log?.Print(log: "## Hurokkezelő: Hurkot talált.", detailed: .Low)
+                    }
                     return (input[i].children, i, (input[i] as! Group).loopCount!)
                 case .None:
                     print("Hurokkezelő: Csoportot talált")
@@ -290,7 +292,7 @@ class RSCU_LoopUnroller: NSObject {
 
         // Az élek itt rendeződnek át, új élek keletkeznek
         for j in 0..<multipliedGraph.count {
-            Log?.Print(log: "## Hurokkezelő: Élek átrendezése \(j)/\(multipliedGraph.count) kész.", detailed: .High)
+            Log?.Print(log: "## Hurokkezelő: Élek átrendezése \(j+1)/\(multipliedGraph.count) kész.", detailed: .High)
             for k in 0..<multipliedGraph[j].children.count {
                 let edgeWeight = (multipliedGraph[j].children[k] as! Edge).weight
                 let sNodeID = (multipliedGraph[j].children[k] as! Edge).parentsNode.nodeID
@@ -405,13 +407,49 @@ class RSCU_LoopUnroller: NSObject {
     }
     
     func DoProcess() -> [GraphElement]? {
-        let destinationGraph = SegmentedUnroll(group: sourceGroup)
-        guard nil != destinationGraph else {
-            print("Nem sikerült a szintézis")
-            Log?.Print(log: "## Hurokkezelő: Nem sikerült a szintézis!", detailed: .Low)
-            return nil
-        }
-        return destinationGraph
+        var destinationGraph: [GraphElement]?
+       
+            let destinationGraphLoc = self.SegmentedUnroll(group: self.sourceGroup)
+        
+                destinationGraph = destinationGraphLoc
+                
+                
+                guard nil != destinationGraph else {
+                    print("Nem sikerült a szintézis")
+                    Log?.Print(log: "## Hurokkezelő: Nem sikerült a szintézis!", detailed: .Low)
+                    return nil
+                }
+                Log?.Print(log: "## Hurokkezelő: A szintézis elkészült.", detailed: .Low)
+                return destinationGraph
+        
+        
+        
+
+        
+        
     }
+ 
+    /*
+    func DoProcess(onComplete: @escaping ([GraphElement]?)->()) {
+        var destinationGraph: [GraphElement]?
+        DispatchQueue.global(qos: .userInitiated).async {
+            let destinationGraphLoc = self.SegmentedUnroll(group: self.sourceGroup)
+            destinationGraph = destinationGraphLoc
+            
+            guard nil != destinationGraph else {
+                print("Nem sikerült a szintézis")
+                Log?.Print(log: "## Hurokkezelő: Nem sikerült a szintézis!", detailed: .Low)
+                onComplete(nil)
+                return
+            }
+            Log?.Print(log: "## Hurokkezelő: A szintézis elkészült.", detailed: .Low)
+            onComplete(destinationGraph)
+            
+        }
+        
+        
+        
+        
+    }*/
 }
 
