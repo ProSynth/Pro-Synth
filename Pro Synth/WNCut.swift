@@ -466,7 +466,8 @@ class WNCut: NSObject {
         
         dsyev_(jobz, uplo, &CLPKsizeOfMatrix, &S_Matrix, &CLPKsizeOfMatrix, &w, &work, &lwork, &info)
         var work2 = [Double] (repeating:0.0, count: Int(work[0]))
-        dsyev_(jobz, uplo, &CLPKsizeOfMatrix, &S_Matrix, &CLPKsizeOfMatrix, &w, &work2, &lwork, &info)
+        var lwork2 = __CLPK_integer(work2.count)
+        dsyev_(jobz, uplo, &CLPKsizeOfMatrix, &S_Matrix, &CLPKsizeOfMatrix, &w, &work2, &lwork2, &info)
         
         for i in 0..<sizeOfMatrix {
             if ((w[i] < 0)  || (w[i] < 1e-10)) {

@@ -1730,13 +1730,23 @@
                     </view>
                     <connections>
                         <outlet property="DecomposingEnable" destination="DBC-Gw-IUX" id="BeT-Yd-Ebg"/>
+                        <outlet property="RSCUBiggestWeight" destination="ORb-L8-vwZ" id="eWJ-gJ-03X"/>
+                        <outlet property="RSCUDecomposingToolSelector" destination="bvG-EU-HWP" id="yk2-Jr-dOK"/>
+                        <outlet property="RSCUNumOfNodes" destination="00e-wZ-gEm" id="wTe-7C-tgN"/>
+                        <outlet property="RSCURecursionDepth" destination="gWu-jB-Jil" id="E5F-nZ-zeu"/>
+                        <outlet property="RSCUSave" destination="G3S-aG-O14" id="VPK-Li-D9F"/>
+                        <outlet property="RSCUTaskSplitStepper" destination="OXX-mH-lqd" id="rKS-QF-yyv"/>
+                        <outlet property="RSCUTaskSplitTextField" destination="Q1F-Rn-2Pt" id="Y7H-RC-UoO"/>
                         <outlet property="RSCU_Enable" destination="KIC-KO-8O9" id="jVi-tQ-WLh"/>
+                        <outlet property="SpectFDirLatency" destination="sxQ-UX-i7A" id="K17-dy-DDi"/>
+                        <outlet property="SpectFDirMaxProc" destination="RfE-cx-YuH" id="vbk-hP-O3B"/>
                         <outlet property="SpectFDirParamD" destination="tPR-YQ-N3K" id="tyW-pk-2PK"/>
                         <outlet property="SpectFDirParamP" destination="Lqe-me-N9T" id="zeh-X1-S4I"/>
                         <outlet property="SpectFDirParamS" destination="ex0-mV-oXB" id="Jbg-Wv-xlL"/>
                         <outlet property="SpectFDirRestartTime" destination="dWS-al-yiS" id="l5c-kC-rUD"/>
                         <outlet property="SpectFDirSave" destination="u53-hy-aPr" id="ibX-KG-Fn5"/>
                         <outlet property="SpectralForcedirEnable" destination="30h-Dd-cYs" id="6aE-fe-TkG"/>
+                        <outlet property="SynthSelect" destination="30h-Dd-cYs" id="iLp-GQ-a49"/>
                         <outlet property="WNCutEnable" destination="DBC-Gw-IUX" id="R6g-mP-11Q"/>
                         <outlet property="WNCutNumOfGroups" destination="xZz-e2-aqd" id="yBc-6c-FZB"/>
                         <outlet property="WNCutNumOfNodes" destination="0lb-tS-Qo6" id="ccP-M7-Lkn"/>
@@ -3322,6 +3332,6 @@ Gw
         <image name="NSGoRightTemplate" width="9" height="12"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
+        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
     </resources>
 </document>

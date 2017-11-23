@@ -187,11 +187,13 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.importXMLMethod), name: Notification.Name("importXMLGraphMethod"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.SynthToDelegate), name: Notification.Name("synthDidLoad"), object: nil)
 
         newNode?.delegate = self
         newGroup?.delegate = self
         newConnectionManual?.delegate = self
         
+
      
         addNode.isEnabled = false
         addEdge.isEnabled = false
@@ -484,76 +486,12 @@ class graphViewController: NSViewController {
     }
     
     
+    func SynthToDelegate() {
+        SynthViewController?.delegate = self
+    }
+    
     func doSynth()  {
 
-        // Dekompozíció cégrehajtása
-        allGroups.append(selectedGroups)
-        var Case: Int = 2
-        switch synthProcess {
-        case .WNCut?:
-            let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
-            let grouping = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p:0.001)
-            guard nil != grouping  else {
-                print("A Dekompozíció nem végződött el")
-                return
-            }
-            allGroups.append(grouping!)
-            selectGraph.addItem(withTitle: "Decomposition")
-            selectGraph.selectItem(withTitle: "Decomposition")
-            selectedGroups = allGroups[1]
-        case .SFDS?:
-            let proba: SpectralForceDirected = SpectralForceDirected(groups: allGroups[0])
-            let result = proba.DoProcess(restartTime: 500, latencyTime: 700, p: false, s: false, d: false)
-            guard nil != result.graph  else {
-                print("A Dekompozíció nem végződött el")
-                return
-            }
-            allGroups.append(result.graph!)
-            selectGraph.addItem(withTitle: "Scheduling")
-            selectGraph.selectItem(withTitle: "Scheduling")
-            selectedGroups = allGroups[1]
-        case .RSCU?:
-            let RSCULoopUnroller: RSCU_LoopUnroller = RSCU_LoopUnroller(into: 4, with: selectedGroups[0].children[0].children)
-            //var rscuResult: [GraphElement]?
-            /*
-            RSCULoopUnroller.DoProcess{ groups in
-                rscuResult = groups
-            }*/
-            DispatchQueue.global(qos: .userInteractive).async {
-                let rscuResult = RSCULoopUnroller.DoProcess()
-                guard nil != rscuResult else {
-                    print("A Hurokkibontás nem végződött el")
-                    return
-                }
-                DispatchQueue.main.async {
-                    self.allGroups.append(rscuResult!)
-                    self.selectGraph.addItem(withTitle: "Loop Unrolling")
-                    self.selectGraph.selectItem(withTitle: "Loop Unrolling")
-                    self.selectedGroups = self.allGroups[1]
-                }
-            }
-            
-
-            break
-        default:
-            print("Nem szintetizál a program")
-        }
-        
-        
-        //groups.removeAll()
-        //groups = grouping!
-        
-
-        /*
-        var we: Int = 0
-        for group in 0..<selectedGroups.count {
-            for node in 0..<selectedGroups[group].children.count {
-                we += (selectedGroups[group].children[node] as! Node).weight
-            }
-        }
-        print("Összes pont: \(we)")
-        */
-        
     }
 
 }
@@ -566,7 +504,45 @@ class graphViewController: NSViewController {
 
 
 
+// Szintézis extensionök!!
 
+extension graphViewController: StartSynthDelegate {
+    func DoWNCutDecomposing(parameter: Double, useWeights: Bool) {
+        return
+    }
+    
+    func DoSpecFDS(restartTime: Int, latency: Int, p: Bool, s: Bool, d: Bool) {
+        return
+    }
+    
+    func DoRSCUUnrolling(splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int) {
+        allGroups.append(selectedGroups)
+        var recursionDepth: Int = 0
+        let RSCULoopUnroller: RSCU_LoopUnroller = RSCU_LoopUnroller(into: segment, with: self.selectedGroups[0].children[0].children)
+        let rscuResult = RSCULoopUnroller.DoProcess()
+        guard nil != rscuResult else {
+            print("A Hurokkibontás nem végződött el")
+            return (0, 0, 0)
+        }
+        var maxWeight: Int = (rscuResult![0] as! Node).weight
+        let Count = (rscuResult?.count)!
+        for i in 1..<Count {
+            let cWeight = (rscuResult![i] as! Node).weight
+            if cWeight > maxWeight {
+                maxWeight = cWeight
+            }
+        }
+        recursionDepth = RSCULoopUnroller.recursionDepth
+        DispatchQueue.main.async {
+            self.allGroups.append(rscuResult!)
+            self.selectGraph.addItem(withTitle: "Loop Unrolling")
+            self.selectGraph.selectItem(withTitle: "Loop Unrolling")
+            self.selectedGroups = self.allGroups[1]
+        }
+        return (recursionDepth, Count, maxWeight)
+    }
+
+}
 
 
 

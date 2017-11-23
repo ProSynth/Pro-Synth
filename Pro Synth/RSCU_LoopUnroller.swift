@@ -13,10 +13,12 @@ class RSCU_LoopUnroller: NSObject {
     private var sourceGroup: [GraphElement]
     private var tmp: [GraphElement]!
     private var numOfParts: Int
+    var recursionDepth: Int
     
     init(into numOfParts: Int, with group: [GraphElement]) {
         self.sourceGroup = group
         self.numOfParts = numOfParts
+        self.recursionDepth = 0
         super.init()
     }
     
@@ -347,9 +349,9 @@ class RSCU_LoopUnroller: NSObject {
         var outputGraph: [GraphElement]? = nil
         var noLoops: Bool!
         var firstOuterLoop = findFirstOutlerLoop(input: input)
-
         
         if nil != firstOuterLoop {
+            recursionDepth += 1
             noLoops = false
             var firstOuterLoopGrap = (firstOuterLoop?.outerLoop)!
             var firstOuterLoopIndex = (firstOuterLoop?.index)!

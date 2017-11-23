@@ -46,6 +46,13 @@ enum Detail: Int {
     case High           = 2
 }
 
+enum RSCUDecType {
+    case FastWNCut
+    case WNCut
+    case FastNCut
+    case NCut
+}
+
 struct nodeAttributes {
     var name:String
     var weight:Int
@@ -127,7 +134,7 @@ var nodeAttribute:Node = Node(name: " ", parent: nil, weight: -1, nodeOpType: no
 
 
 var Log: logWindow?
-
+var SynthViewController: synthesisViewController?
 
 
 
