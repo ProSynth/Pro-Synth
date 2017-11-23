@@ -13,7 +13,7 @@ import simd
 let EPS: Float      = 0.0005
 let USE_QI          = 1
 let USE_TI          = 0
-let VERBOSE         = true
+let VERBOSE         = false
 
 // Arguments:
 // p :  include buffers in allocation estimation
@@ -41,6 +41,9 @@ class SpectralForceDirected: NSObject {
     let NOMAXDELAYROUNDS: UInt              = 1000000000            // Never used
     var argV: Bool                          = false
     
+    var cpuusage            = [Int]()
+    var maxusage : Int  = 1
+    
     var transferTimeInfo                    = [Int : [Int]]()
     var usageCache                          = [Int : [Float]]()
     var w                                   = [String : Int]()
@@ -63,10 +66,10 @@ class SpectralForceDirected: NSObject {
             for j in 0..<groups[i].children.count {
                 let id = (groups[i].children[j] as! Node).nodeID
                 let weight = (groups[i].children[j] as! Node).weight
-                let name = groups[i].children[j].name
+                let name = String("abbCPU")  //groups[i].children[j].name
                 let IOType = (groups[i].children[j] as! Node).type
                 let indexPath = IndexPath(indexes:[i, j])                           //MARK: -!!!
-                tmpNode = CNode(NodeID: id, Name: name, Weight: weight, type: IOType, groupPath: indexPath)
+                tmpNode = CNode(NodeID: id, Name: name!, Weight: weight, type: IOType, groupPath: indexPath)
                 ops.append(tmpNode)
             }
         }
@@ -256,12 +259,15 @@ class SpectralForceDirected: NSObject {
         var plusWgt: Float
         
         follow = Array(repeating: 0.0, count: 2*latencytime)                //ez nem 1
+        nextAsap = t + e.latency  //kivettem a hurokból
+        if follow[nextAsap] < wgt {
+            follow[nextAsap] = wgt
+        }
+        
         for i in 0..<e.nxt.count {
-            nextAsap = t + e.latency
-            if follow[nextAsap] < wgt {
-                follow[nextAsap] = wgt
-            }
-            if ((ops[e.nxt[i]].type != "Buffer") && (nextAsap >= ops[e.nxt[i]].asap)) {
+            
+            
+            if (/*(ops[e.nxt[i]].type != "Buffer") &&*/ (nextAsap >= ops[e.nxt[i]].asap)) {
                 plusWgt = wgt / (Float(1) + Float(ops[e.nxt[i]].alap) - Float(ops[e.nxt[i]].asap))
                 if (ops[e.nxt[i]].latency > 2)
                 {
@@ -341,7 +347,16 @@ class SpectralForceDirected: NSObject {
                     tmp[i+j] += wgt
                 }
                 if USE_TI != useWhichTime {
-                    addIp(a: &tmp, b: build_qi(e: e, t: i, wgt: wgt))
+                    var maxIdx: Int!
+                    let b = build_qi(e: e, t: i, wgt: wgt)
+                    if tmp.count <= b.count {                                 // MARK:!!!
+                        maxIdx = tmp.count
+                    } else {
+                        maxIdx = b.count
+                    }
+                    catlas_saxpby(Int32(maxIdx), Float(1), b, Int32(1), Float(1), &tmp, Int32(1))
+                    
+                    //addIp(a: &tmp, b: build_qi(e: e, t: i, wgt: wgt))
                 }
             }
         }
@@ -361,23 +376,25 @@ class SpectralForceDirected: NSObject {
     //!
     //////////////////////////////////////////////////////////////////////////////////////
     
-    private func buildC(c: inout [String : [Float]], max: inout Float, mean: inout Float, _type: [CNode]) {
+    private func buildC(c: inout [String : [Float]], max: inout Float, mean: inout Float, _sortedtype: [CNode]) {
         var u: [Float]
         var tot: [Float]
         var nodeTmp: CNode
-        var type: [CNode] = _type
+        var type: [CNode] = _sortedtype
         var i: Int          = 0
         var test: Bool      = false
         
-        for k in 1..<type.count {
-            for m in stride(from: type.count-1, through: k, by: -1) {
-                if (type[m-1].type.compare(String(0)).rawValue) > 0 {
-                    nodeTmp = type[m-1]
-                    type[m-1] = type[m]
-                    type[m] = nodeTmp
-                }
-            }
-        }
+        
+        
+        /* for k in 1..<type.count { //kint rendezünk, nem itt mert ez nagyon lassú lesz
+         for m in stride(from: type.count-1, through: k, by: -1) {
+         if (type[m-1].type.compare(String(0)).rawValue) > 0 {
+         nodeTmp = type[m-1]
+         type[m-1] = type[m]
+         type[m] = nodeTmp
+         }
+         }
+         }*/
         
         tot = Array(repeating: 0.0, count: restartTime)
         
@@ -400,16 +417,16 @@ class SpectralForceDirected: NSObject {
                     i += 1
                 } while ((i <= type.count) && (test==true))
                 
-                mean = 0
-                for k in 0..<tot.count {
-                    mean += tot[k]
-                    if tot[k] > max {
-                        max = tot[k]
-                    }
-                }
-                
-                mean = mean/Float(tot.count)
-                
+                /* mean = 0
+                 for k in 0..<tot.count {
+                 mean += tot[k]
+                 if tot[k] > max {
+                 max = tot[k]
+                 }
+                 }
+                 
+                 mean = mean/Float(tot.count)
+                 */
                 for k in 0..<tot.count {
                     tot[k] = tot[k]//abs(tot[k]-mean)                   //difference from original force directed scheduler
                 }
@@ -691,7 +708,7 @@ class SpectralForceDirected: NSObject {
         var forceChange         = [Float]()
         var maxChange           = [Float]()
         
-        var cpuusage            = [Float]()
+        
         
         var c                   = [String : [Float]]()
         var newC                = [String : [Float]]()
@@ -710,6 +727,7 @@ class SpectralForceDirected: NSObject {
         forceChange.removeAll()
         print("## \(fixed)/\(tofix) done.")
         list = ord
+        var sortedops = ops.sorted(by: { $0.type > $1.type })
         while list.count != 0 {
             // sort list, descending order operations by mobility (difference) or by latency if difference = 0
             for i in 1..<list.count {
@@ -754,7 +772,7 @@ class SpectralForceDirected: NSObject {
                 
                 genTransfers()
                 
-                buildC(c: &c, max: &max, mean: &mean, _type: ops)       // a max nincs inicializálva!!
+                buildC(c: &c, max: &max, mean: &mean, _sortedtype: sortedops)       // a max nincs inicializálva!! de nem is kell az ops viszont rendezve kell
                 
                 maxChange.append(max)
                 meanChange.append(mean)
@@ -767,8 +785,8 @@ class SpectralForceDirected: NSObject {
                     fce = 0
                     bestIndex = 0
                     
-                    ops[e.id].asap = i
-                    ops[e.id].alap = i
+                    // ops[e.id].asap = i
+                    // ops[e.id].alap = i
                     e.asap = i
                     e.alap = i
                     
@@ -777,7 +795,7 @@ class SpectralForceDirected: NSObject {
                     
                     genTransfers()                  // Update q(i) configuration
                     
-                    buildC(c: &newC, max: &max, mean: &mean, _type: ops)
+                    buildC(c: &newC, max: &max, mean: &mean, _sortedtype: sortedops)
                     
                     
                     
@@ -885,6 +903,10 @@ class SpectralForceDirected: NSObject {
                 }
             }
             print("\(cpuusage[i]),")
+            if (cpuusage[i] > maxusage)
+            {
+                maxusage = cpuusage[i]
+            }
         }
         
         return delayed
@@ -1042,9 +1064,14 @@ class SpectralForceDirected: NSObject {
         return (Matrix, sizeOfMatrix, weight)
     }
     
-    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool, spect: Bool = true) -> (graph: [GraphElement]?, latency: Int?) {
+    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool, spect: Bool = true) -> (graph: [GraphElement]?, latency: Int?, proccount : Int?) {
         self.restartTime = restartTime
         self.latencytime = latencyTime
+        if self.restartTime > self.latencytime
+        {
+            self.restartTime = self.latencytime
+        }
+        
         
         let matrixStruct = pushMatrix(groups: groups)
         
@@ -1059,7 +1086,34 @@ class SpectralForceDirected: NSObject {
         calculateAsapAlap(latencyTime: latencyTime)
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE, spect: spect)
         writeBack()
-        return (groups, l)
+        return (groups, l, maxusage)
     }
+    
+    func RLScan(restartTimefrom: Int, latencyTimefrom: Int, restartTimeto: Int, latencyTimeto: Int,restartTimesteps: Int, latencyTimesteps: Int , spect: Bool = true) -> ([[Int]]) {
+        
+        let stepcountr = (restartTimeto - restartTimefrom)/restartTimesteps
+        let stepcountl = (latencyTimeto - latencyTimefrom)/latencyTimesteps
+        var ered: [[Int]] = Array(repeating: Array(repeating: 0, count: stepcountr), count: stepcountl)
+        
+        
+        
+        for i in 0..<stepcountr{
+            DispatchQueue.concurrentPerform(iterations: stepcountl) {
+                
+                let j = $0
+                let iter: SpectralForceDirected = SpectralForceDirected(groups: self.groups)
+                let retvar = iter.DoProcess(restartTime: restartTimefrom+i*restartTimesteps, latencyTime: latencyTimefrom+j*latencyTimesteps, p: false, s: false, d: false)
+                
+                
+                
+                ered[i][j] = retvar.proccount!
+            }
+            
+        }
+        
+        
+        return ered
+        
+    }
+    
 }
-

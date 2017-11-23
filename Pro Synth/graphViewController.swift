@@ -491,7 +491,7 @@ class graphViewController: NSViewController {
     }
     
     func doSynth()  {
-
+        
     }
 
 }
@@ -507,11 +507,43 @@ class graphViewController: NSViewController {
 // Szintézis extensionök!!
 
 extension graphViewController: StartSynthDelegate {
-    func DoWNCutDecomposing(parameter: Double, useWeights: Bool) {
-        return
+    
+    func DoWNCutDecomposing(parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int) {
+        allGroups.append(selectedGroups)
+        let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
+        let result = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p: parameter, useWeights: useWeights)
+        guard nil != result else {
+            print("A Dekompozíció nem végződött el")
+            return (0, 0, 0)
+        }
+        let disjunkGroups = (result?.count)!
+        var numOfNodes: Int             = 0
+        for i in 0..<disjunkGroups {
+            numOfNodes += result![i].children.count
+        }
+        var sumEdge: Int                = 0
+        for i in 0..<disjunkGroups {
+            for j in 0..<result![i].children.count {
+                for k in 0..<result![i].children[j].children.count {
+                    sumEdge += (result![i].children[j].children[k] as! Edge).weight
+                }
+            }
+        }
+        
+        // A gráfmegjelenítőbe és struktúrába való visszatöltés
+        DispatchQueue.main.async {
+            self.allGroups.append(result!)
+            self.selectGraph.addItem(withTitle: "Decomposition")
+            self.selectGraph.selectItem(withTitle: "Decomposition")
+            self.selectedGroups = self.allGroups[1]
+        }
+        return (disjunkGroups, numOfNodes, sumEdge)
     }
     
     func DoSpecFDS(restartTime: Int, latency: Int, p: Bool, s: Bool, d: Bool) {
+        let SpectralForce: SpectralForceDirected = SpectralForceDirected(groups: selectedGroups)
+        let result = SpectralForce.RLScan(restartTimefrom: 1000, latencyTimefrom: 300, restartTimeto: 1001, latencyTimeto: 700, restartTimesteps: 1, latencyTimesteps: 50)
+        print(result)
         return
     }
     
@@ -533,6 +565,8 @@ extension graphViewController: StartSynthDelegate {
             }
         }
         recursionDepth = RSCULoopUnroller.recursionDepth
+        
+        // A gráfmegjelenítőbe és struktúrába való visszatöltés
         DispatchQueue.main.async {
             self.allGroups.append(rscuResult!)
             self.selectGraph.addItem(withTitle: "Loop Unrolling")

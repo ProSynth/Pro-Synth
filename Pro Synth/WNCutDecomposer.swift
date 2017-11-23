@@ -102,7 +102,7 @@ class WNCutDecomposer: NSObject {
         return false
     }
     
-    func DoProcess(sourceGroups: [GraphElement], p:Double) -> [GraphElement]? {
+    func DoProcess(sourceGroups: [GraphElement], p:Double, useWeights: Bool) -> [GraphElement]? {
         
         var destinationGroups = [GraphElement]()
         

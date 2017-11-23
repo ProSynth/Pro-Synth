@@ -10,7 +10,7 @@ import Cocoa
 
 protocol StartSynthDelegate {
     func DoRSCUUnrolling(splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int)
-    func DoWNCutDecomposing(parameter: Double, useWeights: Bool)
+    func DoWNCutDecomposing(parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int)
     func DoSpecFDS(restartTime: Int, latency: Int, p: Bool, s: Bool, d: Bool)
 }
 
@@ -18,22 +18,15 @@ class synthesisViewController: NSViewController {
 
     var delegate:StartSynthDelegate?
     
+    var selected: String = ""
+    
     @IBAction func SynthSelect(_ sender: NSButton) {
-        switch sender.title {
-        case "WNCut":
-            synthProcess = .WNCut
-        case "RSCU":
-            synthProcess = .RSCU
-            break
-        case "SFDS":
-            synthProcess = .SFDS
-            break
-        default:
-            break
-        }
+        selected = sender.title
+        print(selected)
     }
     
-    @IBOutlet weak var SynthSelect: NSButton!
+    
+    
     
     @IBOutlet weak var WNCutParameter: NSTextField!
     @IBOutlet weak var WNCutWeighted: NSButton!
@@ -57,7 +50,10 @@ class synthesisViewController: NSViewController {
     @IBOutlet weak var SpectFDirParamD: NSButton!
     @IBOutlet weak var SpectFDirSave: NSButton!
     @IBOutlet weak var SpectFDirMaxProc: NSTextField!
-    
+    @IBOutlet weak var SpectFDirMultipleSchedSelector: NSPopUpButton!
+    @IBOutlet weak var SpectFDirAddRemoveSynth: NSSegmentedControl!
+    @IBOutlet weak var SpectFDirRestartTimeSteps: NSTextField!
+    @IBOutlet weak var SpectFDirRestartTimeStepsStepper: NSStepper!
     
     
     override func viewDidLoad() {
@@ -70,25 +66,43 @@ class synthesisViewController: NSViewController {
     
     func StartSynth() {
         
-        
-        let segments: Int = RSCUTaskSplitTextField.integerValue
-        DispatchQueue.global(qos: .userInteractive).async {
-            let result = self.delegate?.DoRSCUUnrolling(splitInto: segments, with: .FastWNCut)
-            DispatchQueue.main.async {
-                self.RSCUBiggestWeight.integerValue = (result?.maxWeight)!
-                self.RSCURecursionDepth.integerValue = (result?.recursionDepth)!
-                self.RSCUNumOfNodes.integerValue = (result?.numOfNode)!
-            }
-        }
+
+
 
 
         
-        switch SynthSelect.title {
+        switch selected {
         case "WNCut":
+            let parameter: Double = Double(WNCutParameter.floatValue)
+            let useWeights: Bool = (WNCutWeighted.state == NSOnState ? true : false)
+            // Dekompozíció thread indítása
+            DispatchQueue.global(qos: .userInteractive).async {
+                let result = self.delegate?.DoWNCutDecomposing(parameter: parameter, useWeights: useWeights)
+                DispatchQueue.main.async {
+                    self.WNCutNumOfNodes.integerValue = (result?.numOfNode)!
+                    self.WNCutNumOfGroups.integerValue = (result?.disjunktGroups)!
+                    self.WNCutSumOfEWeights.integerValue = (result?.sumEdgeWeights)!
+                }
+            }
+            
             break
         case "RSCU":
+            
+            let segments: Int = RSCUTaskSplitTextField.integerValue
+            DispatchQueue.global(qos: .userInteractive).async {
+                let result = self.delegate?.DoRSCUUnrolling(splitInto: segments, with: .FastWNCut)
+                DispatchQueue.main.async {
+                    self.RSCUBiggestWeight.integerValue = (result?.maxWeight)!
+                    self.RSCURecursionDepth.integerValue = (result?.recursionDepth)!
+                    self.RSCUNumOfNodes.integerValue = (result?.numOfNode)!
+                }
+            }
+            
             break
         case "SFDS":
+            DispatchQueue.global(qos: .userInteractive).async {
+                self.delegate?.DoSpecFDS(restartTime: 0, latency: 0, p: true, s: true, d: true)
+            }
             break
         default:
             break
