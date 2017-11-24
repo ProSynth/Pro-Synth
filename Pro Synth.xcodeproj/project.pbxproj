@@ -194,8 +194,8 @@
 				3F5FFF761F6DCB2C00D5AF06 /* noSelectionViewController.swift */,
 				3F4D62DC1F6D2EF200621182 /* attributeViewController.swift */,
 				3FEFCF541F767C82001FA2A9 /* Edge */,
-				3FEFCF531F766957001FA2A9 /* Group */,
-				3FEFCF521F76694E001FA2A9 /* Node */,
+				3FEFCF531F766957001FA2A9 /* Node */,
+				3FEFCF521F76694E001FA2A9 /* Group */,
 			);
 			name = Attribute;
 			sourceTree = "<group>";
@@ -296,17 +296,17 @@
 			name = GraphSupport;
 			sourceTree = "<group>";
 		};
-		3FEFCF521F76694E001FA2A9 /* Node */ = {
+		3FEFCF521F76694E001FA2A9 /* Group */ = {
 			isa = PBXGroup;
 			children = (
 				3F226A611F75C5C2004733A8 /* groupGlobalAttributeViewController.swift */,
 				3F226A631F75C620004733A8 /* groupSinthesisAttributeViewController.swift */,
 				3F226A671F75CA17004733A8 /* groupAttributeViewController.swift */,
 			);
-			name = Node;
+			name = Group;
 			sourceTree = "<group>";
 		};
-		3FEFCF531F766957001FA2A9 /* Group */ = {
+		3FEFCF531F766957001FA2A9 /* Node */ = {
 			isa = PBXGroup;
 			children = (
 				3F5FFF781F6DD0B000D5AF06 /* nodeAttributeViewController.swift */,
@@ -314,7 +314,7 @@
 				3F226A5F1F75C3BE004733A8 /* nodeEdgesAttributeViewController.swift */,
 				3FB5BC811F817959006A2A72 /* nodeSinthesisAttributeViewController.swift */,
 			);
-			name = Group;
+			name = Node;
 			sourceTree = "<group>";
 		};
 		3FEFCF541F767C82001FA2A9 /* Edge */ = {

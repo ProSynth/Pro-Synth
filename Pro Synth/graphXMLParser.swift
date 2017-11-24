@@ -14,6 +14,7 @@ class graphXMLParser: NSObject, XMLParserDelegate {
     var tmpGraphGroups = [[GraphElement]]()
     var tmpGroup = [GraphElement]()
     var nodeForEdge = [Node]()
+    var parentGroup: Group?
     
     var indexTable = [Int : Int]()
     
@@ -60,9 +61,9 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                 if let name = attributeDict["name"] {
                     tmpName = name
                 }
-                tmpLocalGroup = Group(name: tmpName, parent: nil, maxGroupTime: 0)
+                tmpLocalGroup = Group(name: tmpName, parent: parentGroup, maxGroupTime: 0)
                 tmpGroup.append(tmpLocalGroup)
-                //indexTable[tmpId] = tmpGroup.count-1
+                parentGroup = tmpLocalGroup
                 break
             case "loop":
                 if let id = attributeDict["id"] {
@@ -81,13 +82,15 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                 } else {
                     lType = .ACI
                 }
-                tmpLocalGroup = Group(name: "Loop", parent: nil, maxGroupTime: 0, groupID: tmpId, loop: lType)
+                tmpLocalGroup = Group(name: "Loop", parent: parentGroup, maxGroupTime: 0, groupID: tmpId, loop: lType)
                 tmpLocalGroup.loopCount = tmpCount
                 tmpGroup.append(tmpLocalGroup)
-                //indexTable[tmpId] = tmpGroup.count-1
+                parentGroup = tmpLocalGroup
                 break
             default:
                 if let name = attributeDict["ctype"] {
+                    tmpName = name
+                } else if let name = attributeDict["type"] {
                     tmpName = name
                 }
                 if let id = attributeDict["id"] {
@@ -100,7 +103,24 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                         tmpWeight = c
                     }
                 }
-                tmpNode = Node(name: tmpName, parent: nil, weight: tmpWeight, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
+                
+                var tmpNodeOpType: nodeOpType!
+                if nodeOpTypeArray.contains(where: {
+                    if ($0 ).name == tmpName {
+                        tmpNodeOpType = $0
+                        return true
+                    } else {
+                        return false
+                    }
+                    
+                }) {
+                    
+                } else {
+                    tmpNodeOpType = nodeOpType(name: tmpName, defaultWeight: tmpWeight)
+                    nodeOpTypeArray.append(tmpNodeOpType)
+                }
+                
+                tmpNode = Node(name: tmpName, parent: parentGroup, weight: tmpWeight, nodeOpType: tmpNodeOpType, nodeID: tmpId)       // Hol a pontsúly?
                 tmpGroup.append(tmpNode)
                 nodeForEdge.append(tmpNode)
                 indexTable[tmpId] = nodeForEdge.count-1
@@ -111,6 +131,8 @@ class graphXMLParser: NSObject, XMLParserDelegate {
         }
         else {
             if let name = attributeDict["ctype"] {
+                tmpName = name
+            } else if let name = attributeDict["type"] {
                 tmpName = name
             }
             if let id = attributeDict["id"] {
@@ -123,7 +145,24 @@ class graphXMLParser: NSObject, XMLParserDelegate {
                     tmpWeight = c
                 }
             }
-            tmpNode = Node(name: tmpName, parent: nil, weight: tmpWeight, nodeOpType: nil, nodeID: tmpId)       // Hol a pontsúly?
+            
+            var tmpNodeOpType: nodeOpType!
+            if nodeOpTypeArray.contains(where: {
+                if ($0 ).name == tmpName {
+                    tmpNodeOpType = $0
+                    return true
+                } else {
+                    return false
+                }
+                
+            }) {
+                
+            } else {
+                tmpNodeOpType = nodeOpType(name: tmpName, defaultWeight: tmpWeight)
+                nodeOpTypeArray.append(tmpNodeOpType)
+            }
+            
+            tmpNode = Node(name: tmpName, parent: parentGroup, weight: tmpWeight, nodeOpType: tmpNodeOpType, nodeID: tmpId)       // Hol a pontsúly?
             tmpGroup.append(tmpNode)
             nodeForEdge.append(tmpNode)
             indexTable[tmpId] = nodeForEdge.count-1

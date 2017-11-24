@@ -727,9 +727,13 @@ extension graphViewController: NSOutlineViewDelegate {
         let type = (graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).representedObject
         
         if type is Node {
-            //tmpNodeAttribute = Node(name: (type as! Node).name, parent: nil, weight: (type as! Node).weight, nodeOpType: (type as! Node).opType, nodeID: -2)
             tmpNodeAttribute = type as! Node
             NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
+        } else if type is Group {
+            tmpGroupAttribute = type as! Group
+            NotificationCenter.default.post(name: Notification.Name("groupAttribute"), object: self)
+        } else if type is Edge {
+            
         }
         /*
         switch path.count {

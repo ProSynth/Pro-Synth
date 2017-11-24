@@ -14,6 +14,9 @@ class groupGlobalAttributeViewController: NSViewController {
     @IBOutlet weak var groupID: NSTextField!
     @IBOutlet weak var maxTime: NSTextField!
     @IBOutlet weak var nodesOfGroupTableView: NSTableView!
+    @IBOutlet weak var groupType: NSTextField!
+    @IBOutlet weak var loopCount: NSTextField!
+    @IBOutlet weak var loopCountText: NSTextField!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
@@ -22,27 +25,54 @@ class groupGlobalAttributeViewController: NSViewController {
     }
     
     func update() {
-        name.stringValue = (groupAttribute as GraphElement).name
-        name.stringValue = groupAttributesP1.name
-        groupID.stringValue = String(groupAttributesP1.groupID)
-        maxTime.integerValue = groupAttributesP1.maxTime
+        name.stringValue = tmpGroupAttribute.name
+        groupID.stringValue = String(tmpGroupAttribute.groupID)
+        maxTime.integerValue = tmpGroupAttribute.maxTime
+        switch tmpGroupAttribute.loop {
+        case .None:
+            groupType.stringValue = "Group"
+            loopCount.isHidden = true
+            loopCountText.isHidden = true
+            break
+        case .Normal:
+            groupType.stringValue = "Data independent loop"
+            loopCount.isHidden = false
+            loopCountText.isHidden = false
+            loopCount.integerValue = tmpGroupAttribute.loopCount!
+            break
+        case .ACI:
+            groupType.stringValue = "Data dependent loop"
+            loopCount.isHidden = false
+            loopCountText.isHidden = false
+            loopCount.stringValue = "?"
+            break
+        default:
+            loopCount.isHidden = true
+            loopCountText.isHidden = true
+            break
+        }
         nodesOfGroupTableView.reloadData()
     }
     
 }
 
+extension groupGlobalAttributeViewController: NSTextFieldDelegate {
+    override func controlTextDidChange(_ obj: Notification) {
+        tmpGroupAttribute.name = name.stringValue
+    }
+}
 
 extension groupGlobalAttributeViewController: NSTableViewDataSource {
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return (groupAttribute as GraphElement).children.count
+        return (tmpGroupAttribute as GraphElement).children.count
     }
     
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         if tableColumn == tableView.tableColumns[0] {
-            return (groupAttribute as GraphElement).children[row].name
+            return (tmpGroupAttribute as GraphElement).children[row].name
         } else if tableColumn == tableView.tableColumns[1] {
-            return String((groupAttribute as GraphElement).children[row].children.count)
+            return String((tmpGroupAttribute as GraphElement).children[row].children.count)
         } else {
             return nil
         }
