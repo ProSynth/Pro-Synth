@@ -53,6 +53,12 @@ class Group: GraphElement {
 
         self.numberOfNode = 0
         super.init(name: name, parent: parent)
+        tmpGroupArray.append(self)
+    }
+    
+    deinit {
+        let index = tmpGroupArray.index(where: { $0.groupID == self.groupID})
+        tmpGroupArray.remove(at: index!)
     }
     
     func getGroupID() -> Int {

@@ -14,6 +14,8 @@ class nodeEdgesAttributeViewController: NSViewController {
     
     @IBOutlet weak var nodeEdgesTableView: NSTableView!
     @IBOutlet weak var sumOfEdgesWeights: NSTextField!
+    @IBOutlet weak var sumOfEdgesSource: NSTextField!
+    @IBOutlet weak var sumOfEdgesDestination: NSTextField!
     
     
     override func viewDidLoad() {
@@ -26,10 +28,19 @@ class nodeEdgesAttributeViewController: NSViewController {
     func update() {
         nodeEdgesTableView.reloadData()
         var sum: Int = 0
+        var sumS: Int = 0
+        var sumD: Int = 0
         for i in 0..<tmpNodeAttribute.children.count {
+            if (tmpNodeAttribute.children[i] as! Edge).parentsNode == tmpNodeAttribute {
+                sumS += (tmpNodeAttribute.children[i] as! Edge).weight
+            } else {
+                sumD += (tmpNodeAttribute.children[i] as! Edge).weight
+            }
             sum += (tmpNodeAttribute.children[i] as! Edge).weight
         }
         sumOfEdgesWeights.integerValue = sum
+        sumOfEdgesSource.integerValue = sumS
+        sumOfEdgesDestination.integerValue = sumD
     }
     
 }

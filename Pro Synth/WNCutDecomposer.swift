@@ -177,13 +177,14 @@ class WNCutDecomposer: NSObject {
                 
                 //print("\(index) sorszámú pontot megtaláltam")
                 let name = (sourceNodes[index] as GraphElement).name
-
-                //let weight = sourceNodes[index].weight
+                let weight = sourceNodes[index].weight
+                var spectrum = sourceNodes[index].spectrum
                 
                 if runningPoint > sortedNodeDictionary[i].value {
-                    (destinationGroups[group-1].children.last as! Node).weight += 1
+                    (destinationGroups[group-1].children.last as! Node).weight += weight
                     destinationGroups[group-1].children.last?.name += ":\(name)"
                     runningPoint = sortedNodeDictionary[i].value
+                    spectrum = (spectrum! + (destinationGroups[group-1].children.last as! Node).spectrum!)/2
                 } else {
                     
                     if prevIndex != nil {
@@ -201,9 +202,9 @@ class WNCutDecomposer: NSObject {
                     
                     
                     
-                    destinationGroups[group-1].children.append(Node(name: name, parent: nil, weight: 1, nodeOpType: .none))
+                    destinationGroups[group-1].children.append(Node(name: name, parent: nil, weight: weight, nodeOpType: .none))
                     // Élek hozzáadása
-
+                    (destinationGroups[group-1].children.last as! Node).spectrum = spectrum
                     indexes.removeAll()
                     runningPoint = sortedNodeDictionary[i].value
                 }

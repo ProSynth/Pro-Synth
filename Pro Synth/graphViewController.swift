@@ -364,14 +364,24 @@ class graphViewController: NSViewController {
                                         break
                                     }
                                 }
-                                if nodeOpTypeArray.contains(where: {($0 ).name == propArray2[1] }) {
+                                var tmpNodeOpType: nodeOpType!
+                                if nodeOpTypeArray.contains(where: {
+                                    if ($0 ).name == propArray2[1] {
+                                        tmpNodeOpType = $0
+                                        return true
+                                    } else {
+                                        return false
+                                    }
+                                    
+                                }) {
                                     
                                 } else {
-                                    nodeOpTypeArray.append(nodeOpType(name: propArray2[1], defaultWeight: nodeWeight))
+                                    tmpNodeOpType = nodeOpType(name: propArray2[1], defaultWeight: nodeWeight)
+                                    nodeOpTypeArray.append(tmpNodeOpType)
                                 }
                                 output[tmpnodeID] = true
                                 input[tmpnodeID] = true
-                                self.addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: self.self.selectedGroups[index] as! Group, nodeOpType: nodeOpType(name:propArray2[1] ,defaultWeight:nodeWeight), nodeID: tmpnodeID)
+                                self.addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: self.self.selectedGroups[index] as! Group, nodeOpType: tmpNodeOpType, nodeID: tmpnodeID)
                             }
                         } else if stringArray[1] == "->" {
                             edgeNode1ID = Int(stringArray[0])!
