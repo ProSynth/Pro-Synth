@@ -130,7 +130,8 @@ var nodeAttributesPl:nodeAttributes = nodeAttributes(name: "", weight: -1, nodeI
 var groupAttributesP1:groupAttributes = groupAttributes(name: "", weight: -1, nodeID: -1, groupID: -1)
 
 var groupAttribute:Group = Group(name: "Attribútum", parent: nil, maxGroupTime: 0, groupID: -2)
-var nodeAttribute:Node = Node(name: " ", parent: nil, weight: -1, nodeOpType: nodeOpTypeArray[0], nodeID: -2)
+//var nodeAttribute: Node = Node(name: " ", parent: nil, weight: -1, nodeOpType: nodeOpTypeArray[0], nodeID: -2)
+var tmpNodeAttribute: Node!
 
 
 var Log: logWindow?

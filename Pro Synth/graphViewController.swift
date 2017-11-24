@@ -540,11 +540,17 @@ extension graphViewController: StartSynthDelegate {
         return (disjunkGroups, numOfNodes, sumEdge)
     }
     
-    func DoSpecFDS(restartTime: Int, latency: Int, p: Bool, s: Bool, d: Bool) {
+    func DoSpecFDS(p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int] {
         let SpectralForce: SpectralForceDirected = SpectralForceDirected(groups: selectedGroups)
-        let result = SpectralForce.RLScan(restartTimefrom: 1000, latencyTimefrom: 300, restartTimeto: 1001, latencyTimeto: 700, restartTimesteps: 1, latencyTimesteps: 50)
-        print(result)
-        return
+        if schedules.count == 1 {
+            let result = SpectralForce.DoProcess(restartTime: schedules[0].restartTime, latencyTime: schedules[0].latency, p: p, s: s, d: d, spect: useSpectrum)
+            return [0]
+        } else {
+            //let result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
+            return [0]
+        }
+        
+        
     }
     
     func DoRSCUUnrolling(splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int) {
@@ -708,6 +714,14 @@ extension graphViewController: NSOutlineViewDelegate {
     func outlineViewSelectionDidChange(_ notification: Notification) {
         //print((graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath)
         var path:IndexPath = (graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).indexPath
+        let type = (graphOutlineView.item(atRow: graphOutlineView.selectedRow) as! NSTreeNode).representedObject
+        
+        if type is Node {
+            //tmpNodeAttribute = Node(name: (type as! Node).name, parent: nil, weight: (type as! Node).weight, nodeOpType: (type as! Node).opType, nodeID: -2)
+            tmpNodeAttribute = type as! Node
+            NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
+        }
+        /*
         switch path.count {
         case 1:
             groupAttributesP1.name = selectedGroups[path[0]].name
@@ -740,7 +754,7 @@ extension graphViewController: NSOutlineViewDelegate {
         //let selectedItem = graphOutlineView.item(atRow: graphOutlineView.selectedRow) as? GraphElement
         //print(selectedItem?.name as Any)
         
-       
+       */
     }
 }
 

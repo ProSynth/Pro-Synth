@@ -10,9 +10,19 @@ import Cocoa
 
 class nodeSinthesisAttributeViewController: NSViewController {
 
+    @IBOutlet weak var SpectralValue: NSTextField!
+    @IBOutlet weak var StartTime: NSTextField!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
+        
+        if nil != tmpNodeAttribute.spectrum {
+            SpectralValue.doubleValue = tmpNodeAttribute.spectrum!
+        }
+        if nil != tmpNodeAttribute.startTime {
+            StartTime.integerValue = tmpNodeAttribute.startTime!
+        }
     }
+    
     
 }

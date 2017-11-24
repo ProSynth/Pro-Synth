@@ -1088,7 +1088,7 @@ class SpectralForceDirected: NSObject {
         writeBack()
         return (groups, l, maxusage)
     }
-    
+    /*
     func RLScan(restartTimefrom: Int, latencyTimefrom: Int, restartTimeto: Int, latencyTimeto: Int,restartTimesteps: Int, latencyTimesteps: Int , spect: Bool = true) -> ([[Int]]) {
         
         let stepcountr = (restartTimeto - restartTimefrom)/restartTimesteps
@@ -1115,5 +1115,32 @@ class SpectralForceDirected: NSObject {
         return ered
         
     }
-    
+    */
+    /*
+    func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([[Int]]) {
+        
+
+        var ered: [[Int]] = Array(repeating: Array(repeating: 0, count: schedules.count), count: stepcountl)
+        
+        
+        
+        for i in 0..<schedules.count{
+            DispatchQueue.concurrentPerform(iterations: stepcountl) {
+                
+                let j = $0
+                let iter: SpectralForceDirected = SpectralForceDirected(groups: self.groups)
+                let retvar = iter.DoProcess(restartTime: schedules[i].restartTime, latencyTime: schedules[i].latency, p: false, s: false, d: false)
+                
+                
+                
+                ered[i][j] = retvar.proccount!
+            }
+            
+        }
+ 
+        
+        return ered
+ 
+    }
+  */
 }

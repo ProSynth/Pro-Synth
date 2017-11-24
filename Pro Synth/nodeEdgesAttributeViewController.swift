@@ -13,6 +13,7 @@ class nodeEdgesAttributeViewController: NSViewController {
     
     
     @IBOutlet weak var nodeEdgesTableView: NSTableView!
+    @IBOutlet weak var sumOfEdgesWeights: NSTextField!
     
     
     override func viewDidLoad() {
@@ -24,6 +25,11 @@ class nodeEdgesAttributeViewController: NSViewController {
     
     func update() {
         nodeEdgesTableView.reloadData()
+        var sum: Int = 0
+        for i in 0..<tmpNodeAttribute.children.count {
+            sum += (tmpNodeAttribute.children[i] as! Edge).weight
+        }
+        sumOfEdgesWeights.integerValue = sum
     }
     
 }
@@ -31,14 +37,14 @@ class nodeEdgesAttributeViewController: NSViewController {
 extension nodeEdgesAttributeViewController: NSTableViewDataSource {
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return  (nodeAttribute as GraphElement).children.count
+        return  (tmpNodeAttribute as GraphElement).children.count
     }
     
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         if tableColumn == tableView.tableColumns[0] {
-            return (nodeAttribute as GraphElement).children[row].name
+            return (tmpNodeAttribute as GraphElement).children[row].name
         } else if tableColumn == tableView.tableColumns[1] {
-            let edge = (nodeAttribute as GraphElement).children[row]
+            let edge = (tmpNodeAttribute as GraphElement).children[row]
             let edgeAsEdge = edge as! Edge
             return edgeAsEdge.weight
         } else {

@@ -41,20 +41,13 @@ class nodeGlobalAttributeViewController: NSViewController {
         weightText.stringValue = String(weightStepper.intValue)
     }
     
-    
     func update() {
-        name.stringValue = (nodeAttribute as GraphElement).name
-        nodeID.stringValue = String(nodeAttribute.nodeID)
-        weightText.integerValue = nodeAttribute.weight
-        numberOfEdge.integerValue = nodeAttribute.numberOfConnectedEdge
+        name.stringValue = tmpNodeAttribute.name
+        nodeID.stringValue = String(tmpNodeAttribute.nodeID)
+        weightText.integerValue = tmpNodeAttribute.weight
+        numberOfEdge.integerValue = tmpNodeAttribute.numberOfConnectedEdge
         weightStepper.integerValue = weightText.integerValue
-        /*for item in 0..<nodeOpTypeArray.count {
-            if nodeOpTypeArray[item].name == nodeAttribute.opType.name {
-                operationType.selectItem(at: item)
-            }
-        }*/
-        //let opIndex = nodeOpTypeArray.index(where: {$0.name == nodeAttribute.opType.name})!
-        //operationType.selectItem(at: opIndex)
+
     }
     
 }

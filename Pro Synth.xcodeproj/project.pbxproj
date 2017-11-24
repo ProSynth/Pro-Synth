@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2B1A40241FB8E746004DBD2D /* synthesisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */; };
+		2B2FE3DD1FC79920007BA903 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2FE3DC1FC79920007BA903 /* StartButton.swift */; };
 		2B97F9401FC087B30095C976 /* graphXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B97F93F1FC087B30095C976 /* graphXMLParser.swift */; };
 		2BDFE3F31FC4EAB5002B1385 /* logWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFE3F21FC4EAB5002B1385 /* logWindow.swift */; };
 		2BFE8A4A1FB277E600EDA589 /* WNCutDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */; };
@@ -72,6 +73,7 @@
 
 /* Begin PBXFileReference section */
 		2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = synthesisViewController.swift; sourceTree = "<group>"; };
+		2B2FE3DC1FC79920007BA903 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 		2B97F93F1FC087B30095C976 /* graphXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = graphXMLParser.swift; sourceTree = "<group>"; };
 		2BDFE3F21FC4EAB5002B1385 /* logWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = logWindow.swift; sourceTree = "<group>"; };
 		2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WNCutDecomposer.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				3F2924831F45A11600F3130E /* ViewController.swift */,
 				3FB5BC7D1F817253006A2A72 /* SplitViewController.swift */,
 				2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */,
+				2B2FE3DC1FC79920007BA903 /* StartButton.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -487,6 +490,7 @@
 				2BDFE3F31FC4EAB5002B1385 /* logWindow.swift in Sources */,
 				3F2924821F45A11600F3130E /* AppDelegate.swift in Sources */,
 				3F2924B21F45A31500F3130E /* welcomeScreenWindowController.swift in Sources */,
+				2B2FE3DD1FC79920007BA903 /* StartButton.swift in Sources */,
 				3FB5BC7E1F817253006A2A72 /* SplitViewController.swift in Sources */,
 				3F5FFF791F6DD0B000D5AF06 /* nodeAttributeViewController.swift in Sources */,
 				3F89FE111F74627300F7B623 /* GlobalVariables.swift in Sources */,
