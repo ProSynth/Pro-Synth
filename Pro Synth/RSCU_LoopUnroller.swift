@@ -170,18 +170,18 @@ class RSCU_LoopUnroller: NSObject {
                 if DExist && SExist {
                     newDParentIndex = copyIndexIDTable.index(of: tmpDNodeID)! + offseft
                     newSParentIndex = copyIndexIDTable.index(of: tmpSNodeID)! + offseft
-                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: multipliedGraph[newDParentIndex] as! Node)
+                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: multipliedGraph[newDParentIndex] as! Node, dataType: Edges[i].type)
                     multipliedGraph[newDParentIndex].children.append(tmpEdge)
                     multipliedGraph[newSParentIndex].children.append(tmpEdge)
                 } else if SExist {
                     newSParentIndex = copyIndexIDTable.index(of: tmpSNodeID)! + offseft
         
-                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: tmpDNode )
+                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: multipliedGraph[newSParentIndex] as! Node, parentNode2: tmpDNode, dataType: Edges[i].type )
                     multipliedGraph[newSParentIndex].children.append(tmpEdge)
                     tmpDNode.children.append(tmpEdge)
                 } else if DExist {
                     newDParentIndex = copyIndexIDTable.index(of: tmpDNodeID)! + offseft
-                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: tmpSNode , parentNode2: multipliedGraph[newDParentIndex] as! Node)
+                    let tmpEdge = Edge(name: name, weight: weight, parentNode1: tmpSNode , parentNode2: multipliedGraph[newDParentIndex] as! Node, dataType: Edges[i].type)
                     multipliedGraph[newDParentIndex].children.append(tmpEdge)
                     tmpSNode.children.append(tmpEdge)
                 } else {
@@ -301,6 +301,7 @@ class RSCU_LoopUnroller: NSObject {
                 let sNode = (multipliedGraph[j].children[k] as! Edge).parentsNode
                 let dNodeID = (multipliedGraph[j].children[k] as! Edge).parentdNode.nodeID
                 let dNode = (multipliedGraph[j].children[k] as! Edge).parentdNode
+                let dataType = (multipliedGraph[j].children[k] as! Edge).type
 
                 let firstExist = (oldNewIDs[sNodeID] != nil)
                 let secondExist = (oldNewIDs[dNodeID] != nil)
@@ -311,16 +312,16 @@ class RSCU_LoopUnroller: NSObject {
                     }
                     let ind1 = newIDIndex.index(of: oldNewIDs[sNodeID]!)!
                     let ind2 = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
-                    output[ind1].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node))
-                    output[ind2].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node))
+                    output[ind1].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node, dataType: dataType))
+                    output[ind2].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind1] as! Node, parentNode2: output[ind1] as! Node, dataType: dataType))
                  } else if firstExist {
                     let ind = newIDIndex.index(of: oldNewIDs[sNodeID]!)!
-                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
-                    dNode.children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode))
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode, dataType: dataType))
+                    dNode.children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: output[ind] as! Node, parentNode2: dNode, dataType: dataType))
                  } else if secondExist {
                     let ind = newIDIndex.index(of: oldNewIDs[dNodeID]!)!
-                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
-                    sNode.children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node))
+                    output[ind].children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node, dataType: dataType))
+                    sNode.children.append(Edge(name: "Él", weight: edgeWeight, parentNode1: sNode, parentNode2: output[ind] as! Node, dataType: dataType))
                 } else if !firstExist && !secondExist {
                     // Nem ide tartozik az él, ennek hibának kellene lennie
                 }

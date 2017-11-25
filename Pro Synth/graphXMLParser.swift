@@ -198,8 +198,11 @@ class graphXMLParser: NSObject, XMLParserDelegate {
         }
         let indexSNode = indexTable[snodeID]
         let indexDNode = indexTable[dnodeID]
-        
-        let tmpEdge = Edge(name: "Él", weight: tmpWeight, parentNode1: nodeForEdge[indexSNode!], parentNode2: nodeForEdge[indexDNode!])
+        var tmpEdgeDataType = edgeDataType(name: "Undefined Data Type", defaultWeight: tmpWeight)
+        if edgeDataTypeArray.isEmpty {
+                    edgeDataTypeArray.append(tmpEdgeDataType)
+        }
+        let tmpEdge = Edge(name: "Él", weight: tmpWeight, parentNode1: nodeForEdge[indexSNode!], parentNode2: nodeForEdge[indexDNode!], dataType: tmpEdgeDataType)
         nodeForEdge[indexSNode!].children.append(tmpEdge)
         nodeForEdge[indexDNode!].children.append(tmpEdge)
         

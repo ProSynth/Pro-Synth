@@ -28,7 +28,7 @@ protocol newConnectionDelegate {
 //!                 ahhoz, hogy létrehozhassa a megfelelő helyen az új élet
 //////////////////////////////////////////////////////////////////////////////////////
     
-    func createConnectionFromData(name: String, weight:Int, type:EdgeType, node1Index:IndexPath, node2Index: IndexPath)
+    func createConnectionFromData(name: String, weight:Int, type: edgeDataType, node1Index:IndexPath, node2Index: IndexPath)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -63,12 +63,13 @@ class newConnectionManual: NSViewController {
     @IBOutlet weak var node2Selector: NSPopUpButton!
     @IBOutlet weak var weightText: NSTextField!
     @IBOutlet weak var weightStepper: NSStepper!
-    @IBOutlet weak var busDefined: NSButton!
-    @IBOutlet weak var busType: NSPopUpButton!
+    @IBOutlet weak var isNewDataType: NSButton!
+    @IBOutlet weak var newDataTypeText: NSTextField!
+    @IBOutlet weak var existingDataTypes: NSPopUpButton!
     @IBOutlet weak var customName: NSButton!
     @IBOutlet weak var name: NSTextField!
     @IBOutlet weak var nameLabel: NSTextField!
-    @IBOutlet weak var edgeDataType: NSComboBox!
+
     
     @IBOutlet weak var cancel: NSButton!
     @IBOutlet weak var create: NSButton!
@@ -80,40 +81,43 @@ class newConnectionManual: NSViewController {
         weightText.stringValue = String(weightStepper.intValue)
     }
     
+    @IBAction func newDataChange(_ sender: NSButton) {
+        if sender.state == NSOnState {
+            existingDataTypes.isEnabled = false
+            newDataTypeText.isEnabled = true
+        } else {
+            existingDataTypes.isEnabled = true
+            newDataTypeText.isEnabled = false
+        }
+    }
+    
     override func viewDidAppear() {
-        busType.isEnabled = false
+        isNewDataType.isEnabled = false
         name.isEnabled = false
         node1Selector.removeAllItems()
         node2Selector.removeAllItems()
         node1Selector.addItems(withTitles: nodeString)
         node2Selector.addItems(withTitles: nodeString)
         
+        existingDataTypes.isEnabled = true
+        newDataTypeText.isEnabled = false
+        
         create.keyEquivalent = "\u{0d}"
         cancel.keyEquivalent = "\u{1b}"
         
-        edgeDataType.removeAllItems()
+        existingDataTypes.removeAllItems()
         for i in 0..<edgeDataTypeArray.count {
-            edgeDataType.addItem(withObjectValue: edgeDataTypeArray[i].name)
+            existingDataTypes.addItem(withTitle: edgeDataTypeArray[i].name)
         }
         
         name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem]) connection"
     }
+    
     @IBAction func nodeIsChanged(_ sender: NSPopUpButton) {
         name.stringValue = "\(nodeString[node1Selector.indexOfSelectedItem])-\(nodeString[node2Selector.indexOfSelectedItem]) connection"
     }
     
-    @IBAction func busTypeDefined(_ sender: NSButton) {
-        switch busDefined.state {
-        case NSOnState:
-            busType.isEnabled = true
-            break
-        case NSOffState:
-            busType.isEnabled = false
-            break
-        default:
-            return
-        }
-    }
+
     
     @IBAction func customName(_ sender: NSButton) {
         switch customName.state {
@@ -136,9 +140,14 @@ class newConnectionManual: NSViewController {
     }
     
     @IBAction func create(_ sender: NSButton) {
-        //edgeDataTypeArray.append(edgeDataType(name: edgeDataType.stringValue, defaultWeight: weightStepper.integerValue))
+        var tmpEdgeDataType: edgeDataType!
+        if isNewDataType.state == NSOnState {
+            tmpEdgeDataType = edgeDataType(name: newDataTypeText.stringValue, defaultWeight: weightText.integerValue)
+        } else {
+            tmpEdgeDataType = edgeDataTypeArray[existingDataTypes.indexOfSelectedItem]
+        }
         
-        delegate?.createConnectionFromData(name: name.stringValue, weight: weightStepper.integerValue, type: .none, node1Index: nodePath[node1Selector.indexOfSelectedItem], node2Index: nodePath[node2Selector.indexOfSelectedItem])
+        delegate?.createConnectionFromData(name: name.stringValue, weight: weightStepper.integerValue, type: tmpEdgeDataType, node1Index: nodePath[node1Selector.indexOfSelectedItem], node2Index: nodePath[node2Selector.indexOfSelectedItem])
         weightText.stringValue = "0"
         weightStepper.integerValue = 0
     

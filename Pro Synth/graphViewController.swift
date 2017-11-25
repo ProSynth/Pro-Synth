@@ -207,8 +207,8 @@ class graphViewController: NSViewController {
 
     }
     
-    func addEdgeWithData(name:String, weight:Int, type:EdgeType, snode:Node, dnode:Node) {
-        let tmpEdge = Edge(name: name, weight: weight, parentNode1:snode, parentNode2:dnode)
+    func addEdgeWithData(name:String, weight:Int, type:edgeDataType, snode:Node, dnode:Node) {
+        let tmpEdge = Edge(name: name, weight: weight, parentNode1:snode, parentNode2:dnode, dataType: type)
         snode.children.append(tmpEdge as GraphElement)
         dnode.children.append(tmpEdge as GraphElement)
     }
@@ -397,7 +397,7 @@ class graphViewController: NSViewController {
                                 }
                                 
                                 edgeWeight = Int(propArray2[1])!
-                                
+                                let dataTypeName = propArray2[2]
                                 
                                 
                                 var index1N: Int = -1
@@ -442,7 +442,23 @@ class graphViewController: NSViewController {
                                 output[edgeNode1ID] = false
                                 input[edgeNode2ID] = false
                                 //Itt még a groups 0-t javítani kell
-                                self.addEdgeWithData(name: defaultString, weight: edgeWeight, type: .none,
+                                var tmpEdgeDataType: edgeDataType!
+                                if edgeDataTypeArray.contains(where: {
+                                    if ($0 ).name == dataTypeName {
+                                        tmpEdgeDataType = $0
+                                        return true
+                                    } else {
+                                        return false
+                                    }
+                                    
+                                }) {
+                                    
+                                } else {
+                                    tmpEdgeDataType = edgeDataType(name: dataTypeName, defaultWeight: edgeWeight)
+                                    edgeDataTypeArray.append(tmpEdgeDataType)
+                                }
+                                
+                                self.addEdgeWithData(name: defaultString, weight: edgeWeight, type: tmpEdgeDataType,
                                                      snode: self.selectedGroups[index1G].children[index1N] as! Node,
                                                      dnode: self.selectedGroups[index2G].children[index2N] as! Node)
                                 sumEl += edgeWeight
@@ -615,7 +631,7 @@ extension graphViewController: newGroupDelegate {
 }
 
 extension graphViewController: newConnectionDelegate {
-    func createConnectionFromData(name: String, weight:Int, type:EdgeType, node1Index:IndexPath, node2Index: IndexPath) {
+    func createConnectionFromData(name: String, weight:Int, type:edgeDataType, node1Index:IndexPath, node2Index: IndexPath) {
         
         addEdgeWithData(name: name, weight: weight, type: type, snode: selectedGroups[node1Index[0]].children[node1Index[1]] as! Node, dnode: selectedGroups[node2Index[0]].children[node2Index[1]] as! Node)
         
@@ -733,42 +749,9 @@ extension graphViewController: NSOutlineViewDelegate {
             tmpGroupAttribute = type as! Group
             NotificationCenter.default.post(name: Notification.Name("groupAttribute"), object: self)
         } else if type is Edge {
-            
-        }
-        /*
-        switch path.count {
-        case 1:
-            groupAttributesP1.name = selectedGroups[path[0]].name
-            groupAttributesP1.groupID = (selectedGroups[path[0]] as! Group).groupID
-            groupAttributesP1.maxTime = (selectedGroups[path[0]] as! Group).maxTime
-            
-            groupAttribute = selectedGroups[path[0]] as! Group
-            
-            NotificationCenter.default.post(name: Notification.Name("groupAttribute"), object: self)
-        case 2:
-            nodeAttributesPl.name = selectedGroups[path[0]].children[path[1]].name
-            nodeAttributesPl.weight = (selectedGroups[path[0]].children[path[1]] as! Node).weight
-            nodeAttributesPl.nodeID = (selectedGroups[path[0]].children[path[1]] as! Node).nodeID
-            nodeAttributesPl.groupID = (selectedGroups[path[0]] as! Group).groupID
-            nodeAttributesPl.numberOfEdge = (selectedGroups[path[0]].children[path[1]] as! Node).numberOfConnectedEdge
-            //nodeAttributesPl.opType = (groups[path[0]].children[path[1]] as! Node).opType!
-            
-            nodeAttribute = selectedGroups[path[0]].children[path[1]] as! Node
-            
-            NotificationCenter.default.post(name: Notification.Name("nodeAttribute"), object: self)
-        case 3:
-            edgeAttributesP1.name = selectedGroups[path[0]].children[path[1]].children[path[2]].name
-            edgeAttributesP1.edgeID = (selectedGroups[path[0]].children[path[1]].children[path[2]] as! Edge).edgeID
-            edgeAttributesP1.weight = (selectedGroups[path[0]].children[path[1]].children[path[2]] as! Edge).weight
+            tmpEdgeAttribute = type as! Edge
             NotificationCenter.default.post(name: Notification.Name("edgeAttribute"), object: self)
-        default:
-            print("Hiba az attribútumszerkesztőben")
         }
-        
-        //let selectedItem = graphOutlineView.item(atRow: graphOutlineView.selectedRow) as? GraphElement
-        //print(selectedItem?.name as Any)
-        
-       */
     }
 }
 

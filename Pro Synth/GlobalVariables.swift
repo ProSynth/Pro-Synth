@@ -133,6 +133,7 @@ var groupAttribute:Group = Group(name: "Attribútum", parent: nil, maxGroupTime:
 //var nodeAttribute: Node = Node(name: " ", parent: nil, weight: -1, nodeOpType: nodeOpTypeArray[0], nodeID: -2)
 var tmpNodeAttribute: Node!
 var tmpGroupAttribute: Group!
+var tmpEdgeAttribute: Edge!
 var tmpGroupArray = [Group]()
 
 var Log: logWindow?

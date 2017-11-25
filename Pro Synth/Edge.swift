@@ -26,7 +26,7 @@ enum EdgeType {
 
 class Edge: GraphElement {
     var weight: Int                     //Ez lesz az él súlya
-    var type: EdgeType                  //Kapcoslat típusa
+    var type: edgeDataType                  //Kapcoslat típusa
     static var  currentEdgeID : Int = 0
     var edgeID : Int
     var parentsNode : Node
@@ -41,11 +41,11 @@ class Edge: GraphElement {
 //!                 Inicializáláskor megkapja a súlyát
 //!///////////////////////////////////////////////////////////////////////////////////
     
-    init(name: String, weight:Int, parentNode1:Node, parentNode2:Node) {
+    init(name: String, weight:Int, parentNode1:Node, parentNode2:Node, dataType: edgeDataType) {
         self.weight = weight
         self.edgeID = Edge.currentEdgeID
         Edge.currentEdgeID += 1
-        self.type = .none
+        self.type = dataType
         self.parentsNode = parentNode1
         self.parentdNode = parentNode2
         super.init(name: name, parent: parentsNode)
