@@ -124,6 +124,7 @@ var synthProcess: SynthType? = nil
 
 var edgeDataTypeArray = [edgeDataType]()
 var nodeOpTypeArray = [nodeOpType]()
+var schedulesArray = [SchedulingElement]()
 
 var edgeAttributesP1:edgeAttributes = edgeAttributes(name: "", weight: -1, edgeID: -1)
 var nodeAttributesPl:nodeAttributes = nodeAttributes(name: "", weight: -1, nodeID: -1, groupID: -1, opType: nodeOpType(name: "", defaultWeight: -1))

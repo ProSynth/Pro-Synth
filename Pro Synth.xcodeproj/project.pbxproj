@@ -10,6 +10,7 @@
 		2B1A40241FB8E746004DBD2D /* synthesisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */; };
 		2B2FE3DD1FC79920007BA903 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2FE3DC1FC79920007BA903 /* StartButton.swift */; };
 		2B97F9401FC087B30095C976 /* graphXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B97F93F1FC087B30095C976 /* graphXMLParser.swift */; };
+		2BDCC03B1FC985060080CA59 /* autoFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDCC03A1FC985060080CA59 /* autoFill.swift */; };
 		2BDFE3F31FC4EAB5002B1385 /* logWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFE3F21FC4EAB5002B1385 /* logWindow.swift */; };
 		2BFE8A4A1FB277E600EDA589 /* WNCutDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */; };
 		2BFE8A4E1FB2785100EDA589 /* RSCU_LoopUnroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */; };
@@ -75,6 +76,7 @@
 		2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = synthesisViewController.swift; sourceTree = "<group>"; };
 		2B2FE3DC1FC79920007BA903 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 		2B97F93F1FC087B30095C976 /* graphXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = graphXMLParser.swift; sourceTree = "<group>"; };
+		2BDCC03A1FC985060080CA59 /* autoFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = autoFill.swift; sourceTree = "<group>"; };
 		2BDFE3F21FC4EAB5002B1385 /* logWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = logWindow.swift; sourceTree = "<group>"; };
 		2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WNCutDecomposer.swift; sourceTree = "<group>"; };
 		2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSCU_LoopUnroller.swift; sourceTree = "<group>"; };
@@ -150,6 +152,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2BDCC0391FC984CE0080CA59 /* Synthesis */ = {
+			isa = PBXGroup;
+			children = (
+				2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */,
+				2BDCC03A1FC985060080CA59 /* autoFill.swift */,
+			);
+			name = Synthesis;
+			sourceTree = "<group>";
+		};
 		2BFE8A481FB2766D00EDA589 /* WNCutDecomposer */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,11 +189,11 @@
 		3F0928B51F5192C7000997B2 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				2BDCC0391FC984CE0080CA59 /* Synthesis */,
 				3F226A661F75C826004733A8 /* Graph */,
 				3F226A651F75C80A004733A8 /* Attribute */,
 				3F2924831F45A11600F3130E /* ViewController.swift */,
 				3FB5BC7D1F817253006A2A72 /* SplitViewController.swift */,
-				2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */,
 				2B2FE3DC1FC79920007BA903 /* StartButton.swift */,
 			);
 			name = ViewControllers;
@@ -479,6 +490,7 @@
 				3FEFCF561F767CD1001FA2A9 /* edgeAttributeViewController.swift in Sources */,
 				3F2924BD1F45B3E300F3130E /* welcomeCollectionViewItem.swift in Sources */,
 				3FAFA6FD1F82D40E005F57FB /* WindowController.swift in Sources */,
+				2BDCC03B1FC985060080CA59 /* autoFill.swift in Sources */,
 				2BFE8A501FB2786600EDA589 /* SpectralForceDirected.swift in Sources */,
 				2BFE8A4A1FB277E600EDA589 /* WNCutDecomposer.swift in Sources */,
 				3F226A641F75C620004733A8 /* groupSinthesisAttributeViewController.swift in Sources */,

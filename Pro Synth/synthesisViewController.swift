@@ -9,12 +9,13 @@
 import Cocoa
 
 struct SchedulingElement {
-    static var index: Int = 0
+    var index: Int
+    static var stindex: Int = 0
     var restartTime: Int
     var latency: Int
     var name: String {
         get {
-            return "\(SchedulingElement.index) -> Restart: \(String(restartTime)) + Latency: \(String(latency))"
+            return "\(index) -> Restart: \(String(restartTime)) + Latency: \(String(latency))"
         }
         set(specialName){
             self.name = specialName
@@ -23,7 +24,8 @@ struct SchedulingElement {
     init(restartTime: Int, latency: Int) {
         self.restartTime = restartTime
         self.latency = latency
-        SchedulingElement.index += 1
+        SchedulingElement.stindex += 1
+        self.index = SchedulingElement.stindex
     }
 }
 
@@ -78,7 +80,17 @@ class synthesisViewController: NSViewController {
     @IBOutlet weak var SpectFDirAddRemoveSynth: NSSegmentedControl!
     @IBOutlet weak var SpectFDirRestartTimeSteps: NSTextField!
     @IBOutlet weak var SpectFDirRestartTimeStepsStepper: NSStepper!
+    @IBOutlet weak var autoFill: NSButton!
     
+    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+        
+        
+        if segue.identifier == "autoFill" {
+            
+        }
+        
+        
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +99,7 @@ class synthesisViewController: NSViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.StartSynth), name: Notification.Name("startSynth"), object: nil)
         NotificationCenter.default.post(name: Notification.Name("synthDidLoad"), object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.AutofillPaste), name: Notification.Name("autoFillCompleted"), object: nil)
         Schedules.append(SchedulingElement(restartTime: 0, latency: 0))
         SpectFDirMultipleSchedSelector.removeAllItems()
         SpectFDirMultipleSchedSelector.addItem(withTitle: Schedules[0].name)
@@ -95,7 +108,8 @@ class synthesisViewController: NSViewController {
     
     @IBAction func ScheduleChanged(_ sender: NSPopUpButton) {
         selectedScheduleIndex = sender.indexOfSelectedItem
-        
+        SpectFDirLatency.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].latency
+        SpectFDirRestartTime.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].restartTime
     }
     
     func StartSynth() {
@@ -148,6 +162,28 @@ class synthesisViewController: NSViewController {
             break
         }
     }
+    @IBAction func autoFill(_ sender: Any) {
+        
+    }
+    
+    func AutofillPaste() {
+        Schedules = schedulesArray
+        SpectFDirMultipleSchedSelector.removeAllItems()
+        for i in 0..<Schedules.count {
+            SpectFDirMultipleSchedSelector.addItem(withTitle: (Schedules[i].name))
+        }
+        selectedScheduleIndex = 0
+        SpectFDirMultipleSchedSelector.selectItem(at: selectedScheduleIndex)
+        SpectFDirLatency.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].latency
+        SpectFDirRestartTime.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].restartTime
+        
+        for i in 0..<Schedules.count {
+            Schedules[i].index = i+1
+            SpectFDirMultipleSchedSelector.removeItem(at: i)
+            SpectFDirMultipleSchedSelector.insertItem(withTitle: Schedules[i].name, at: i)
+        }
+        SchedulingElement.stindex -= 1
+    }
     
     @IBAction func AddRemoveScheduling(_ sender: NSSegmentedControl) {
 
@@ -159,10 +195,23 @@ class synthesisViewController: NSViewController {
             SpectFDirMultipleSchedSelector.selectItem(at: Schedules.count-1)
             SpectFDirLatency.stringValue = ""
             SpectFDirRestartTime.stringValue = ""
+            selectedScheduleIndex = SpectFDirMultipleSchedSelector.indexOfSelectedItem
             break
         case 1:
-            SpectFDirMultipleSchedSelector.removeItem(at: SpectFDirAddRemoveSynth.indexOfSelectedItem)
-            Schedules.remove(at: SpectFDirAddRemoveSynth.indexOfSelectedItem)
+            selectedScheduleIndex = SpectFDirMultipleSchedSelector.indexOfSelectedItem
+            Schedules.remove(at: SpectFDirMultipleSchedSelector.indexOfSelectedItem)
+            SpectFDirMultipleSchedSelector.removeItem(at: SpectFDirMultipleSchedSelector.indexOfSelectedItem)
+            
+            SpectFDirMultipleSchedSelector.selectItem(at: Schedules.count-1)
+            SpectFDirLatency.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].latency
+            SpectFDirRestartTime.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].restartTime
+            selectedScheduleIndex = SpectFDirMultipleSchedSelector.indexOfSelectedItem
+            for i in 0..<Schedules.count {
+                Schedules[i].index = i+1
+                SpectFDirMultipleSchedSelector.removeItem(at: i)
+                SpectFDirMultipleSchedSelector.insertItem(withTitle: Schedules[i].name, at: i)
+            }
+            SchedulingElement.stindex -= 1
             break
         default:
             break
@@ -173,7 +222,11 @@ class synthesisViewController: NSViewController {
         } else {
             sender.setEnabled(true, forSegment: 1)
         }
-        print(sender.indexOfSelectedItem)
+        if Schedules.count > 7 {
+            sender.setEnabled(false, forSegment: 0)
+        } else {
+            sender.setEnabled(true, forSegment: 0)
+        }
     }
 }
 
@@ -185,5 +238,6 @@ extension synthesisViewController: NSTextFieldDelegate {
         
         SpectFDirMultipleSchedSelector.removeItem(at: selectedScheduleIndex)
         SpectFDirMultipleSchedSelector.insertItem(withTitle: Schedules[selectedScheduleIndex].name, at: selectedScheduleIndex)
+        SpectFDirMultipleSchedSelector.selectItem(at: selectedScheduleIndex)
     }
 }
