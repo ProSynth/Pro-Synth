@@ -851,7 +851,7 @@
                 </windowController>
                 <customObject id="6f7-a7-6o1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="617" y="199"/>
+            <point key="canvasLocation" x="856" y="197"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="7fj-Iu-prH">
@@ -1221,11 +1221,11 @@
                                         </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="o3P-fI-MOt">
-                                        <rect key="frame" x="583" y="4" width="91" height="19"/>
+                                        <rect key="frame" x="594" y="4" width="80" height="19"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="91" id="cg3-38-bcx"/>
+                                            <constraint firstAttribute="width" constant="80" id="cg3-38-bcx"/>
                                         </constraints>
-                                        <buttonCell key="cell" type="roundRect" title="Default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OYo-FU-Ojj">
+                                        <buttonCell key="cell" type="roundRect" title="New" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OYo-FU-Ojj">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="cellTitle"/>
                                         </buttonCell>
@@ -1315,7 +1315,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xZz-e2-aqd">
-                                            <rect key="frame" x="246" y="49" width="37" height="17"/>
+                                            <rect key="frame" x="246" y="49" width="80" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="--" id="qAz-Ce-W7w">
                                                 <font key="font" metaFont="system"/>
@@ -1324,7 +1324,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0lb-tS-Qo6">
-                                            <rect key="frame" x="490" y="49" width="37" height="17"/>
+                                            <rect key="frame" x="490" y="49" width="73" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="--" id="GnD-kj-gco">
                                                 <font key="font" metaFont="system"/>
@@ -1342,7 +1342,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z5p-gk-k2s">
-                                            <rect key="frame" x="246" y="24" width="37" height="17"/>
+                                            <rect key="frame" x="246" y="24" width="97" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="--" id="eaD-4O-eFc">
                                                 <font key="font" metaFont="system"/>
@@ -2755,7 +2755,7 @@ Gw
                 </windowController>
                 <customObject id="dUR-T9-ZA4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1768" y="-514"/>
+            <point key="canvasLocation" x="1962" y="-551"/>
         </scene>
         <!--Log Window-->
         <scene sceneID="Mlb-zR-bG2">

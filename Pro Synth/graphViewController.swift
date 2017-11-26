@@ -70,8 +70,38 @@ class graphViewController: NSViewController {
     @IBOutlet weak var graphScrollView: NSScrollView!
     @IBOutlet weak var selectGraph: NSPopUpButton!
     
-    @IBOutlet weak var sideBarWidth: NSLayoutConstraint!
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        //logWindow.addLog(log: "Saját szöveget adunk hozzá")
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.importXMLMethod), name: Notification.Name("importXMLGraphMethod"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.SynthToDelegate), name: Notification.Name("synthDidLoad"), object: nil)
+        
+        newNode?.delegate = self
+        newGroup?.delegate = self
+        newConnectionManual?.delegate = self
+        
+        
+        
+        addNode.isEnabled = false
+        addEdge.isEnabled = false
+        
+        
+        selectGraph.removeAllItems()
+        //selectGraph.addItem(withTitle: "Untitled Graph")
+        graphOutlineView.register(forDraggedTypes: [NSPasteboardTypeString])
+        
+        
+        
+    }
 
     @IBAction func addGraphMenuButton(_ sender: NSButton) {
     
@@ -175,37 +205,7 @@ class graphViewController: NSViewController {
     
 
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //logWindow.addLog(log: "Saját szöveget adunk hozzá")
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.launchNewGroupSheet(notification:)), name: Notification.Name("hotKeyGroup"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.addNode(_:)), name: Notification.Name("hotKeyNode"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.importXMLMethod), name: Notification.Name("importXMLGraphMethod"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.SynthToDelegate), name: Notification.Name("synthDidLoad"), object: nil)
-
-        newNode?.delegate = self
-        newGroup?.delegate = self
-        newConnectionManual?.delegate = self
-        
-
-     
-        addNode.isEnabled = false
-        addEdge.isEnabled = false
-
-        
-        selectGraph.removeAllItems()
-        selectGraph.addItem(withTitle: "Untitled Graph")
-        graphOutlineView.register(forDraggedTypes: [NSPasteboardTypeString])
-        
-        
-
-    }
+    
     
     func addEdgeWithData(name:String, weight:Int, type:edgeDataType, snode:Node, dnode:Node) {
         let tmpEdge = Edge(name: name, weight: weight, parentNode1:snode, parentNode2:dnode, dataType: type)
@@ -271,13 +271,13 @@ class graphViewController: NSViewController {
         
         noGraph.isHidden = true
 
-            
-            sleep(5)
+        DispatchQueue.global(qos: .userInteractive).async {
             //var tmp = [GraphElement]()
             
             var sumEl: Int = 0
             var output = [Int : Bool]()
             var input = [Int : Bool]()
+            var counter: Int = 0
             
             let numberOfGroups = self.selectedGroups.count
             let numberOfNodes = Node.currentNodeID
@@ -294,6 +294,7 @@ class graphViewController: NSViewController {
                 
                 if dataRow[0].range(of: "digraph") != nil {                                             //Ha az első sorban benne van a digraph szöveg, akkor ez egy graphviz formátum
                     for element in 1..<dataRow.count {                                                  //Végigmegyünk az összes soron, keresve a gráfcsoportokat
+                        counter += 1
                         let stringArray = dataRow[element].components(separatedBy: " ")
                         if (stringArray[0] == "Subgraph") || (stringArray[0] == "subgraph") {           //Ha tartalmazza a Subgraph vagy subgraph stringet, akkor ez egy szubgráf definíció
                             
@@ -315,7 +316,7 @@ class graphViewController: NSViewController {
                             } else {
                                 groupMax = 0
                             }
-                            self.addGroupWithData(name: groupName, maxGroupTime: groupMax, groupID: groupID)            //Hozzáadjuk a csoportot
+                            //self.addGroupWithData(name: groupName, maxGroupTime: groupMax, groupID: groupID)            //Hozzáadjuk a csoportot
                             /*
                              for i in 0..<prop.count {
                              if prop[i].range(of: "label") != nil {                                  //Ha van benne label, akkor abban a stringben lesznek az attribútumok
@@ -324,6 +325,20 @@ class graphViewController: NSViewController {
                              }
                              
                              }*/
+                            DispatchQueue.main.sync {
+                                self.selectedGroups.append(Group(name: groupName, parent: nil, maxGroupTime: groupMax, groupID: groupID) as GraphElement)
+                                
+                                if self.selectedGroups.count > 0 {
+                                    self.addNode.isEnabled = true
+                                    addNodeMenuEnabled = true
+                                    
+                                    let appDelegate = NSApplication.shared().delegate as! AppDelegate
+                                    appDelegate.setNodeEnable(enable: true)
+                                    
+                                    
+                                }
+                            }
+                            Log?.Print(log: "## Gráfimportáló: A \(counter). csoport importálva.", detailed: .High)
                             
                         }
                         
@@ -381,7 +396,16 @@ class graphViewController: NSViewController {
                                 }
                                 output[tmpnodeID] = true
                                 input[tmpnodeID] = true
-                                self.addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: self.self.selectedGroups[index] as! Group, nodeOpType: tmpNodeOpType, nodeID: tmpnodeID)
+                                //self.addNodeWithData(name: nodeName, weight: nodeWeight, type: .none, group: self.self.selectedGroups[index] as! Group, nodeOpType: tmpNodeOpType, nodeID: tmpnodeID)
+                                
+                                DispatchQueue.main.sync {
+                                    self.selectedGroups[index].children.append(Node(name: nodeName, parent: self.selectedGroups[index], weight: nodeWeight, nodeOpType: tmpNodeOpType, nodeID: tmpnodeID) as GraphElement)
+                                    
+                                    self.addEdge.isEnabled = true
+                                    let appDelegate = NSApplication.shared().delegate as! AppDelegate
+                                    appDelegate.setEdgeEnable(enable: true)
+                                }
+                                
                             }
                         } else if stringArray[1] == "->" {
                             edgeNode1ID = Int(stringArray[0])!
@@ -458,9 +482,16 @@ class graphViewController: NSViewController {
                                     edgeDataTypeArray.append(tmpEdgeDataType)
                                 }
                                 
-                                self.addEdgeWithData(name: defaultString, weight: edgeWeight, type: tmpEdgeDataType,
-                                                     snode: self.selectedGroups[index1G].children[index1N] as! Node,
-                                                     dnode: self.selectedGroups[index2G].children[index2N] as! Node)
+                                //self.addEdgeWithData(name: defaultString, weight: edgeWeight, type: tmpEdgeDataType, snode: self.selectedGroups[index1G].children[index1N] as! Node, dnode: self.selectedGroups[index2G].children[index2N] as! Node)
+                                
+                                DispatchQueue.main.sync {
+                                    let tmpEdge = Edge(name: defaultString, weight: edgeWeight, parentNode1: self.selectedGroups[index1G].children[index1N] as! Node, parentNode2: self.selectedGroups[index2G].children[index2N] as! Node, dataType: tmpEdgeDataType)
+                                    (self.selectedGroups[index1G].children[index1N] as! Node).children.append(tmpEdge as GraphElement)
+                                    (self.selectedGroups[index2G].children[index2N] as! Node).children.append(tmpEdge as GraphElement)
+                                }
+                                
+
+                                
                                 sumEl += edgeWeight
                             }
                         }
@@ -485,12 +516,25 @@ class graphViewController: NSViewController {
                         
                     }
                 }
+                Log?.Print(log: "## Graphwiz fájl importálva")
                 
                 print("Fájl vége")
-                print(sumEl)
+                Log?.Print(log: "## Fájlnév: \(String(describing: importGraphPath?.lastPathComponent))", detailed: .Normal)
+                DispatchQueue.main.async {
+                    self.selectGraph.addItem(withTitle: String(describing: importGraphPath!.lastPathComponent))
+                }
             } catch {
+                Log?.Print(log: "## Hiba történt a graphwiz fájl importálása közben!", detailed: .Normal)
+                let alert = NSAlert()
+                alert.messageText = "Hiba!!"
+                alert.informativeText = "A fájl importálása sikertelen."
+                alert.addButton(withTitle: "OK")
+                alert.runModal()
                 print("Hiba van")
             }
+        }
+        
+        
             
             
         
@@ -534,7 +578,7 @@ class graphViewController: NSViewController {
 
 extension graphViewController: StartSynthDelegate {
     
-    func DoWNCutDecomposing(parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int) {
+    func DoWNCutDecomposing(synthName: String, parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int) {
         allGroups.append(selectedGroups)
         let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
         let result = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p: parameter, useWeights: useWeights)
@@ -559,14 +603,14 @@ extension graphViewController: StartSynthDelegate {
         // A gráfmegjelenítőbe és struktúrába való visszatöltés
         DispatchQueue.main.async {
             self.allGroups.append(result!)
-            self.selectGraph.addItem(withTitle: "Decomposition")
-            self.selectGraph.selectItem(withTitle: "Decomposition")
+            self.selectGraph.addItem(withTitle: synthName)
+            self.selectGraph.selectItem(withTitle: synthName)
             self.selectedGroups = self.allGroups[1]
         }
         return (disjunkGroups, numOfNodes, sumEdge)
     }
     
-    func DoSpecFDS(p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int] {
+    func DoSpecFDS(synthName: String, p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int] {
         let SpectralForce: SpectralForceDirected = SpectralForceDirected(groups: selectedGroups)
         if schedules.count == 1 {
             let result = SpectralForce.DoProcess(restartTime: schedules[0].restartTime, latencyTime: schedules[0].latency, p: p, s: s, d: d, spect: useSpectrum)
@@ -579,7 +623,7 @@ extension graphViewController: StartSynthDelegate {
         
     }
     
-    func DoRSCUUnrolling(splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int) {
+    func DoRSCUUnrolling(synthName: String, splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int) {
         allGroups.append(selectedGroups)
         var recursionDepth: Int = 0
         let RSCULoopUnroller: RSCU_LoopUnroller = RSCU_LoopUnroller(into: segment, with: self.selectedGroups[0].children[0].children)
@@ -601,8 +645,8 @@ extension graphViewController: StartSynthDelegate {
         // A gráfmegjelenítőbe és struktúrába való visszatöltés
         DispatchQueue.main.async {
             self.allGroups.append(rscuResult!)
-            self.selectGraph.addItem(withTitle: "Loop Unrolling")
-            self.selectGraph.selectItem(withTitle: "Loop Unrolling")
+            self.selectGraph.addItem(withTitle: synthName)
+            self.selectGraph.selectItem(withTitle: synthName)
             self.selectedGroups = self.allGroups[1]
         }
         return (recursionDepth, Count, maxWeight)

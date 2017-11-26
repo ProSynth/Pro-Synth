@@ -98,6 +98,7 @@ class RSCU_LoopUnroller: NSObject {
                     alert.messageText = "Hiba!!"
                     alert.informativeText = "Adatfüggő iteratív hurkot találtam :-( Ezt még nem tudom kezelni... Ezért leállok."
                     alert.addButton(withTitle: "OK")
+                    alert.runModal()
                     return nil
                 case .Normal:
                     print("Hurokkezelő: Hurkot talált")

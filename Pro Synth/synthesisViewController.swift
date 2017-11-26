@@ -33,9 +33,9 @@ struct SchedulingElement {
 }
 
 protocol StartSynthDelegate {
-    func DoRSCUUnrolling(splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int)
-    func DoWNCutDecomposing(parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int)
-    func DoSpecFDS(p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int]
+    func DoRSCUUnrolling(synthName: String, splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int)
+    func DoWNCutDecomposing(synthName: String, parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int)
+    func DoSpecFDS(synthName: String, p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int]
 }
 
 class synthesisViewController: NSViewController {
@@ -199,9 +199,10 @@ class synthesisViewController: NSViewController {
         case "WNCut":
             let parameter: Double = Double(WNCutParameter.floatValue)
             let useWeights: Bool = (WNCutWeighted.state == NSOnState ? true : false)
+            let synthName = SynthName.title
             // Dekompozíció thread indítása
             DispatchQueue.global(qos: .userInteractive).async {
-                let result = self.delegate?.DoWNCutDecomposing(parameter: parameter, useWeights: useWeights)
+                let result = self.delegate?.DoWNCutDecomposing(synthName: synthName, parameter: parameter, useWeights: useWeights)
                 DispatchQueue.main.async {
                     self.WNCutNumOfNodes.integerValue = (result?.numOfNode)!
                     self.WNCutNumOfGroups.integerValue = (result?.disjunktGroups)!
@@ -211,7 +212,7 @@ class synthesisViewController: NSViewController {
             
             break
         case "RSCU":
-            
+            let synthName = SynthName.title
             let segments: Int = RSCUTaskSplitTextField.integerValue
             DispatchQueue.global(qos: .userInteractive).async {
                 var type: RSCUDecType!
@@ -231,7 +232,7 @@ class synthesisViewController: NSViewController {
                 default:
                     break
                 }
-                let result = self.delegate?.DoRSCUUnrolling(splitInto: segments, with: type)
+                let result = self.delegate?.DoRSCUUnrolling(synthName: synthName, splitInto: segments, with: type)
                 DispatchQueue.main.async {
                     self.RSCUBiggestWeight.integerValue = (result?.maxWeight)!
                     self.RSCURecursionDepth.integerValue = (result?.recursionDepth)!
@@ -241,8 +242,9 @@ class synthesisViewController: NSViewController {
             
             break
         case "SFDS":
+            let synthName = SynthName.title
             DispatchQueue.global(qos: .userInteractive).async {
-                let result = self.delegate?.DoSpecFDS(p: true, s: true, d: true, schedules: self.Schedules, useSpectrum: true)
+                let result = self.delegate?.DoSpecFDS(synthName: synthName, p: true, s: true, d: true, schedules: self.Schedules, useSpectrum: true)
                 DispatchQueue.main.async {
                     self.SpectFDirMaxProc.stringValue = ""
                     for i in 0..<(result?.count)! {
