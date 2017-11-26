@@ -11,6 +11,7 @@
 		2B2FE3DD1FC79920007BA903 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2FE3DC1FC79920007BA903 /* StartButton.swift */; };
 		2B97F9401FC087B30095C976 /* graphXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B97F93F1FC087B30095C976 /* graphXMLParser.swift */; };
 		2BDCC03B1FC985060080CA59 /* autoFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDCC03A1FC985060080CA59 /* autoFill.swift */; };
+		2BDCC03D1FC9E6D70080CA59 /* namePopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDCC03C1FC9E6D70080CA59 /* namePopoverViewController.swift */; };
 		2BDFE3F31FC4EAB5002B1385 /* logWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDFE3F21FC4EAB5002B1385 /* logWindow.swift */; };
 		2BFE8A4A1FB277E600EDA589 /* WNCutDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */; };
 		2BFE8A4E1FB2785100EDA589 /* RSCU_LoopUnroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */; };
@@ -77,6 +78,7 @@
 		2B2FE3DC1FC79920007BA903 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 		2B97F93F1FC087B30095C976 /* graphXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = graphXMLParser.swift; sourceTree = "<group>"; };
 		2BDCC03A1FC985060080CA59 /* autoFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = autoFill.swift; sourceTree = "<group>"; };
+		2BDCC03C1FC9E6D70080CA59 /* namePopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = namePopoverViewController.swift; sourceTree = "<group>"; };
 		2BDFE3F21FC4EAB5002B1385 /* logWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = logWindow.swift; sourceTree = "<group>"; };
 		2BFE8A491FB277E600EDA589 /* WNCutDecomposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WNCutDecomposer.swift; sourceTree = "<group>"; };
 		2BFE8A4D1FB2785100EDA589 /* RSCU_LoopUnroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSCU_LoopUnroller.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 			children = (
 				2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */,
 				2BDCC03A1FC985060080CA59 /* autoFill.swift */,
+				2BDCC03C1FC9E6D70080CA59 /* namePopoverViewController.swift */,
 			);
 			name = Synthesis;
 			sourceTree = "<group>";
@@ -504,6 +507,7 @@
 				3F2924B21F45A31500F3130E /* welcomeScreenWindowController.swift in Sources */,
 				2B2FE3DD1FC79920007BA903 /* StartButton.swift in Sources */,
 				3FB5BC7E1F817253006A2A72 /* SplitViewController.swift in Sources */,
+				2BDCC03D1FC9E6D70080CA59 /* namePopoverViewController.swift in Sources */,
 				3F5FFF791F6DD0B000D5AF06 /* nodeAttributeViewController.swift in Sources */,
 				3F89FE111F74627300F7B623 /* GlobalVariables.swift in Sources */,
 				3F2924861F45A11600F3130E /* Document.swift in Sources */,

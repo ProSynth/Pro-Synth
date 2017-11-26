@@ -1082,7 +1082,7 @@
                                         <rect key="frame" x="18" y="731" width="265" height="26"/>
                                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="JzF-gV-Dgj" id="bWd-rS-Rvd">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
+                                            <font key="font" size="12" name=".AppleSystemUIFont"/>
                                             <menu key="menu" id="8f4-zY-srD">
                                                 <items>
                                                     <menuItem title="Item 1" state="on" id="JzF-gV-Dgj"/>
@@ -1196,31 +1196,51 @@
                                 <rect key="frame" x="0.0" y="730" width="694" height="28"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Xoi-zF-ghG">
-                                        <rect key="frame" x="18" y="5" width="143" height="17"/>
+                                        <rect key="frame" x="18" y="5" width="92" height="17"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="139" id="Q2x-lJ-XTC"/>
+                                            <constraint firstAttribute="width" constant="88" id="Q2x-lJ-XTC"/>
                                         </constraints>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Name of the synthesis:" id="46a-22-cp5">
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="46a-22-cp5">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="k6f-Ay-0Cd">
-                                        <rect key="frame" x="167" y="3" width="507" height="22"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="pAt-JR-rls">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3cd-zz-JVz">
+                                        <rect key="frame" x="147" y="5" width="400" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="400" id="JqM-Yv-1Rg"/>
+                                        </constraints>
+                                        <buttonCell key="cell" type="inline" title="Untitled Synthesis" bezelStyle="inline" alignment="center" borderStyle="border" inset="2" id="LI7-bL-4wJ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="changeSynthName:" target="LGX-vd-Huz" id="7AL-Zu-ExD"/>
+                                            <segue destination="amd-Rf-VWa" kind="sheet" identifier="changeSynthName" id="F5F-w6-wRO"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="o3P-fI-MOt">
+                                        <rect key="frame" x="583" y="4" width="91" height="19"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="91" id="cg3-38-bcx"/>
+                                        </constraints>
+                                        <buttonCell key="cell" type="roundRect" title="Default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OYo-FU-Ojj">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="cellTitle"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="setToDefault:" target="LGX-vd-Huz" id="Tz0-24-4Qa"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="k6f-Ay-0Cd" secondAttribute="trailing" constant="20" id="6Gv-ws-wNd"/>
+                                    <constraint firstItem="3cd-zz-JVz" firstAttribute="centerX" secondItem="TQd-h2-t5J" secondAttribute="centerX" id="C5s-Xl-gOL"/>
+                                    <constraint firstItem="o3P-fI-MOt" firstAttribute="top" secondItem="TQd-h2-t5J" secondAttribute="top" constant="5" id="FUf-qp-Gqq"/>
                                     <constraint firstItem="Xoi-zF-ghG" firstAttribute="top" secondItem="TQd-h2-t5J" secondAttribute="top" constant="6" id="VSH-NZ-u4K"/>
-                                    <constraint firstItem="k6f-Ay-0Cd" firstAttribute="top" secondItem="TQd-h2-t5J" secondAttribute="top" constant="3" id="W5W-Et-lUs"/>
-                                    <constraint firstItem="k6f-Ay-0Cd" firstAttribute="leading" secondItem="Xoi-zF-ghG" secondAttribute="trailing" constant="8" id="oyQ-7S-yAY"/>
+                                    <constraint firstItem="3cd-zz-JVz" firstAttribute="top" secondItem="TQd-h2-t5J" secondAttribute="top" constant="6" id="YZi-it-Lwg"/>
                                     <constraint firstItem="Xoi-zF-ghG" firstAttribute="leading" secondItem="TQd-h2-t5J" secondAttribute="leading" constant="20" id="qbU-CS-AEy"/>
+                                    <constraint firstAttribute="trailing" secondItem="o3P-fI-MOt" secondAttribute="trailing" constant="20" id="rtl-Mq-Dlz"/>
                                     <constraint firstAttribute="height" constant="28" id="zj6-ye-TLU"/>
                                 </constraints>
                             </visualEffectView>
@@ -1867,7 +1887,9 @@
                         <outlet property="SpectFDirRestartTimeSteps" destination="K3D-Pj-HEa" id="1w6-SQ-ae4"/>
                         <outlet property="SpectFDirRestartTimeStepsStepper" destination="5hs-ce-Tnz" id="ugH-pE-49b"/>
                         <outlet property="SpectFDirSave" destination="u53-hy-aPr" id="ibX-KG-Fn5"/>
+                        <outlet property="SpectFDirUseWeights" destination="Wyp-C6-dWy" id="Sxw-vw-DKb"/>
                         <outlet property="SpectralForcedirEnable" destination="30h-Dd-cYs" id="6aE-fe-TkG"/>
+                        <outlet property="SynthName" destination="3cd-zz-JVz" id="NEU-sy-NqN"/>
                         <outlet property="SynthSelect" destination="30h-Dd-cYs" id="y6f-Sn-NJq"/>
                         <outlet property="WNCutEnable" destination="DBC-Gw-IUX" id="R6g-mP-11Q"/>
                         <outlet property="WNCutNumOfGroups" destination="xZz-e2-aqd" id="yBc-6c-FZB"/>
@@ -1883,6 +1905,73 @@
                 <customObject id="fJ0-A1-LFG" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="812" y="1913"/>
+        </scene>
+        <!--Name Popover View Controller-->
+        <scene sceneID="rDV-I4-J2j">
+            <objects>
+                <viewController storyboardIdentifier="namePopover" id="amd-Rf-VWa" customClass="namePopoverViewController" customModule="Pro_Synth" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="koT-f3-LQI">
+                        <rect key="frame" x="0.0" y="0.0" width="524" height="116"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EyR-2v-tkl">
+                                <rect key="frame" x="155" y="74" width="349" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="NqM-RU-cW3">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Fs-z9-yHq">
+                                <rect key="frame" x="18" y="77" width="129" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Synthesis name" id="EOU-qv-sPV">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KQB-As-ZmJ">
+                                <rect key="frame" x="153" y="50" width="195" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Replace last synthesis result" bezelStyle="regularSquare" imagePosition="left" inset="2" id="2pY-Bw-83i">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="elg-qj-a33">
+                                <rect key="frame" x="32" y="19" width="75" height="19"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="roundRect" title="Cancel" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f23-xM-vLa">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="cellTitle"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="dismissController:" target="amd-Rf-VWa" id="P9L-n4-0br"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VrF-As-emv">
+                                <rect key="frame" x="429" y="19" width="75" height="19"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="roundRect" title="Save" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YKX-af-aie">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="cellTitle"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="save:" target="amd-Rf-VWa" id="xK0-tw-pPd"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="name" destination="EyR-2v-tkl" id="3fu-AV-seY"/>
+                        <outlet property="replaceSynth" destination="KQB-As-ZmJ" id="pgf-6k-twX"/>
+                    </connections>
+                </viewController>
+                <customObject id="o8V-C9-LGN" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="595" y="2541"/>
         </scene>
         <!--Auto Fill-->
         <scene sceneID="i15-cU-9Ep">
@@ -1923,10 +2012,6 @@
                                     <action selector="iterationSelect:" target="KX7-EB-NoV" id="g8Z-0y-7yP"/>
                                 </connections>
                             </button>
-                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ohW-lP-Pfl">
-                                <rect key="frame" x="16" y="207" width="231" height="5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </box>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3k3-gh-2Z1">
                                 <rect key="frame" x="21" y="240" width="75" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -2073,6 +2158,10 @@
                                     <action selector="dismissController:" target="KX7-EB-NoV" id="S2i-Y0-G4j"/>
                                 </connections>
                             </button>
+                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ohW-lP-Pfl">
+                                <rect key="frame" x="16" y="164" width="231" height="94"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </box>
                         </subviews>
                     </view>
                     <connections>
@@ -2090,7 +2179,7 @@
                 </viewController>
                 <customObject id="PQx-MS-NOl" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="812.5" y="2618.5"/>
+            <point key="canvasLocation" x="1026" y="2625"/>
         </scene>
         <!--Attributes-->
         <scene sceneID="Nuy-tR-hTx">

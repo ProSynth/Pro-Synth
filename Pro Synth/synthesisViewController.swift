@@ -21,6 +21,9 @@ struct SchedulingElement {
             self.name = specialName
         }
     }
+    
+    
+    
     init(restartTime: Int, latency: Int) {
         self.restartTime = restartTime
         self.latency = latency
@@ -46,13 +49,38 @@ class synthesisViewController: NSViewController {
     var currentRestartTime: Int = 0
     var selectedScheduleIndex: Int = 0
     
+    var customName: String = "Untitled Synthesis"
+    var typeName: String?
+    var fullName: String {
+        get {
+            if nil != typeName {
+                return "\(customName), \(typeName!)"
+            } else {
+                return customName
+            }
+        }
+    }
+    
+    var namePopover: namePopoverViewController!
+    
     @IBAction func SynthSelect(_ sender: NSButton) {
         selected = sender.title
-        print(selected)
+        switch selected {
+        case "WNCut":
+            typeName = "WNCut Decomposing"
+        case "RSCU":
+            typeName = "RSCU Loop Unrolling"
+        case "SFDS":
+            typeName = "Spectral Force Directed Scheduler"
+        default:
+            break
+        }
+        SynthName.title = fullName
     }
     
     
     
+    @IBOutlet weak var SynthName: NSButton!
     
     @IBOutlet weak var WNCutParameter: NSTextField!
     @IBOutlet weak var WNCutWeighted: NSButton!
@@ -80,30 +108,43 @@ class synthesisViewController: NSViewController {
     @IBOutlet weak var SpectFDirAddRemoveSynth: NSSegmentedControl!
     @IBOutlet weak var SpectFDirRestartTimeSteps: NSTextField!
     @IBOutlet weak var SpectFDirRestartTimeStepsStepper: NSStepper!
+    @IBOutlet weak var SpectFDirUseWeights: NSButton!
     @IBOutlet weak var autoFill: NSButton!
+    
+
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         
-        
-        if segue.identifier == "autoFill" {
-            
+        if segue.identifier == "changeSynthName" , let vc = segue.destinationController as? namePopoverViewController {
+            vc._name = (sender as! NSButton).title
+            namePopover = vc
         }
-        
+    }
+    
+    func updateName() {
+        customName = namePopover.name.stringValue
+        SynthName.title = fullName
         
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
+        //namePopoverViewController?.delegate = self
+        
         SynthViewController = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.StartSynth), name: Notification.Name("startSynth"), object: nil)
         NotificationCenter.default.post(name: Notification.Name("synthDidLoad"), object: self)
         NotificationCenter.default.addObserver(self, selector: #selector(self.AutofillPaste), name: Notification.Name("autoFillCompleted"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateName), name: Notification.Name("saveName"), object: nil)
         Schedules.append(SchedulingElement(restartTime: 0, latency: 0))
         SpectFDirMultipleSchedSelector.removeAllItems()
         SpectFDirMultipleSchedSelector.addItem(withTitle: Schedules[0].name)
         SpectFDirAddRemoveSynth.setEnabled(false, forSegment: 1)
+        
+        RSCUDecomposingToolSelector.removeAllItems()
+        RSCUDecomposingToolSelector.addItems(withTitles: ["Fast WNCut", "Fast NCut", "WNCut", "NCut"])
     }
     
     @IBAction func ScheduleChanged(_ sender: NSPopUpButton) {
@@ -111,6 +152,41 @@ class synthesisViewController: NSViewController {
         SpectFDirLatency.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].latency
         SpectFDirRestartTime.integerValue = Schedules[SpectFDirMultipleSchedSelector.indexOfSelectedItem].restartTime
     }
+    
+    @IBAction func setToDefault(_ sender: Any) {
+        customName = "Untitled Synthesis"
+        SynthName.title = customName
+        
+        WNCutParameter.stringValue = ""
+        WNCutWeighted.state = NSOnState
+        WNCutSave.state = NSOnState
+        WNCutNumOfNodes.stringValue = "--"
+        WNCutNumOfGroups.stringValue = "--"
+        WNCutSumOfEWeights.stringValue = "--"
+        
+        RSCUTaskSplitTextField.stringValue = ""
+        RSCUTaskSplitStepper.integerValue = 1
+        RSCUSave.state = NSOnState
+        RSCURecursionDepth.stringValue = "--"
+        RSCUNumOfNodes.stringValue = "--"
+        RSCUBiggestWeight.stringValue = "--"
+        
+        SchedulingElement.stindex = 0
+        Schedules.removeAll()
+        Schedules.append(SchedulingElement(restartTime: 0, latency: 0))
+        SpectFDirMultipleSchedSelector.removeAllItems()
+        SpectFDirMultipleSchedSelector.addItem(withTitle: Schedules[0].name)
+        SpectFDirAddRemoveSynth.setEnabled(false, forSegment: 1)
+        SpectFDirRestartTime.stringValue = ""
+        SpectFDirLatency.stringValue = ""
+        SpectFDirSave.state = NSOnState
+        SpectFDirParamD.state = NSOffState
+        SpectFDirParamS.state = NSOffState
+        SpectFDirParamP.state = NSOffState
+        SpectFDirUseWeights.state = NSOnState
+        SpectFDirMaxProc.stringValue = "--"
+    }
+    
     
     func StartSynth() {
         
@@ -138,7 +214,24 @@ class synthesisViewController: NSViewController {
             
             let segments: Int = RSCUTaskSplitTextField.integerValue
             DispatchQueue.global(qos: .userInteractive).async {
-                let result = self.delegate?.DoRSCUUnrolling(splitInto: segments, with: .FastWNCut)
+                var type: RSCUDecType!
+                switch self.RSCUDecomposingToolSelector.titleOfSelectedItem {
+                case "Fast WNCut"?:
+                    type = RSCUDecType.FastWNCut
+                    break
+                case "Fast NCut"?:
+                    type = RSCUDecType.FastNCut
+                    break
+                case "WNCut"?:
+                    type = RSCUDecType.WNCut
+                    break
+                case "NCut"?:
+                    type = RSCUDecType.NCut
+                    break
+                default:
+                    break
+                }
+                let result = self.delegate?.DoRSCUUnrolling(splitInto: segments, with: type)
                 DispatchQueue.main.async {
                     self.RSCUBiggestWeight.integerValue = (result?.maxWeight)!
                     self.RSCURecursionDepth.integerValue = (result?.recursionDepth)!
@@ -162,9 +255,7 @@ class synthesisViewController: NSViewController {
             break
         }
     }
-    @IBAction func autoFill(_ sender: Any) {
-        
-    }
+
     
     func AutofillPaste() {
         Schedules = schedulesArray
@@ -222,11 +313,23 @@ class synthesisViewController: NSViewController {
         } else {
             sender.setEnabled(true, forSegment: 1)
         }
+        /*
         if Schedules.count > 7 {
             sender.setEnabled(false, forSegment: 0)
         } else {
             sender.setEnabled(true, forSegment: 0)
         }
+         */
+    }
+    
+
+}
+
+
+
+extension synthesisViewController: SynthNameDidChanged {
+    func update() {
+        
     }
 }
 

@@ -115,127 +115,136 @@ class WNCutDecomposer: NSObject {
         
         let matrixStruct = pushMatrix(groups: sourceGroups)
         let synthesis: WNCut = WNCut(sizeOfMatrix: matrixStruct.sizeOfmatrix, sourceMatrix: matrixStruct.matrix)
-        let spectrum = synthesis.WNCut(weight: matrixStruct.weight)
-
-        let NodeIDKodtabla = spectrum.NodeIDCoder
-        let NodeSpectrum = spectrum.Spectrum
-        let NodeGroup = spectrum.Group
         
-        var NodeDictionary = [Int : Double]()
-        
-
-        
-        for group in 1...(NodeGroup.max()!) {
+        if useWeights {
+            let spectrum = synthesis.WNCut(weight: matrixStruct.weight)
             
-            // A kibővített gráf leredukálása, így már egészen biztos, hogy egy nodeID-hoz a vektor egyetlen eleme, és egyetlen spetruma fog tartozni
-            var nodeCounter: Int = 0
-            var nodeSpectrums = [Double]()
-            for i in 0..<NodeSpectrum.count {
-                //print("\(i). ciklusban van benne")
-                if NodeGroup[i] == group {
-                    //print("Feltétel teljesül")
-                    if NodeDictionary[NodeIDKodtabla[i]] != nil {                   // Ha létezik már olyan NodeID-jű pont, akkor átlagot veszünk
-                        //print("Meglévő pont integrálása")
-                        nodeSpectrums.append(NodeSpectrum[i])
-                        nodeCounter += 1
-                        let avg = (nodeSpectrums.reduce(0,+))/Double(nodeCounter)
-                        NodeDictionary[NodeIDKodtabla[i]] = avg
-                    } else {
-                        //print("Új pont                        ÚJ!!!!")
-                        NodeDictionary[NodeIDKodtabla[i]] = NodeSpectrum[i]
-                        nodeSpectrums.removeAll()
-                        nodeSpectrums.append(NodeSpectrum[i])
-                        nodeCounter = 1
+            let NodeIDKodtabla = spectrum.NodeIDCoder
+            let NodeSpectrum = spectrum.Spectrum
+            let NodeGroup = spectrum.Group
+            
+            var NodeDictionary = [Int : Double]()
+            
+            
+            
+            for group in 1...(NodeGroup.max()!) {
+                
+                // A kibővített gráf leredukálása, így már egészen biztos, hogy egy nodeID-hoz a vektor egyetlen eleme, és egyetlen spetruma fog tartozni
+                var nodeCounter: Int = 0
+                var nodeSpectrums = [Double]()
+                for i in 0..<NodeSpectrum.count {
+                    //print("\(i). ciklusban van benne")
+                    if NodeGroup[i] == group {
+                        //print("Feltétel teljesül")
+                        if NodeDictionary[NodeIDKodtabla[i]] != nil {                   // Ha létezik már olyan NodeID-jű pont, akkor átlagot veszünk
+                            //print("Meglévő pont integrálása")
+                            nodeSpectrums.append(NodeSpectrum[i])
+                            nodeCounter += 1
+                            let avg = (nodeSpectrums.reduce(0,+))/Double(nodeCounter)
+                            NodeDictionary[NodeIDKodtabla[i]] = avg
+                        } else {
+                            //print("Új pont                        ÚJ!!!!")
+                            NodeDictionary[NodeIDKodtabla[i]] = NodeSpectrum[i]
+                            nodeSpectrums.removeAll()
+                            nodeSpectrums.append(NodeSpectrum[i])
+                            nodeCounter = 1
+                        }
+                        
                     }
                     
                 }
                 
-            }
-            
-            // Itt kell elvégezni a sorbarendezést, stb-t
-            
-            let sortedNodeDictionary = NodeDictionary.sorted{ $0.value < $1.value }
-            let min = (sortedNodeDictionary.first!).value
-            let max = (sortedNodeDictionary.last!).value
-            
-            var runningPoint: Double = min
-            let maxDistence = (max-min)*(p/1000)
-            
-            
-            // A kimeneti gráf struktúra feltöltése
-            destinationGroups.append(Group(name: "Group #\(group)", parent: nil, maxGroupTime: 0))           // Az adott, diszjunkt csoport létrehozása
-            
-
-            var indexes = [Int]()
-            var prevIndex: Int? = nil
-            
-            for i in 0..<sortedNodeDictionary.count {
-                guard let index = findNode(fromID: sortedNodeDictionary[i].key, nodes: sourceNodes) else {
-                    print("Hiba az ID alapú meghatározásnál, nem találta a pontot")
-                    return nil
+                // Itt kell elvégezni a sorbarendezést, stb-t
+                
+                let sortedNodeDictionary = NodeDictionary.sorted{ $0.value < $1.value }
+                let min = (sortedNodeDictionary.first!).value
+                let max = (sortedNodeDictionary.last!).value
+                
+                var runningPoint: Double = min
+                let maxDistence = (max-min)*(p/1000)
+                
+                
+                // A kimeneti gráf struktúra feltöltése
+                destinationGroups.append(Group(name: "Group #\(group)", parent: nil, maxGroupTime: 0))           // Az adott, diszjunkt csoport létrehozása
+                
+                
+                var indexes = [Int]()
+                var prevIndex: Int? = nil
+                
+                for i in 0..<sortedNodeDictionary.count {
+                    guard let index = findNode(fromID: sortedNodeDictionary[i].key, nodes: sourceNodes) else {
+                        print("Hiba az ID alapú meghatározásnál, nem találta a pontot")
+                        return nil
+                    }
+                    
+                    //print("\(index) sorszámú pontot megtaláltam")
+                    let name = (sourceNodes[index] as GraphElement).name
+                    let weight = sourceNodes[index].weight
+                    var spectrum = sourceNodes[index].spectrum
+                    
+                    if runningPoint > sortedNodeDictionary[i].value {
+                        (destinationGroups[group-1].children.last as! Node).weight += weight
+                        destinationGroups[group-1].children.last?.name += ":\(name)"
+                        runningPoint = sortedNodeDictionary[i].value
+                        spectrum = (spectrum! + (destinationGroups[group-1].children.last as! Node).spectrum!)/2
+                    } else {
+                        
+                        if prevIndex != nil {
+                            for j in 0..<indexes.count {
+                                for edge in 0..<(sourceNodes[indexes[j]] as GraphElement).children.count {
+                                    let  theEdge = ((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
+                                    if (!checkIfBothNodeIdInArray(edge: theEdge, indexes: indexes, sourceNodes: sourceNodes)) {
+                                        (destinationGroups[group-1].children.last!).children.append((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
+                                    }
+                                }
+                                
+                                
+                            }
+                        }
+                        
+                        
+                        
+                        destinationGroups[group-1].children.append(Node(name: name, parent: nil, weight: weight, nodeOpType: .none))
+                        // Élek hozzáadása
+                        (destinationGroups[group-1].children.last as! Node).spectrum = spectrum
+                        indexes.removeAll()
+                        runningPoint = sortedNodeDictionary[i].value
+                    }
+                    
+                    
+                    
+                    
+                    indexes.append(index)                           // Az összetartozó pontok indexe
+                    
+                    
+                    runningPoint += maxDistence
+                    
+                    prevIndex = index
                 }
                 
-                //print("\(index) sorszámú pontot megtaláltam")
-                let name = (sourceNodes[index] as GraphElement).name
-                let weight = sourceNodes[index].weight
-                var spectrum = sourceNodes[index].spectrum
-                
-                if runningPoint > sortedNodeDictionary[i].value {
-                    (destinationGroups[group-1].children.last as! Node).weight += weight
-                    destinationGroups[group-1].children.last?.name += ":\(name)"
-                    runningPoint = sortedNodeDictionary[i].value
-                    spectrum = (spectrum! + (destinationGroups[group-1].children.last as! Node).spectrum!)/2
-                } else {
-                    
-                    if prevIndex != nil {
-                        for j in 0..<indexes.count {
-                            for edge in 0..<(sourceNodes[indexes[j]] as GraphElement).children.count {
-                                let  theEdge = ((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
-                                if (!checkIfBothNodeIdInArray(edge: theEdge, indexes: indexes, sourceNodes: sourceNodes)) {
-                                    (destinationGroups[group-1].children.last!).children.append((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
-                                }
-                            }
-                            
-                            
+                for j in 0..<indexes.count {
+                    for edge in 0..<(sourceNodes[indexes[j]] as GraphElement).children.count {
+                        let  theEdge = ((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
+                        if (!checkIfBothNodeIdInArray(edge: theEdge, indexes: indexes, sourceNodes: sourceNodes)) {
+                            (destinationGroups[group-1].children.last!).children.append((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
                         }
                     }
-                    
-                    
-                    
-                    destinationGroups[group-1].children.append(Node(name: name, parent: nil, weight: weight, nodeOpType: .none))
-                    // Élek hozzáadása
-                    (destinationGroups[group-1].children.last as! Node).spectrum = spectrum
-                    indexes.removeAll()
-                    runningPoint = sortedNodeDictionary[i].value
                 }
                 
-                
-                
-
-                indexes.append(index)                           // Az összetartozó pontok indexe
-
-                
-                runningPoint += maxDistence
-                
-                prevIndex = index
+                //Töröljük a tartalmát, hogy legközelebb üres legyen
+                NodeDictionary.removeAll()
             }
             
-            for j in 0..<indexes.count {
-                for edge in 0..<(sourceNodes[indexes[j]] as GraphElement).children.count {
-                    let  theEdge = ((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
-                    if (!checkIfBothNodeIdInArray(edge: theEdge, indexes: indexes, sourceNodes: sourceNodes)) {
-                        (destinationGroups[group-1].children.last!).children.append((sourceNodes[indexes[j]] as GraphElement).children[edge] as! Edge)
-                    }
-                }
-            }
             
-            //Töröljük a tartalmát, hogy legközelebb üres legyen
-            NodeDictionary.removeAll()
+            
+            print("\(plus)")
+        } else {
+            let spectrum = synthesis.NCut()
+            // Az NCutot még meg kell csinálni
         }
+        
 
-        
-        
-        print("\(plus)")
+
         
         
         return destinationGroups
