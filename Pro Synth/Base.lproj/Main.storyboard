@@ -1532,7 +1532,7 @@
                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="224" id="C9v-gB-xvL"/>
                                                 <constraint firstAttribute="height" constant="14" id="qKh-RB-aD1"/>
                                             </constraints>
-                                            <buttonCell key="cell" type="check" title="Save start time to graph editor list" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="H5G-Fp-gTR">
+                                            <buttonCell key="cell" type="check" title="Save start time to graph editor list" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" inset="2" id="H5G-Fp-gTR">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -1965,8 +1965,10 @@
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="cancel" destination="elg-qj-a33" id="9wK-bl-6IV"/>
                         <outlet property="name" destination="EyR-2v-tkl" id="3fu-AV-seY"/>
                         <outlet property="replaceSynth" destination="KQB-As-ZmJ" id="pgf-6k-twX"/>
+                        <outlet property="save" destination="VrF-As-emv" id="1Qh-bS-XyB"/>
                     </connections>
                 </viewController>
                 <customObject id="o8V-C9-LGN" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

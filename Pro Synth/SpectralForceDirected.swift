@@ -27,7 +27,7 @@ class SpectralForceDirected: NSObject {
     // Saját változók definiálása
     var groups: [GraphElement]
     
-    init(groups: [GraphElement]) {
+    init( groups: [GraphElement]) {
         self.groups = groups
         super.init()
     }

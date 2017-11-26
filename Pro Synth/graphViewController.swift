@@ -251,11 +251,17 @@ class graphViewController: NSViewController {
         let parser = graphXMLParser()
         parser.parseFeed(url: importGraphPath!) { (selectedGroups) in
             self.selectedGroups = selectedGroups
-            
+            self.selectGraph.addItem(withTitle: String(describing: importGraphPath!.lastPathComponent))
+            self.allGroups.append(self.selectedGroups)
             
             OperationQueue.main.addOperation {
                 self.graphOutlineView.reloadData()
             }
+            
+            Log?.Print(log: "## XML fájl importálva")
+            
+            Log?.Print(log: "## Fájlnév: \(String(describing: importGraphPath?.lastPathComponent))", detailed: .Normal)
+           
         }
     }
     
@@ -270,7 +276,8 @@ class graphViewController: NSViewController {
     func importMethod() {
         
         noGraph.isHidden = true
-
+        self.selectedGroups.removeAll()                  // Hogy nem  importáljunk egy fába többet
+        
         DispatchQueue.global(qos: .userInteractive).async {
             //var tmp = [GraphElement]()
             
@@ -281,6 +288,7 @@ class graphViewController: NSViewController {
             
             let numberOfGroups = self.selectedGroups.count
             let numberOfNodes = Node.currentNodeID
+            
             
             do {
                 // Adat beolvasása a data stringbe
@@ -522,6 +530,7 @@ class graphViewController: NSViewController {
                 Log?.Print(log: "## Fájlnév: \(String(describing: importGraphPath?.lastPathComponent))", detailed: .Normal)
                 DispatchQueue.main.async {
                     self.selectGraph.addItem(withTitle: String(describing: importGraphPath!.lastPathComponent))
+                    self.allGroups.append(self.selectedGroups)
                 }
             } catch {
                 Log?.Print(log: "## Hiba történt a graphwiz fájl importálása közben!", detailed: .Normal)
@@ -578,12 +587,13 @@ class graphViewController: NSViewController {
 
 extension graphViewController: StartSynthDelegate {
     
-    func DoWNCutDecomposing(synthName: String, parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int) {
-        allGroups.append(selectedGroups)
+    func DoWNCutDecomposing(synthName: String, replace: Bool, save: Bool, parameter: Double, useWeights: Bool) -> (disjunktGroups: Int, numOfNode: Int, sumEdgeWeights: Int) {
+        //allGroups.append(selectedGroups)
         let WNCutDecomposerTool: WNCutDecomposer = WNCutDecomposer()
         let result = WNCutDecomposerTool.DoProcess(sourceGroups: selectedGroups, p: parameter, useWeights: useWeights)
         guard nil != result else {
             print("A Dekompozíció nem végződött el")
+            Log?.Print(log: "## WNCut Decomposer: A dekompozíció közben hiba lépett fel!", detailed: .Low)
             return (0, 0, 0)
         }
         let disjunkGroups = (result?.count)!
@@ -602,34 +612,54 @@ extension graphViewController: StartSynthDelegate {
         
         // A gráfmegjelenítőbe és struktúrába való visszatöltés
         DispatchQueue.main.async {
-            self.allGroups.append(result!)
-            self.selectGraph.addItem(withTitle: synthName)
-            self.selectGraph.selectItem(withTitle: synthName)
-            self.selectedGroups = self.allGroups[1]
+            if save {
+                if replace {
+                    self.allGroups[self.selectGraph.indexOfSelectedItem] = result!
+                    self.selectGraph.removeItem(at: self.selectGraph.indexOfSelectedItem)
+                    self.selectGraph.insertItem(withTitle: synthName, at: self.selectGraph.indexOfSelectedItem)
+                    self.selectGraph.selectItem(withTitle: synthName)
+                    self.selectedGroups = self.allGroups[self.selectGraph.indexOfSelectedItem]
+                } else {
+                    self.allGroups.append(result!)
+                    self.selectGraph.addItem(withTitle: synthName)
+                    self.selectGraph.selectItem(withTitle: synthName)
+                    self.selectedGroups = self.allGroups.last!
+                }
+            } else {
+                self.selectedGroups = result!
+            }
+
+
         }
+        Log?.Print(log: "## WNCut Decomposer: A dekompozíció sikeresen befejeződött.", detailed: .Normal)
         return (disjunkGroups, numOfNodes, sumEdge)
     }
     
-    func DoSpecFDS(synthName: String, p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int] {
+    func DoSpecFDS(synthName: String, replace: Bool, save: Bool, p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int] {
         let SpectralForce: SpectralForceDirected = SpectralForceDirected(groups: selectedGroups)
         if schedules.count == 1 {
             let result = SpectralForce.DoProcess(restartTime: schedules[0].restartTime, latencyTime: schedules[0].latency, p: p, s: s, d: d, spect: useSpectrum)
+            let resultGraph = result.graph
+            allGroups[selectGraph.indexOfSelectedItem] = resultGraph!
+            Log?.Print(log: "## Spectral Force Directed Ütemező: Az ütemezés elkészült.", detailed: .Normal)
             return [0]
         } else {
             //let result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
+            Log?.Print(log: "## Spectral Force Directed Ütemező: Ez a funkció még nem érhető el a Pro Synth jelenlegi verziójában...", detailed: .Low)
             return [0]
         }
         
         
     }
     
-    func DoRSCUUnrolling(synthName: String, splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int) {
-        allGroups.append(selectedGroups)
+    func DoRSCUUnrolling(synthName: String, replace: Bool, save: Bool, splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int) {
+        //allGroups.append(selectedGroups)
         var recursionDepth: Int = 0
         let RSCULoopUnroller: RSCU_LoopUnroller = RSCU_LoopUnroller(into: segment, with: self.selectedGroups[0].children[0].children)
         let rscuResult = RSCULoopUnroller.DoProcess()
         guard nil != rscuResult else {
             print("A Hurokkibontás nem végződött el")
+            Log?.Print(log: "## RSCU Hurokkibontó: A hurokkibontás közben hiba lépett fel!", detailed: .Low)
             return (0, 0, 0)
         }
         var maxWeight: Int = (rscuResult![0] as! Node).weight
@@ -644,11 +674,25 @@ extension graphViewController: StartSynthDelegate {
         
         // A gráfmegjelenítőbe és struktúrába való visszatöltés
         DispatchQueue.main.async {
-            self.allGroups.append(rscuResult!)
-            self.selectGraph.addItem(withTitle: synthName)
-            self.selectGraph.selectItem(withTitle: synthName)
-            self.selectedGroups = self.allGroups[1]
+            if save {
+                if replace {
+                    self.allGroups[self.selectGraph.indexOfSelectedItem] = rscuResult!
+                    self.selectGraph.removeItem(at: self.selectGraph.indexOfSelectedItem)
+                    self.selectGraph.insertItem(withTitle: synthName, at: self.selectGraph.indexOfSelectedItem)
+                    self.selectGraph.selectItem(withTitle: synthName)
+                    self.selectedGroups = self.allGroups[self.selectGraph.indexOfSelectedItem]
+                } else {
+                    self.allGroups.append(rscuResult!)
+                    self.selectGraph.addItem(withTitle: synthName)
+                    self.selectGraph.selectItem(withTitle: synthName)
+                    self.selectedGroups = self.allGroups.last!
+                }
+            } else {
+                self.selectedGroups = rscuResult!
+            }
+            
         }
+        Log?.Print(log: "## RSCU Hurokkibontó: A hurokkibontás befejeződött", detailed: .Normal)
         return (recursionDepth, Count, maxWeight)
     }
 

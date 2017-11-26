@@ -27,12 +27,16 @@ class namePopoverViewController: NSViewController {
     
     @IBOutlet weak var name: NSTextField!
     @IBOutlet weak var replaceSynth: NSButton!
+    @IBOutlet weak var save: NSButton!
+    @IBOutlet weak var cancel: NSButton!
     
     var delegate: SynthNameDidChanged?
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
         name.stringValue = _name
+        save.keyEquivalent = "\u{0d}"
+        cancel.keyEquivalent = "\u{1b}"
     }
     
     @IBAction func save(_ sender: NSButton) {
