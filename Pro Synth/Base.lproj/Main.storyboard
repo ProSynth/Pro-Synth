@@ -118,6 +118,12 @@
                                                 <action selector="importXMLGraph:" target="Voe-Tx-rLC" id="xAJ-VA-5Qn"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Export Graphwiz graph" id="RTN-G5-9dy">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="exportGraph:" target="Voe-Tx-rLC" id="m6c-yG-NxH"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
                                         <menuItem title="Page Setup…" keyEquivalent="P" id="qIS-W8-SiK">
                                             <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>

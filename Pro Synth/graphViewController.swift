@@ -18,6 +18,7 @@ var addEdgeMenuEnabled : Bool = false
 var index: Int = 0
 
 var importGraphPath : URL?
+var exportGraphPath : URL?
 
 var defaultGroupId: Int = -1
 
@@ -81,6 +82,7 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.addEdge(_:)), name: Notification.Name("hotKeyEdge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importXMLMethod), name: Notification.Name("importXMLGraphMethod"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.exportGraphMethod), name: Notification.Name("exportGraphMethod"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.SynthToDelegate), name: Notification.Name("synthDidLoad"), object: nil)
@@ -250,11 +252,12 @@ class graphViewController: NSViewController {
         self.noGraph.isHidden = true
         let parser = graphXMLParser()
         parser.parseFeed(url: importGraphPath!) { (selectedGroups) in
-            self.selectedGroups = selectedGroups
-            self.selectGraph.addItem(withTitle: String(describing: importGraphPath!.lastPathComponent))
-            self.allGroups.append(self.selectedGroups)
+            
             
             OperationQueue.main.addOperation {
+                self.selectedGroups = selectedGroups
+                self.selectGraph.addItem(withTitle: String(describing: importGraphPath!.lastPathComponent))
+                self.allGroups.append(self.selectedGroups)
                 self.graphOutlineView.reloadData()
             }
             
@@ -548,6 +551,65 @@ class graphViewController: NSViewController {
             
         
 
+    }
+    
+    func exportGraphMethod() {
+        let text = "Kiírandó fájl\nKiírandó fájl2"
+        print("Exportálás")
+        print(exportGraphPath?.absoluteString as Any)
+        let name = (selectGraph.titleOfSelectedItem!).replacingOccurrences(of: " ", with: "_")
+        var outputText = "digraph \(name) {\n"
+        
+        var index: Int = 0
+        for i in 0..<selectedGroups.count {
+            for j in 0..<selectedGroups[i].children.count {
+                let node = (selectedGroups[i].children[j] as! Node)
+                var line: String = String(node.nodeID)
+                line += " [label=\""
+                if node.name == node.opType?.name {
+                    line += "@:"
+                } else {
+                    line += "\(node.name):"
+                }
+                line += "\((node.opType?.name)!):"
+                line += "0:0:0:"
+                line += "\(node.weight):"
+                line += "\((node.parent as! Group).groupID)\"];\n"
+                outputText += line
+                index += 1
+            }
+        }
+        
+        for i in 0..<selectedGroups.count {
+            for j in 0..<selectedGroups[i].children.count {
+                for k in 0..<selectedGroups[i].children[j].children.count {
+                    let edge = (selectedGroups[i].children[j].children[k] as! Edge)
+                    var line: String = String(edge.parentsNode.nodeID)
+                    line += " -> \(edge.parentdNode.nodeID) [ label=\""
+                    line += "\(edge.edgeID):"
+                    line += "\(edge.weight):"
+                    line += "\(edge.type.name)\"];\n"
+                    outputText += line
+                }
+            }
+        }
+        
+        for i in 0..<selectedGroups.count {
+            var line: String = "Subgraph \(selectedGroups[i].name) {label=\""
+            line += "\((selectedGroups[i] as! Group).groupID):0 "
+            for j in 0..<selectedGroups[i].children.count {
+                line += " \((selectedGroups[i].children[j] as! Node).nodeID);"
+            }
+            line += "}\n"
+            outputText += line
+        }
+        
+        outputText += "}"
+        
+        do {
+            try outputText.write(to: exportGraphPath!, atomically: false, encoding: .utf8)
+        }
+        catch {/* error handling here */}
     }
     
     

@@ -63,6 +63,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
     }
     
+    @IBAction func exportGraph(_ sender: NSMenuItem) {
+        let myFiledialog = NSSavePanel()
+        myFiledialog.prompt = "Export graph"
+        myFiledialog.allowedFileTypes = ["dot"]
+        
+        myFiledialog.beginSheetModal(for: NSApplication.shared().mainWindow!, completionHandler: { num in
+            if num == NSModalResponseOK {
+                exportGraphPath = myFiledialog.url
+                NotificationCenter.default.post(name: Notification.Name("exportGraphMethod"), object: self)
+            } else {
+                print("nothing chosen")
+            }
+        })
+    }
+    
+    
     @IBAction func addNodeFromMenu(_ sender: NSMenuItem) {
         NotificationCenter.default.post(name: Notification.Name("hotKeyNode"), object: self)
 
