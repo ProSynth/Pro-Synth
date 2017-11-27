@@ -14,6 +14,8 @@ struct ScheduleResults {
     var name: String
     var graph: [GraphElement]
     var processorUsage: [Int]
+    var latency: Int
+    var restartTime: Int
 }
 
 class SchedulingResultViewController: NSViewController {

@@ -1091,7 +1091,7 @@ class SpectralForceDirected: NSObject {
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE, spect: spect)
         writeBack()
         
-        let res = ScheduleResults(name: schedule.name, graph: groups, processorUsage: cpuusage)
+        let res = ScheduleResults(name: schedule.name, graph: groups, processorUsage: cpuusage, latency: latencytime, restartTime: restartTime)
         
         
         return res
