@@ -138,6 +138,8 @@ var tmpEdgeAttribute: Edge!
 var tmpGroupArray = [Group]()
 
 var Log: logWindow?
+var SchedRes: SchedulingResultViewController?
+
 var SynthViewController: synthesisViewController?
 
 var fileData: [UInt8]!

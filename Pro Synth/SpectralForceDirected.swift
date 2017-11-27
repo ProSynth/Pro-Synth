@@ -27,7 +27,7 @@ class SpectralForceDirected: NSObject {
     // Saját változók definiálása
     var groups: [GraphElement]
     
-    init( groups: [GraphElement]) {
+    init(groups: [GraphElement]) {
         self.groups = groups
         super.init()
     }
@@ -726,6 +726,7 @@ class SpectralForceDirected: NSObject {
         delayed.removeAll()
         forceChange.removeAll()
         print("## \(fixed)/\(tofix) done.")
+        Log?.Print(log: "## \(fixed)/\(tofix) done.", detailed: .Normal)
         list = ord
         var sortedops = ops.sorted(by: { $0.type > $1.type })
         while list.count != 0 {
@@ -759,6 +760,7 @@ class SpectralForceDirected: NSObject {
             if e.asap == e.alap {
                 fixed += 1
                 print("## skipping node \(e.id!).\n## \(fixed)/\(tofix) done.")
+                Log?.Print(log: "## \(fixed)/\(tofix) done.", detailed: .Normal)
                 forceChange.append(0)
             }
             else {
@@ -868,6 +870,7 @@ class SpectralForceDirected: NSObject {
                     fixed += 1
                 }
                 print("##   \(fixed)/\(tofix) done")
+                Log?.Print(log: "## \(fixed)/\(tofix) done.", detailed: .Normal)
             }
             c.removeAll()
             newC.removeAll()
@@ -1072,14 +1075,15 @@ class SpectralForceDirected: NSObject {
             self.restartTime = self.latencytime
         }
         
-        
-        let matrixStruct = pushMatrix(groups: groups)
-        
-        
-        let WNCutsched: WNCut = WNCut(sizeOfMatrix: matrixStruct.sizeOfmatrix, sourceMatrix: matrixStruct.matrix)
-        
-        spektrum = WNCutsched.WNCut(weight: matrixStruct.weight)
-        
+        if spektrum == nil
+        {
+            let matrixStruct = pushMatrix(groups: groups)
+            
+            
+            let WNCutsched: WNCut = WNCut(sizeOfMatrix: matrixStruct.sizeOfmatrix, sourceMatrix: matrixStruct.matrix)
+            
+            spektrum = WNCutsched.WNCut(weight: matrixStruct.weight)
+        }
         
         
         readInput()
@@ -1089,58 +1093,72 @@ class SpectralForceDirected: NSObject {
         return (groups, l, maxusage)
     }
     /*
-    func RLScan(restartTimefrom: Int, latencyTimefrom: Int, restartTimeto: Int, latencyTimeto: Int,restartTimesteps: Int, latencyTimesteps: Int , spect: Bool = true) -> ([[Int]]) {
+     func RLScan(restartTimefrom: Int, latencyTimefrom: Int, restartTimeto: Int, latencyTimeto: Int,restartTimesteps: Int, latencyTimesteps: Int , spect: Bool = true) -> ([[Int]]) {
+     
+     let stepcountr = (restartTimeto - restartTimefrom)/restartTimesteps
+     let stepcountl = (latencyTimeto - latencyTimefrom)/latencyTimesteps
+     var ered: [[Int]] = Array(repeating: Array(repeating: 0, count: stepcountr), count: stepcountl)
+     
+     
+     
+     for i in 0..<stepcountr{
+     DispatchQueue.concurrentPerform(iterations: stepcountl) {
+     
+     let j = $0
+     let iter: SpectralForceDirected = SpectralForceDirected(groups: self.groups)
+     let retvar = iter.DoProcess(restartTime: restartTimefrom+i*restartTimesteps, latencyTime: latencyTimefrom+j*latencyTimesteps, p: false, s: false, d: false)
+     
+     
+     
+     ered[i][j] = retvar.proccount!
+     }
+     
+     }
+     
+     
+     return ered
+     
+     }
+     */
+    
+    func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([Int]) {
         
-        let stepcountr = (restartTimeto - restartTimefrom)/restartTimesteps
-        let stepcountl = (latencyTimeto - latencyTimefrom)/latencyTimesteps
-        var ered: [[Int]] = Array(repeating: Array(repeating: 0, count: stepcountr), count: stepcountl)
         
+        var ered: [Int] = Array(repeating: 0, count: schedules.count)
         
-        
-        for i in 0..<stepcountr{
-            DispatchQueue.concurrentPerform(iterations: stepcountl) {
-                
-                let j = $0
-                let iter: SpectralForceDirected = SpectralForceDirected(groups: self.groups)
-                let retvar = iter.DoProcess(restartTime: restartTimefrom+i*restartTimesteps, latencyTime: latencyTimefrom+j*latencyTimesteps, p: false, s: false, d: false)
-                
-                
-                
-                ered[i][j] = retvar.proccount!
-            }
+        if spect == true
+        {
+            let matrixStruct = pushMatrix(groups: groups)
             
+            
+            let WNCutsched: WNCut = WNCut(sizeOfMatrix: matrixStruct.sizeOfmatrix, sourceMatrix: matrixStruct.matrix)
+            
+            spektrum = WNCutsched.WNCut(weight: matrixStruct.weight)
         }
+        
+        DispatchQueue.concurrentPerform(iterations: schedules.count) {
+            
+            let j = $0
+            let iter: SpectralForceDirected = SpectralForceDirected(groups: self.groups)
+            if spect == true
+            {
+                iter.spektrum = spektrum
+            }
+            else {
+                iter.spektrum = nil
+            }
+            let retvar = iter.DoProcess(restartTime: schedules[j].restartTime, latencyTime: schedules[j].latency, p: false, s: false, d: false)
+            
+            
+            ered[j] = retvar.proccount!
+        }
+        
+        
         
         
         return ered
         
     }
-    */
-    /*
-    func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([[Int]]) {
-        
-
-        var ered: [[Int]] = Array(repeating: Array(repeating: 0, count: schedules.count), count: stepcountl)
-        
-        
-        
-        for i in 0..<schedules.count{
-            DispatchQueue.concurrentPerform(iterations: stepcountl) {
-                
-                let j = $0
-                let iter: SpectralForceDirected = SpectralForceDirected(groups: self.groups)
-                let retvar = iter.DoProcess(restartTime: schedules[i].restartTime, latencyTime: schedules[i].latency, p: false, s: false, d: false)
-                
-                
-                
-                ered[i][j] = retvar.proccount!
-            }
-            
-        }
- 
-        
-        return ered
- 
-    }
-  */
+    
 }
+

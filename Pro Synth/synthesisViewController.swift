@@ -32,6 +32,7 @@ struct SchedulingElement {
     }
 }
 
+
 protocol StartSynthDelegate {
     
     func DoRSCUUnrolling(synthName: String, replace: Bool, save: Bool,  splitInto segment: Int, with decTool: RSCUDecType) -> (recursionDepth: Int, numOfNode: Int, maxWeight: Int)
@@ -247,8 +248,12 @@ class synthesisViewController: NSViewController {
         case "SFDS":
             let synthName = SynthName.title
             let save = (SpectFDirSave.state == NSOnState ? true : false)
+            let p = SpectFDirParamP.state == NSOnState ? true : false
+            let s = SpectFDirParamS.state == NSOnState ? true : false
+            let d = SpectFDirParamD.state == NSOnState ? true : false
+            let useSpect = SpectFDirUseWeights.state == NSOnState ? true : false
             DispatchQueue.global(qos: .userInteractive).async {
-                let result = self.delegate?.DoSpecFDS(synthName: synthName, replace: replcace, save: save, p: true, s: true, d: true, schedules: self.Schedules, useSpectrum: true)
+                let result = self.delegate?.DoSpecFDS(synthName: synthName, replace: replcace, save: save, p: p, s: s, d: d, schedules: self.Schedules, useSpectrum: useSpect)
                 DispatchQueue.main.async {
                     self.SpectFDirMaxProc.stringValue = ""
                     for i in 0..<(result?.count)! {

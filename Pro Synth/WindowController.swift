@@ -11,8 +11,12 @@ import Cocoa
 class WindowController: NSWindowController {
 
     @IBOutlet weak var sidebars: NSSegmentedControl!
+    
     var logWindowController: NSWindowController?
     var logViewController: logWindow?
+    
+    var scheduleWindowController: NSWindowController?
+    var scheduleViewController: SchedulingResultViewController?
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -22,6 +26,14 @@ class WindowController: NSWindowController {
             logViewController = logWindowController?.contentViewController as? logWindow
             Log = logViewController
             logWindowController?.close()
+        }
+        
+        if scheduleWindowController == nil {
+            let storyboard = NSStoryboard(name: "Main", bundle: nil)
+            scheduleWindowController = storyboard.instantiateController(withIdentifier: "ScheduleResult") as? NSWindowController
+            scheduleViewController = scheduleWindowController?.contentViewController as? SchedulingResultViewController
+            SchedRes = scheduleViewController
+            scheduleWindowController?.close()
         }
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
         window?.titleVisibility = .hidden
@@ -48,6 +60,12 @@ class WindowController: NSWindowController {
     @IBAction func openLogWindow(_ sender: Any) {
         if logWindowController != nil {
             logWindowController?.showWindow(sender)
+        }
+    }
+    
+    @IBAction func openScheduleResult(_ sender: Any) {
+        if scheduleWindowController != nil {
+            scheduleWindowController?.showWindow(sender)
         }
     }
     

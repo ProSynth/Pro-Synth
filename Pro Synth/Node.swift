@@ -30,17 +30,17 @@ class Node: GraphElement {
     var spectrum: Double?
     var startTime: Int? = nil
     var type: IO        = .Normal
-
-//////////////////////////////////////////////////////////////////////////////////////
-//!         Function
-//////////////////////////////////////////////////////////////////////////////////////
-//!         init()
-//!===================================================================================
-//!         Leírás: Inicializáljuk létrehozásakor a Node-ot a nevével
-//!                 Kezdetben nem kapcsolódik hozzá él
-//!                 Inicializáláskor megkapja a súlyát
-//!///////////////////////////////////////////////////////////////////////////////////
-
+    
+    //////////////////////////////////////////////////////////////////////////////////////
+    //!         Function
+    //////////////////////////////////////////////////////////////////////////////////////
+    //!         init()
+    //!===================================================================================
+    //!         Leírás: Inicializáljuk létrehozásakor a Node-ot a nevével
+    //!                 Kezdetben nem kapcsolódik hozzá él
+    //!                 Inicializáláskor megkapja a súlyát
+    //!///////////////////////////////////////////////////////////////////////////////////
+    
     init(name: String, parent: GraphElement?, weight:Int, nodeOpType:nodeOpType?, nodeID: Int = -1) {
         // ID kiosztó szerkezet
         if nodeID == (-1) {
@@ -51,8 +51,8 @@ class Node: GraphElement {
         } else {
             self.nodeID = nodeID
             if Node.currentNodeID < nodeID {
-               Node.currentNodeID = nodeID
-            } 
+                Node.currentNodeID = nodeID
+            }
         }
         self.opType = nodeOpType!
         self.weight = weight
@@ -62,5 +62,5 @@ class Node: GraphElement {
     func getWeight() -> Int {
         return self.weight
     }
-
+    
 }

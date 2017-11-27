@@ -697,6 +697,17 @@ class graphViewController: NSViewController {
         }
         
     }
+
+    @IBAction func deleteGroup(_ sender: Any) {
+        allGroups.remove(at: selectGraph.indexOfSelectedItem)
+        selectGraph.removeItem(at: selectGraph.indexOfSelectedItem)
+        if selectGraph.indexOfSelectedItem != -1 {
+            selectedGroups = allGroups[selectGraph.indexOfSelectedItem]
+        } else {
+            selectedGroups.removeAll()
+        }
+        
+    }
     
     
     func SynthToDelegate() {
@@ -774,9 +785,13 @@ extension graphViewController: StartSynthDelegate {
         if schedules.count == 1 {
             let result = SpectralForce.DoProcess(restartTime: schedules[0].restartTime, latencyTime: schedules[0].latency, p: p, s: s, d: d, spect: useSpectrum)
             let resultGraph = result.graph
-            allGroups[selectGraph.indexOfSelectedItem] = resultGraph!
-            Log?.Print(log: "## Spectral Force Directed Ütemező: Az ütemezés elkészült.", detailed: .Normal)
-            return [0]
+            DispatchQueue.main.async {
+                self.allGroups[self.selectGraph.indexOfSelectedItem] = resultGraph!
+                Log?.Print(log: "## Spectral Force Directed Ütemező: Az ütemezés elkészült.", detailed: .Normal)
+                
+            }
+
+            return [result.proccount!]
         } else {
             //let result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
             Log?.Print(log: "## Spectral Force Directed Ütemező: Ez a funkció még nem érhető el a Pro Synth jelenlegi verziójában...", detailed: .Low)
