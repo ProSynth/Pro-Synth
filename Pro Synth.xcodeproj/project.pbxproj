@@ -10,6 +10,8 @@
 		2B1952291FCB4EC500921704 /* DocumentDataStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1952281FCB4EC500921704 /* DocumentDataStructures.swift */; };
 		2B1A40241FB8E746004DBD2D /* synthesisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */; };
 		2B2FE3DD1FC79920007BA903 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2FE3DC1FC79920007BA903 /* StartButton.swift */; };
+		2B7680DA1FCCAA9F00934863 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7680D71FCCAA8800934863 /* Charts.framework */; };
+		2B7680DB1FCCAA9F00934863 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7680D71FCCAA8800934863 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2B97F9401FC087B30095C976 /* graphXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B97F93F1FC087B30095C976 /* graphXMLParser.swift */; };
 		2BD2D8521FCC3E150067581A /* SchedulingResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD2D8511FCC3E150067581A /* SchedulingResultViewController.swift */; };
 		2BDCC03B1FC985060080CA59 /* autoFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDCC03A1FC985060080CA59 /* autoFill.swift */; };
@@ -59,6 +61,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2B7680D61FCCAA8800934863 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B7680D11FCCAA8800934863 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
+			remoteInfo = Charts;
+		};
+		2B7680D81FCCAA8800934863 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B7680D11FCCAA8800934863 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
+			remoteInfo = ChartsTests;
+		};
+		2B7680DC1FCCAA9F00934863 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B7680D11FCCAA8800934863 /* Charts.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A58A4ED274A941CA248EA921;
+			remoteInfo = Charts;
+		};
 		3F2924921F45A11600F3130E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F2924761F45A11600F3130E /* Project object */;
@@ -75,10 +98,25 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		2B7680DE1FCCAA9F00934863 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2B7680DB1FCCAA9F00934863 /* Charts.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		2B1952281FCB4EC500921704 /* DocumentDataStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDataStructures.swift; sourceTree = "<group>"; };
 		2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = synthesisViewController.swift; sourceTree = "<group>"; };
 		2B2FE3DC1FC79920007BA903 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
+		2B7680D11FCCAA8800934863 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "../../Downloads/Charts-3.0.4/Charts.xcodeproj"; sourceTree = "<group>"; };
 		2B97F93F1FC087B30095C976 /* graphXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = graphXMLParser.swift; sourceTree = "<group>"; };
 		2BD2D8511FCC3E150067581A /* SchedulingResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulingResultViewController.swift; sourceTree = "<group>"; };
 		2BDCC03A1FC985060080CA59 /* autoFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = autoFill.swift; sourceTree = "<group>"; };
@@ -138,6 +176,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B7680DA1FCCAA9F00934863 /* Charts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,6 +197,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2B7680D21FCCAA8800934863 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2B7680D71FCCAA8800934863 /* Charts.framework */,
+				2B7680D91FCCAA8800934863 /* ChartsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		2BDCC0391FC984CE0080CA59 /* Synthesis */ = {
 			isa = PBXGroup;
 			children = (
@@ -237,6 +285,7 @@
 				3F2924941F45A11600F3130E /* Pro SynthTests */,
 				3F29249F1F45A11600F3130E /* Pro SynthUITests */,
 				3F29247F1F45A11600F3130E /* Products */,
+				2B7680D11FCCAA8800934863 /* Charts.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -365,10 +414,12 @@
 				3F29247A1F45A11600F3130E /* Sources */,
 				3F29247B1F45A11600F3130E /* Frameworks */,
 				3F29247C1F45A11600F3130E /* Resources */,
+				2B7680DE1FCCAA9F00934863 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2B7680DD1FCCAA9F00934863 /* PBXTargetDependency */,
 			);
 			name = "Pro Synth";
 			productName = "Pro Synth";
@@ -449,6 +500,12 @@
 			mainGroup = 3F2924751F45A11600F3130E;
 			productRefGroup = 3F29247F1F45A11600F3130E /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 2B7680D21FCCAA8800934863 /* Products */;
+					ProjectRef = 2B7680D11FCCAA8800934863 /* Charts.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				3F29247D1F45A11600F3130E /* Pro Synth */,
@@ -457,6 +514,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		2B7680D71FCCAA8800934863 /* Charts.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Charts.framework;
+			remoteRef = 2B7680D61FCCAA8800934863 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2B7680D91FCCAA8800934863 /* ChartsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ChartsTests.xctest;
+			remoteRef = 2B7680D81FCCAA8800934863 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		3F29247C1F45A11600F3130E /* Resources */ = {
@@ -556,6 +630,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2B7680DD1FCCAA9F00934863 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Charts;
+			targetProxy = 2B7680DC1FCCAA9F00934863 /* PBXContainerItemProxy */;
+		};
 		3F2924931F45A11600F3130E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3F29247D1F45A11600F3130E /* Pro Synth */;
@@ -675,6 +754,7 @@
 		3F2924A61F45A11600F3130E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -690,6 +770,7 @@
 		3F2924A71F45A11600F3130E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;

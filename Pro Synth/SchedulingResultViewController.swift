@@ -6,7 +6,9 @@
 //  Copyright © 2017. Gergo Markovits. All rights reserved.
 //
 
+import Foundation
 import Cocoa
+import Charts
 
 struct ScheduleResults {
     var name: String
@@ -16,8 +18,8 @@ struct ScheduleResults {
 
 class SchedulingResultViewController: NSViewController {
 
-    @IBOutlet weak var ScrollView: NSScrollView!
-    @IBOutlet weak var TableView: NSTableView!
+
+    @IBOutlet weak var lineChartView: LineChartView!
     @IBOutlet weak var NoSchedulingText: NSTextField!
     
     @IBOutlet weak var selectSynth: NSPopUpButton!
@@ -37,61 +39,34 @@ class SchedulingResultViewController: NSViewController {
         // Do view setup here.
         self.view.window?.title = "Pro Synth - Processor Usage"
         if schedulesCount > 0 {
-            ScrollView.isHidden = true
+            lineChartView.isHidden = true
         } else {
-            ScrollView.isHidden = false
+            lineChartView.isHidden = false
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reload), name: Notification.Name("updateProcessorUsage"), object: nil)
+        
+        let e1 = ChartDataEntry(x: 1.0, y: 2.3)
+        let e2 = ChartDataEntry(x: 2.0, y: 3.8)
+        let e3 = ChartDataEntry(x: 3.0, y: 5.4)
+        let e4 = ChartDataEntry(x: 4.0, y: 2.3)
+        let e5 = ChartDataEntry(x: 5.0, y: 3.4)
+        
+        let dataset = LineChartDataSet(values: [e1, e2, e3, e4, e5], label: "Ütemezés")
+        dataset.colors = [NSUIColor.red]
+        let data = LineChartData(dataSets: [dataset])
+        lineChartView.data = data
+        lineChartView.chartDescription?.text = "Processzorhasználat"
+        
     }
     
     override func viewDidAppear() {
         if schedulesCount > 0 {
-            ScrollView.isHidden = true
+            lineChartView.isHidden = true
         } else {
-            ScrollView.isHidden = false
+            lineChartView.isHidden = false
         }
     }
     
-    func reload() {
-        
-        TableView.reloadData()
-        var maxColumnCount: Int = 0
-        for i in 0..<tableData.count {
-            if tableData[i].processorUsage.count > maxColumnCount {
-                maxColumnCount = tableData[i].processorUsage.count
-            }
-        }
-        
-    }
-    
-}
-extension SchedulingResultViewController: NSTableViewDataSource {
-    
-    
-    
-    func numberOfRows(in tableView: NSTableView) -> Int {
-        return schedulesCount
-    }
-    
-    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
-        if tableColumn == TableView.tableColumns[0] {
-            return tableData[row].name
-        }
-        
-        /*
-        for i in 1..<tableData[row].processorUsage.count {
-            if tableColumn == TableView.tableColumns[i] {
-                return tableData[row].processorUsage[i]
-            }
-        }
- */
-        return tableData[row].processorUsage[1]
-        return nil
-    }
-    
+
     
 }
 
-extension SchedulingResultViewController: NSTableViewDelegate {
-    
-}
