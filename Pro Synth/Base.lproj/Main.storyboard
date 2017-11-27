@@ -830,6 +830,24 @@
                                         <action selector="openLogWindow:" target="jGA-0Y-lOj" id="Sag-DI-bCx"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="77933536-8AE7-4987-87C3-C30BF3818B12" label="Log Window" paletteLabel="Log Window" id="GDT-aJ-Xpg">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="38" height="22"/>
+                                    <size key="maxSize" width="102" height="27"/>
+                                    <segmentedControl key="view" verticalHuggingPriority="750" id="rm2-Tb-r4U">
+                                        <rect key="frame" x="14" y="14" width="44" height="24"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedRounded" trackingMode="selectAny" id="SnP-GT-zZn">
+                                            <font key="font" metaFont="system"/>
+                                            <segments>
+                                                <segment image="logwin" width="32"/>
+                                            </segments>
+                                        </segmentedCell>
+                                    </segmentedControl>
+                                    <connections>
+                                        <action selector="openLogWindow:" target="jGA-0Y-lOj" id="mAj-IT-Sjb"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="ysV-lQ-lZJ"/>
@@ -838,8 +856,7 @@
                                 <toolbarItem reference="ueF-Bx-BVU"/>
                                 <toolbarItem reference="F7T-PS-zGR"/>
                                 <toolbarItem reference="ueF-Bx-BVU"/>
-                                <toolbarItem reference="8sF-a1-M9z"/>
-                                <toolbarItem reference="yze-eY-X97"/>
+                                <toolbarItem reference="GDT-aJ-Xpg"/>
                                 <toolbarItem reference="ysV-lQ-lZJ"/>
                                 <toolbarItem reference="wWg-1a-pUT"/>
                             </defaultToolbarItems>
@@ -2167,7 +2184,7 @@
                                 </connections>
                             </button>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ohW-lP-Pfl">
-                                <rect key="frame" x="16" y="164" width="231" height="94"/>
+                                <rect key="frame" x="16" y="164" width="231" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                         </subviews>
@@ -2542,7 +2559,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Re6-jx-Jwp">
-                                            <rect key="frame" x="20" y="178" width="411" height="5"/>
+                                            <rect key="frame" x="20" y="178" width="411" height="4"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="031-LU-TOV">
@@ -3940,5 +3957,6 @@ Gw
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
+        <image name="logwin" width="20" height="15"/>
     </resources>
 </document>

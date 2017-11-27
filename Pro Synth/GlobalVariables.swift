@@ -109,7 +109,7 @@ class edgeDataType {
     
 }
 
-class nodeOpType {
+struct nodeOpType {
     
     var name: String
     var defaultWeight: Int
@@ -140,7 +140,7 @@ var tmpGroupArray = [Group]()
 var Log: logWindow?
 var SynthViewController: synthesisViewController?
 
-
+var fileData: [UInt8]!
 
 
 

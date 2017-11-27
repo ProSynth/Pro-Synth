@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B1952291FCB4EC500921704 /* DocumentDataStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1952281FCB4EC500921704 /* DocumentDataStructures.swift */; };
 		2B1A40241FB8E746004DBD2D /* synthesisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */; };
 		2B2FE3DD1FC79920007BA903 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2FE3DC1FC79920007BA903 /* StartButton.swift */; };
 		2B97F9401FC087B30095C976 /* graphXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B97F93F1FC087B30095C976 /* graphXMLParser.swift */; };
@@ -74,6 +75,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2B1952281FCB4EC500921704 /* DocumentDataStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDataStructures.swift; sourceTree = "<group>"; };
 		2B1A40231FB8E746004DBD2D /* synthesisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = synthesisViewController.swift; sourceTree = "<group>"; };
 		2B2FE3DC1FC79920007BA903 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 		2B97F93F1FC087B30095C976 /* graphXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = graphXMLParser.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				3F2924AE1F45A23300F3130E /* welcomeScreen */,
 				3F2924811F45A11600F3130E /* AppDelegate.swift */,
 				3F2924851F45A11600F3130E /* Document.swift */,
+				2B1952281FCB4EC500921704 /* DocumentDataStructures.swift */,
 				3F2924871F45A11600F3130E /* Assets.xcassets */,
 				3F2924891F45A11600F3130E /* Main.storyboard */,
 				3F0928B51F5192C7000997B2 /* ViewControllers */,
@@ -502,6 +505,7 @@
 				7BDB22581F581BF200D785DD /* newNode.swift in Sources */,
 				3FEFCF5A1F768730001FA2A9 /* edgeSinthesisViewController.swift in Sources */,
 				3F0928B91F51A876000997B2 /* Node.swift in Sources */,
+				2B1952291FCB4EC500921704 /* DocumentDataStructures.swift in Sources */,
 				2BDFE3F31FC4EAB5002B1385 /* logWindow.swift in Sources */,
 				3F2924821F45A11600F3130E /* AppDelegate.swift in Sources */,
 				3F2924B21F45A31500F3130E /* welcomeScreenWindowController.swift in Sources */,
