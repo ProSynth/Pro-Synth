@@ -192,10 +192,10 @@ class synthesisViewController: NSViewController {
     
     func StartSynth() {
         
-
-
-        let replcace = namePopover._replace
-
+        var replcace = false
+        if namePopover != nil {
+            replcace = namePopover._replace
+        }
         
         switch selected {
         case "WNCut":

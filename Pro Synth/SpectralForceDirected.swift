@@ -1067,9 +1067,9 @@ class SpectralForceDirected: NSObject {
         return (Matrix, sizeOfMatrix, weight)
     }
     
-    func DoProcess(restartTime: Int, latencyTime: Int, p: Bool, s: Bool, d: Bool, spect: Bool = true) -> (graph: [GraphElement]?, latency: Int?, proccount : Int?) {
-        self.restartTime = restartTime
-        self.latencytime = latencyTime
+    func DoProcess(schedule: SchedulingElement, p: Bool, s: Bool, d: Bool, spect: Bool = true) ->  ScheduleResults {
+        self.restartTime = schedule.restartTime
+        self.latencytime = schedule.latency
         if self.restartTime > self.latencytime
         {
             self.restartTime = self.latencytime
@@ -1087,10 +1087,14 @@ class SpectralForceDirected: NSObject {
         
         
         readInput()
-        calculateAsapAlap(latencyTime: latencyTime)
+        calculateAsapAlap(latencyTime: schedule.latency)
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE, spect: spect)
         writeBack()
-        return (groups, l, maxusage)
+        
+        let res = ScheduleResults(name: schedule.name, graph: groups, processorUsage: cpuusage)
+        
+        
+        return res
     }
     /*
      func RLScan(restartTimefrom: Int, latencyTimefrom: Int, restartTimeto: Int, latencyTimeto: Int,restartTimesteps: Int, latencyTimesteps: Int , spect: Bool = true) -> ([[Int]]) {
@@ -1121,10 +1125,10 @@ class SpectralForceDirected: NSObject {
      }
      */
     
-    func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([Int]) {
+    func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([ScheduleResults]) {
         
         
-        var ered: [Int] = Array(repeating: 0, count: schedules.count)
+        var ered: [ScheduleResults]!
         
         if spect == true
         {
@@ -1147,10 +1151,10 @@ class SpectralForceDirected: NSObject {
             else {
                 iter.spektrum = nil
             }
-            let retvar = iter.DoProcess(restartTime: schedules[j].restartTime, latencyTime: schedules[j].latency, p: false, s: false, d: false)
+            let retvar = iter.DoProcess(schedule: schedules[j], p: false, s: false, d: false, spect: spect)
             
             
-            ered[j] = retvar.proccount!
+            ered[j] = retvar
         }
         
         

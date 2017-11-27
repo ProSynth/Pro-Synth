@@ -41,6 +41,7 @@ class SchedulingResultViewController: NSViewController {
         } else {
             ScrollView.isHidden = false
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reload), name: Notification.Name("updateProcessorUsage"), object: nil)
     }
     
     override func viewDidAppear() {
@@ -49,6 +50,11 @@ class SchedulingResultViewController: NSViewController {
         } else {
             ScrollView.isHidden = false
         }
+    }
+    
+    func reload() {
+        
+        TableView.reloadData()
     }
     
 }
@@ -63,7 +69,7 @@ extension SchedulingResultViewController: NSTableViewDataSource {
             return tableData[row].name
         }
         for i in 1..<tableData[row].processorUsage.count {
-            if tableColumn == tableView.tableColumns[i] {
+            if tableColumn == TableView.tableColumns[i] {
                 return tableData[row].processorUsage[i]
             }
         }

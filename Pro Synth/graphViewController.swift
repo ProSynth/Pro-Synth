@@ -783,19 +783,32 @@ extension graphViewController: StartSynthDelegate {
     func DoSpecFDS(synthName: String, replace: Bool, save: Bool, p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int] {
         let SpectralForce: SpectralForceDirected = SpectralForceDirected(groups: selectedGroups)
         if schedules.count == 1 {
-            let result = SpectralForce.DoProcess(restartTime: schedules[0].restartTime, latencyTime: schedules[0].latency, p: p, s: s, d: d, spect: useSpectrum)
+            let result = SpectralForce.DoProcess(schedule: schedules[0], p: p, s: s, d: d, spect: useSpectrum)
             let resultGraph = result.graph
             DispatchQueue.main.async {
-                self.allGroups[self.selectGraph.indexOfSelectedItem] = resultGraph!
+                self.allGroups[self.selectGraph.indexOfSelectedItem] = resultGraph
                 Log?.Print(log: "## Spectral Force Directed Ütemező: Az ütemezés elkészült.", detailed: .Normal)
-                
+                SchedRes?.tableData.append(result)
+                NotificationCenter.default.post(name: Notification.Name("updateProcessorUsage"), object: self)
             }
-
-            return [result.proccount!]
+            let maxproc = result.processorUsage.max()
+            return [maxproc!]
         } else {
-            //let result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
-            Log?.Print(log: "## Spectral Force Directed Ütemező: Ez a funkció még nem érhető el a Pro Synth jelenlegi verziójában...", detailed: .Low)
-            return [0]
+            let result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
+            var maxprocs = [Int]()
+            DispatchQueue.main.async {
+                for i in 0..<result.count {
+                    self.allGroups.append(result[i].graph)
+                    self.selectGraph.addItem(withTitle: result[i].name)
+                    SchedRes?.tableData.append(result[i])
+                    let maxproc = result[i].processorUsage.max()
+                    maxprocs.append(maxproc!)
+                }
+                self.selectedGroups = self.allGroups.last!
+                self.selectGraph.selectItem(at: self.allGroups.count-1)
+            }
+            Log?.Print(log: "## Spectral Force Directed Ütemező: Az ütemezés elkészült.", detailed: .Normal)
+            return maxprocs
         }
         
         
