@@ -8,6 +8,8 @@
 
 import Cocoa
 
+var isReady = false
+
 class Document: NSDocument {
     
 
@@ -36,7 +38,11 @@ class Document: NSDocument {
         // Insert code here to write your document to data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning nil.
         // You can also choose to override fileWrapperOfType:error:, writeToURL:ofType:error:, or writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
        NotificationCenter.default.post(name: Notification.Name("saveFile"), object: self)
-        return Data(bytes: [0x23, 0x34, 0x56])
+        while !isReady {
+            
+        }
+        isReady = false
+        return Data(bytes: stackBytes)
         throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
     }
 

@@ -86,7 +86,7 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.exportGraphMethod), name: Notification.Name("exportGraphMethod"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.printFile), name: Notification.Name("readFile"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.makeHeader), name: Notification.Name("saveFile"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.save), name: Notification.Name("saveFile"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.SynthToDelegate), name: Notification.Name("synthDidLoad"), object: nil)
@@ -113,67 +113,9 @@ class graphViewController: NSViewController {
         print(fileData)
     }
     
-    func makeHeader() {
-        for i in 0..<header.sw_name.count {
-            stackBytes.append(header.sw_name[i])
-        }
-        withUnsafeBytes(of: &header) { bytes in
-            var ctr = 0
-            for byte in bytes {
-                if ctr > 7 {
-                    stackBytes.append(byte)
-                    print(byte)
-                }
-                
-                ctr += 1
-            }
-        }
-        let allGroupsCount = UInt8(allGroups.count)
-        stackBytes.append(allGroupsCount)
-        for i in 0..<allGroups.count {
-            var groupCtr: UInt8 = 0
-            for j in 0..<allGroups[i].count {
-                if allGroups[i][j] is Group {
-                    groupCtr += 1
-                }
-            }
-            stackBytes.append(groupCtr)
-            for j in 0..<allGroups[i].count {
-                
-                
-                if allGroups[i][j] is Group {
-                    let tmpGroup = (allGroups[i][j] as! Group)
-                    if tmpGroup.loopCount == nil {
-                        tmpGroup.loopCount = 0
-                    }
-                    var tmpGroupData = GroupData(groupID: tmpGroup.groupID, numberOfNodes: tmpGroup.numberOfNode, maxTime: tmpGroup.maxTime, loop: tmpGroup.loop, loopCount: tmpGroup.loopCount!)
-                    
-                    var ctr = 0
-                    for char in tmpGroup.name.utf8{
-                        stackBytes += [char]
-                        ctr += 1
-                    }
-                    while ctr < 50 {
-                        stackBytes.append(32)
-                        ctr += 1
-                    }
-                    
-                    withUnsafeBytes(of: &tmpGroupData) { bytes in
-                        var ctr = 0
-                        for byte in bytes {
-                            if ctr > 7 {
-                                stackBytes.append(byte)
-                                print(byte)
-                            }
-                            
-                            ctr += 1
-                        }
-                    }
-                }
-            }
-            
-        }
-        print(stackBytes)
+    func save() {
+        let saveData = DocumentDataStructures()
+        saveData.toFile(allGroups: allGroups)
     }
 
     @IBAction func addGraphMenuButton(_ sender: NSButton) {

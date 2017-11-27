@@ -55,10 +55,19 @@ class SchedulingResultViewController: NSViewController {
     func reload() {
         
         TableView.reloadData()
+        var maxColumnCount: Int = 0
+        for i in 0..<tableData.count {
+            if tableData[i].processorUsage.count > maxColumnCount {
+                maxColumnCount = tableData[i].processorUsage.count
+            }
+        }
+        
     }
     
 }
 extension SchedulingResultViewController: NSTableViewDataSource {
+    
+    
     
     func numberOfRows(in tableView: NSTableView) -> Int {
         return schedulesCount
@@ -68,13 +77,19 @@ extension SchedulingResultViewController: NSTableViewDataSource {
         if tableColumn == TableView.tableColumns[0] {
             return tableData[row].name
         }
+        
+        /*
         for i in 1..<tableData[row].processorUsage.count {
             if tableColumn == TableView.tableColumns[i] {
                 return tableData[row].processorUsage[i]
             }
         }
+ */
+        return tableData[row].processorUsage[1]
         return nil
     }
+    
+    
 }
 
 extension SchedulingResultViewController: NSTableViewDelegate {
