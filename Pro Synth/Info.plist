@@ -12,7 +12,7 @@
 				<string>sth</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string></string>
+			<string>/Users/markovitsgergo/Downloads/Stats_Document-512.png</string>
 			<key>CFBundleTypeName</key>
 			<string>DocumentType</string>
 			<key>CFBundleTypeOSTypes</key>
@@ -51,5 +51,9 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict/>
+	</array>
 </dict>
 </plist>

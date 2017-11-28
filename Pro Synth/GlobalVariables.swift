@@ -121,6 +121,8 @@ struct nodeOpType {
 }
 
 var synthProcess: SynthType? = nil
+var persScheduleResults = [ScheduleResults]()
+
 
 var edgeDataTypeArray = [edgeDataType]()
 var nodeOpTypeArray = [nodeOpType]()

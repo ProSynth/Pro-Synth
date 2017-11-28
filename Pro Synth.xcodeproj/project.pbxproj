@@ -13,6 +13,9 @@
 		2B7680DA1FCCAA9F00934863 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7680D71FCCAA8800934863 /* Charts.framework */; };
 		2B7680DB1FCCAA9F00934863 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7680D71FCCAA8800934863 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2B97F9401FC087B30095C976 /* graphXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B97F93F1FC087B30095C976 /* graphXMLParser.swift */; };
+		2BABE2111FCCD98800F09F2D /* ResultSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BABE2101FCCD98800F09F2D /* ResultSelector.swift */; };
+		2BABE2141FCCDCD100F09F2D /* SelecResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BABE2131FCCDCD100F09F2D /* SelecResultCell.swift */; };
+		2BABE2161FCCEB4D00F09F2D /* Stats_Document-512.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BABE2151FCCEB4C00F09F2D /* Stats_Document-512.png */; };
 		2BD2D8521FCC3E150067581A /* SchedulingResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD2D8511FCC3E150067581A /* SchedulingResultViewController.swift */; };
 		2BDCC03B1FC985060080CA59 /* autoFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDCC03A1FC985060080CA59 /* autoFill.swift */; };
 		2BDCC03D1FC9E6D70080CA59 /* namePopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDCC03C1FC9E6D70080CA59 /* namePopoverViewController.swift */; };
@@ -118,6 +121,9 @@
 		2B2FE3DC1FC79920007BA903 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 		2B7680D11FCCAA8800934863 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "../../Downloads/Charts-3.0.4/Charts.xcodeproj"; sourceTree = "<group>"; };
 		2B97F93F1FC087B30095C976 /* graphXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = graphXMLParser.swift; sourceTree = "<group>"; };
+		2BABE2101FCCD98800F09F2D /* ResultSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultSelector.swift; sourceTree = "<group>"; };
+		2BABE2131FCCDCD100F09F2D /* SelecResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelecResultCell.swift; sourceTree = "<group>"; };
+		2BABE2151FCCEB4C00F09F2D /* Stats_Document-512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Stats_Document-512.png"; sourceTree = "<group>"; };
 		2BD2D8511FCC3E150067581A /* SchedulingResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulingResultViewController.swift; sourceTree = "<group>"; };
 		2BDCC03A1FC985060080CA59 /* autoFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = autoFill.swift; sourceTree = "<group>"; };
 		2BDCC03C1FC9E6D70080CA59 /* namePopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = namePopoverViewController.swift; sourceTree = "<group>"; };
@@ -250,6 +256,8 @@
 				3F2924831F45A11600F3130E /* ViewController.swift */,
 				3FB5BC7D1F817253006A2A72 /* SplitViewController.swift */,
 				2B2FE3DC1FC79920007BA903 /* StartButton.swift */,
+				2BABE2101FCCD98800F09F2D /* ResultSelector.swift */,
+				2BABE2131FCCDCD100F09F2D /* SelecResultCell.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -281,6 +289,7 @@
 		3F2924751F45A11600F3130E = {
 			isa = PBXGroup;
 			children = (
+				2BABE2151FCCEB4C00F09F2D /* Stats_Document-512.png */,
 				3F2924801F45A11600F3130E /* Pro Synth */,
 				3F2924941F45A11600F3130E /* Pro SynthTests */,
 				3F29249F1F45A11600F3130E /* Pro SynthUITests */,
@@ -542,6 +551,7 @@
 				3F2924B61F45B21E00F3130E /* Kép1.png in Resources */,
 				3F2924BE1F45B3E300F3130E /* welcomeCollectionViewItem.xib in Resources */,
 				3F29248B1F45A11600F3130E /* Main.storyboard in Resources */,
+				2BABE2161FCCEB4D00F09F2D /* Stats_Document-512.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -580,6 +590,7 @@
 				2BD2D8521FCC3E150067581A /* SchedulingResultViewController.swift in Sources */,
 				3F921CE81F5A11C2004FD276 /* newGroup.swift in Sources */,
 				3F2924841F45A11600F3130E /* ViewController.swift in Sources */,
+				2BABE2111FCCD98800F09F2D /* ResultSelector.swift in Sources */,
 				7BDB22581F581BF200D785DD /* newNode.swift in Sources */,
 				3FEFCF5A1F768730001FA2A9 /* edgeSinthesisViewController.swift in Sources */,
 				3F0928B91F51A876000997B2 /* Node.swift in Sources */,
@@ -600,6 +611,7 @@
 				2B1A40241FB8E746004DBD2D /* synthesisViewController.swift in Sources */,
 				3F5FFF771F6DCB2C00D5AF06 /* noSelectionViewController.swift in Sources */,
 				7B1B75591F8F88E8004973F2 /* WNCut.swift in Sources */,
+				2BABE2141FCCDCD100F09F2D /* SelecResultCell.swift in Sources */,
 				3F226A601F75C3BE004733A8 /* nodeEdgesAttributeViewController.swift in Sources */,
 				3F9CB19F1F549F8D00451649 /* GraphElement.swift in Sources */,
 				2BFE8A4E1FB2785100EDA589 /* RSCU_LoopUnroller.swift in Sources */,

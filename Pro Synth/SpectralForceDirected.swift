@@ -1128,7 +1128,7 @@ class SpectralForceDirected: NSObject {
     func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([ScheduleResults]) {
         
         
-        var ered: [ScheduleResults]!
+        var ered: [ScheduleResults] = Array(repeatElement(ScheduleResults(name: "", graph: [], processorUsage: [0], latency: 0, restartTime: 0) , count: schedules.count))
         
         if spect == true
         {

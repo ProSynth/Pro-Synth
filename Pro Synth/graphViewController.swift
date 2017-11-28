@@ -741,7 +741,7 @@ extension graphViewController: StartSynthDelegate {
             DispatchQueue.main.async {
                 for i in 0..<result.count {
                     self.allGroups.append(result[i].graph)
-                    self.selectGraph.addItem(withTitle: result[i].name)
+                    self.selectGraph.addItem(withTitle: "\(result[i].name) R:\(result[i].restartTime)+L:\(result[i].latency)")
                     SchedRes?.tableData.append(result[i])
                     let maxproc = result[i].processorUsage.max()
                     maxprocs.append(maxproc!)
