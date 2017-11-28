@@ -51,6 +51,7 @@ class Document: NSDocument {
         // You can also choose to override readFromFileWrapper:ofType:error: or readFromURL:ofType:error: instead.
         // If you override either of these, you should also override -isEntireFileLoaded to return false if the contents are lazily loaded.
         fileData = [UInt8](data)
+        
         NotificationCenter.default.post(name: Notification.Name("readFile"), object: self)
         throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
     }

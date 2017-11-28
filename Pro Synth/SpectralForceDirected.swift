@@ -1091,7 +1091,7 @@ class SpectralForceDirected: NSObject {
         mainAlgorithm(p: p, s: s, d: d, v: VERBOSE, spect: spect)
         writeBack()
         
-        let res = ScheduleResults(name: schedule.name, graph: groups, processorUsage: cpuusage, latency: latencytime, restartTime: restartTime)
+        let res = ScheduleResults(name: schedule.name, graph: groups, processorUsage: cpuusage, latency: latencytime, restartTime: restartTime, allGroupsIndex: 0xFFFF)
         
         
         return res
@@ -1128,7 +1128,7 @@ class SpectralForceDirected: NSObject {
     func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([ScheduleResults]) {
         
         
-        var ered: [ScheduleResults] = Array(repeatElement(ScheduleResults(name: "", graph: [], processorUsage: [0], latency: 0, restartTime: 0) , count: schedules.count))
+        var ered: [ScheduleResults] = Array(repeatElement(ScheduleResults(name: "", graph: [], processorUsage: [0], latency: 0, restartTime: 0, allGroupsIndex: 0xFFFF) , count: schedules.count))
         
         if spect == true
         {

@@ -15,6 +15,13 @@ struct Header {
     var file_version: UInt8 = 1
 }
 
+struct ScheduleResultData {
+    var allGroupsIndex: UInt16
+    var latency: Int
+    var restartTime: Int
+    var processorUsage = [Int]()
+}
+
 struct NodeData {
     //var name: [UInt8]
      //var opTypeName: [UInt8]
@@ -86,6 +93,7 @@ class DocumentDataStructures: NSObject {
     var GroupStack = [UInt8]()
     var NodeStack = [UInt8]()
     var EdgeStack = [UInt8]()
+    var SchedResStack = [UInt8]()
     
     var GroupCount: UInt16 = 0
     var NodeCount: UInt16 = 0
@@ -218,9 +226,7 @@ class DocumentDataStructures: NSObject {
         }
     }
     
-    func toFile(allGroups: [[GraphElement]]) {
-        
-        
+    func toFile(allGroups: [[GraphElement]], allGroupsNames: [String]) {
         
         
         for i in 0..<header.sw_name.count {
@@ -247,43 +253,204 @@ class DocumentDataStructures: NSObject {
         
         for i in 0..<allGroups.count {
             
+            // Gráfok nevei
+            var ctr = 0
+            var name = allGroupsNames[i]
+            /*
+            print("(A gráf neve:\(name))")
+            withUnsafeBytes(of: &name) { bytes in
+                for byte in bytes {
+                    stackBytes.append(byte)
+                    ctr += 1
+                }
+            }
+            while ctr < 50 {
+                stackBytes.append(32)
+                ctr += 1
+            }
+            */
+            
+            for char in name.utf8{
+                stackBytes += [char]
+                ctr += 1
+            }
+            while ctr < 50 {
+                stackBytes.append(32)
+                ctr += 1
+            }
+            
             findGraphElement(groups: allGroups[i], isRoot: true)
             
             // Csoportok száma
+            ctr = 0
             var tmpGroupCount = GroupCount
             print("(A csoportok száma:\(tmpGroupCount))")
             withUnsafeBytes(of: &tmpGroupCount) { bytes in
                 for byte in bytes {
                     stackBytes.append(byte)
+                    ctr += 1
                 }
+            }
+            while ctr < 50 {
+                stackBytes.append(32)
+                ctr += 1
             }
             stackBytes.append(contentsOf: GroupStack)
             GroupStack.removeAll()
             GroupCount = 0
             
             // Nodeok száma
+            ctr = 0
             var tmpNodeCount = NodeCount
             withUnsafeBytes(of: &tmpNodeCount) { bytes in
                 for byte in bytes {
                     stackBytes.append(byte)
+                    ctr += 1
                 }
+            }
+            while ctr < 50 {
+                stackBytes.append(32)
+                ctr += 1
             }
             stackBytes.append(contentsOf: NodeStack)
             NodeStack.removeAll()
             NodeCount = 0
             
             // Csoportok száma
+            ctr = 0
             var tmpEdgeCount = EdgeCount
             withUnsafeBytes(of: &tmpEdgeCount) { bytes in
                 for byte in bytes {
                     stackBytes.append(byte)
+                    ctr += 1
                 }
+            }
+            while ctr < 50 {
+                stackBytes.append(32)
+                ctr += 1
             }
             stackBytes.append(contentsOf: EdgeStack)
             EdgeStack.removeAll()
             EdgeCount = 0
         }
-        //print(stackBytes)
+        
+        // Scheduling Resultok feltöltése
+        var SchedulesCount = UInt16(persScheduleResults.count)
+        withUnsafeBytes(of: &SchedulesCount) { bytes in
+            for byte in bytes {
+                stackBytes.append(byte)
+            }
+        }
+        for i in 0..<persScheduleResults.count {
+            let tmpLatency = persScheduleResults[i].latency
+            let tmpRestartTime = persScheduleResults[i].restartTime
+            let index = persScheduleResults[i].allGroupsIndex
+            var tmpScheduleData = ScheduleResultData(allGroupsIndex: index, latency: tmpLatency, restartTime: tmpRestartTime, processorUsage: [])
+            for j in 0..<persScheduleResults[i].processorUsage.count {
+                tmpScheduleData.processorUsage.append(persScheduleResults[i].processorUsage[j])
+            }
+            
+            withUnsafeBytes(of: &tmpScheduleData) { bytes in
+                for byte in bytes {
+                    SchedResStack.append(byte)
+                }
+            }
+        }
+        
+        stackBytes.append(contentsOf: SchedResStack)
         isReady = true
+        print(stackBytes)
     }
+    
+    //MARK: - Olvasás
+    
+    func parseGroup(data: inout [UInt8]) {
+        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
+            print(string)
+        } else {
+            print("not a valid UTF-8 sequence")
+        }
+        data = Array(data.dropFirst(50))
+    }
+    
+    func parseNode(data: inout [UInt8]) {
+        //TODO
+    }
+    
+    func parseEdge(data: inout [UInt8]) {
+        //TODO
+    }
+    
+    func fromFile(dataC: [UInt8]) {
+        
+        var data = dataC
+        
+        // Ellenőrizzük a fejlécet
+        var header = [UInt8]()
+        for i in 0..<12 {
+            header.append(data[i])
+        }
+        let headerType: [UInt8] = [80, 114, 111, 32, 83, 121, 110, 116, 104, 0, 9, 1]
+        if header == headerType {
+            data = Array(data.dropFirst(12))
+            Log?.Print(log: "A fáj beolvaása sikeres.", detailed: .High)
+            print("A fáj beolvaása sikeres.")
+            
+            // Megnézzük, hogy összesen hány gráf van fájlban
+            let allGroupsCount = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
+            data = Array(data.dropFirst(2))
+            print("A gráfok összáma: \(allGroupsCount)")
+            Log?.Print(log: "A gráfok összáma", detailed: .High)
+            
+            // Minden gráfra megcsináljuk:
+            for i in 0..<allGroupsCount {
+                // Felvesszük a nevét
+                if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
+                    print(string)
+                } else {
+                    print("not a valid UTF-8 sequence")
+                }
+                data = Array(data.dropFirst(50))
+                
+                // Lekérdezzük, hogy hány csoportja van
+                let GroupCount = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
+                data = Array(data.dropFirst(2))
+                print("A gráfok összáma\(GroupCount)")
+                
+                // Összeszedjük és példányosítjuk az összes csoportot
+                for i in 0..<Int(GroupCount) {
+                    parseGroup(data: &data)
+                }
+                
+                // Lekérdezzük, hogy hány pontja van
+                let NodeCount = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
+                data = Array(data.dropFirst(2))
+                print("A pontok összszáma: \(NodeCount)")
+                
+                // Összeszedjük és példányosítjuk az összes pontot
+                for i in 0..<Int(NodeCount) {
+                    parseNode(data: &data)
+                }
+                
+                // Lekérdezzük, hogy hány éle van
+                let EdgeCount = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
+                data = Array(data.dropFirst(2))
+                print("A gráfok összáma\(EdgeCount)")
+                
+                // Összeszedjük és példányosítjuk az összes élt
+                for i in 0..<Int(EdgeCount) {
+                    parseEdge(data: &data)
+                }
+            }
+            
+
+            
+        } else {
+            Log?.Print(log: "A megnyitni kívánt fájl nem Pro Synth kompatibilis, vagy sérült.", detailed: .Low)
+            print("A megnyitni kívánt fájl nem Pro Synth kompatibilis, vagy sérült.")
+        }
+        
+    }
+    
+    
 }

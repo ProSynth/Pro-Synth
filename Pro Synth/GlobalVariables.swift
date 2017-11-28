@@ -53,6 +53,14 @@ enum RSCUDecType {
     case NCut
 }
 
+enum DataTypes: Int {
+    case t_UInt8        = 1
+    case t_UInt16       = 2
+    case t_UInt32       = 4
+    case t_String       = 50
+    case t_Int          = 8
+}
+
 struct nodeAttributes {
     var name:String
     var weight:Int
@@ -145,7 +153,6 @@ var SchedRes: SchedulingResultViewController?
 var SynthViewController: synthesisViewController?
 
 var fileData: [UInt8]!
-
 
 
 /* WNCut globális változói */

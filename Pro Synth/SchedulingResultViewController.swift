@@ -18,6 +18,7 @@ struct ScheduleResults {
     var processorUsage: [Int]
     var latency: Int
     var restartTime: Int
+    var allGroupsIndex: UInt16
 }
 
 class SchedulingResultViewController: NSViewController {

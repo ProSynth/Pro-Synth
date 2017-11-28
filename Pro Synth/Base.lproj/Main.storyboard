@@ -3108,7 +3108,7 @@ Gw
                                 </scroller>
                             </scrollView>
                             <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bBQ-z4-IgF">
-                                <rect key="frame" x="605" y="-1" width="267" height="24"/>
+                                <rect key="frame" x="603" y="-1" width="269" height="24"/>
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="ev5-em-Hw0">
                                     <font key="font" metaFont="system"/>
                                     <segments>
@@ -3132,7 +3132,7 @@ Gw
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="R1S-rp-vJo">
-                                <rect key="frame" x="546" y="4" width="55" height="17"/>
+                                <rect key="frame" x="544" y="4" width="55" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Detailed" id="QBx-6W-YVO">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>

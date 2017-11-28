@@ -85,7 +85,7 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.importXMLMethod), name: Notification.Name("importXMLGraphMethod"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.exportGraphMethod), name: Notification.Name("exportGraphMethod"), object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.printFile), name: Notification.Name("readFile"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.read), name: Notification.Name("readFile"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.save), name: Notification.Name("saveFile"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.doSynth), name: Notification.Name("startSynth"), object: nil)
@@ -109,13 +109,18 @@ class graphViewController: NSViewController {
         
     }
     
-    func printFile()  {
-        print(fileData)
+    func read()  {
+        let readData = DocumentDataStructures()
+        readData.fromFile(dataC: fileData)
     }
     
     func save() {
+        var allGroupsNames = [String]()
+        for i in 0..<allGroups.count {
+            allGroupsNames.append(selectGraph.itemTitle(at: i))
+        }
         let saveData = DocumentDataStructures()
-        saveData.toFile(allGroups: allGroups)
+        saveData.toFile(allGroups: allGroups, allGroupsNames: allGroupsNames)
     }
 
     @IBAction func addGraphMenuButton(_ sender: NSButton) {
@@ -725,25 +730,41 @@ extension graphViewController: StartSynthDelegate {
     func DoSpecFDS(synthName: String, replace: Bool, save: Bool, p: Bool, s: Bool, d: Bool, schedules: [SchedulingElement], useSpectrum: Bool) -> [Int] {
         let SpectralForce: SpectralForceDirected = SpectralForceDirected(groups: selectedGroups)
         if schedules.count == 1 {
-            let result = SpectralForce.DoProcess(schedule: schedules[0], p: p, s: s, d: d, spect: useSpectrum)
+            var result = SpectralForce.DoProcess(schedule: schedules[0], p: p, s: s, d: d, spect: useSpectrum)
             let resultGraph = result.graph
             DispatchQueue.main.async {
-                self.allGroups[self.selectGraph.indexOfSelectedItem] = resultGraph
                 Log?.Print(log: "## Spectral Force Directed Ütemező: Az ütemezés elkészült.", detailed: .Normal)
+                if replace {
+                    self.allGroups[self.selectGraph.indexOfSelectedItem] = resultGraph
+                    let index = self.selectGraph.indexOfSelectedItem
+                    self.selectGraph.removeItem(at: index)
+                    self.selectGraph.insertItem(withTitle: "\(synthName) R:\(result.restartTime)+L:\(result.latency)", at: index)
+                    NotificationCenter.default.post(name: Notification.Name("updateProcessorUsage"), object: self)
+                } else {
+                    self.allGroups.append(resultGraph)
+                    self.selectGraph.addItem(withTitle: "\(synthName) R:\(result.restartTime)+L:\(result.latency)")
+                    self.selectGraph.selectItem(withTitle: "\(synthName) R:\(result.restartTime)+L:\(result.latency)")
+                }
+                result.allGroupsIndex = UInt16(self.selectGraph.indexOfSelectedItem)
                 SchedRes?.tableData.append(result)
-                NotificationCenter.default.post(name: Notification.Name("updateProcessorUsage"), object: self)
+                persScheduleResults.append(result)
             }
             let maxproc = result.processorUsage.max()
             return [maxproc!]
         } else {
-            let result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
+            var result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
             var maxprocs = [Int]()
             DispatchQueue.main.async {
                 for i in 0..<result.count {
                     self.allGroups.append(result[i].graph)
-                    self.selectGraph.addItem(withTitle: "\(result[i].name) R:\(result[i].restartTime)+L:\(result[i].latency)")
-                    SchedRes?.tableData.append(result[i])
+                    self.selectGraph.addItem(withTitle: "\(synthName) R:\(result[i].restartTime)+L:\(result[i].latency)")
+                    
                     let maxproc = result[i].processorUsage.max()
+                    
+                    result[i].allGroupsIndex = UInt16(self.allGroups.count-1)
+                    SchedRes?.tableData.append(result[i])
+                    persScheduleResults.append(result[i])
+                    
                     maxprocs.append(maxproc!)
                 }
                 self.selectedGroups = self.allGroups.last!
