@@ -111,7 +111,22 @@ class graphViewController: NSViewController {
     
     func read()  {
         let readData = DocumentDataStructures()
-        readData.fromFile(dataC: fileData)
+        let result = readData.fromFile(dataC: fileData)
+        if result != nil {
+            allGroups.removeAll()
+            selectGraph.removeAllItems()
+            allGroups = (result?.allGroups)!
+            selectGraph.addItems(withTitles: (result?.graphNames)!)
+            selectedGroups = allGroups.last!
+            noGraph.isHidden = true
+        } else {
+            let alert = NSAlert()
+            alert.messageText = "Error"
+            alert.informativeText = "The projekt file could not be opened."
+            alert.addButton(withTitle: "OK")
+            alert.runModal()
+        }
+
     }
     
     func save() {

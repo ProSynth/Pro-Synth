@@ -604,9 +604,50 @@ class DocumentDataStructures: NSObject {
         edges.append(tmpEdge)
     }
     
-    func fromFile(dataC: [UInt8]) {
+    func connectGraphElements() -> [GraphElement] {
+        // A groupokat összekötjük önmagukkal, ha kell vagy nil-t állítunk be parentnek
+        for i in 0..<groups.count {
+            if groupID_ParentID[groups[i].groupID] == 0xFFFFFFFF {
+                groups[i].parent = nil
+            } else {
+                let parentID = groupID_ParentID[groups[i].groupID]!
+                groups[i].parent = groupID_Group[parentID]
+                groupID_Group[parentID]?.children.append(groups[i])
+            }
+        }
+        
+        // A nodeokat groupokhoz kapcsoljuk
+        for i in 0..<nodes.count {
+            let parentID = nodeID_ParentID[nodes[i].nodeID]!
+            nodes[i].parent = groupID_Group[parentID]
+            groupID_Group[parentID]?.children.append(nodes[i])
+        }
+        
+        // Az edgeket nodeokhoz kapcsoljuk
+        for i in 0..<edges.count {
+            let sNodeID = edgeID_sNodeID[edges[i].edgeID]!
+            let dNodeID = edgeID_dNodeID[edges[i].edgeID]!
+            edges[i].parentsNode = nodeID_Node[sNodeID]!
+            edges[i].parentdNode = nodeID_Node[dNodeID]!
+            nodeID_Node[sNodeID]?.children.append(edges[i])
+            nodeID_Node[dNodeID]?.children.append(edges[i])
+        }
+        
+        var graph = [GraphElement]()
+        for i in 0..<groups.count {
+            if groupID_ParentID[groups[i].groupID] == 0xFFFFFFFF {
+                graph.append(groups[i])
+            }
+        }
+        
+        return graph
+    }
+    
+    func fromFile(dataC: [UInt8]) -> (allGroups: [[GraphElement]], graphNames: [String])? {
         
         var data = dataC
+        var allGroups = [[GraphElement]]()
+        var graphNames = [String]()
         
         // Ellenőrizzük a fejlécet
         var header = [UInt8]()
@@ -628,10 +669,13 @@ class DocumentDataStructures: NSObject {
             // Minden gráfra megcsináljuk:
             for i in 0..<allGroupsCount {
                 // Felvesszük a nevét
+                var graphName: String!
                 if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
                     print(string)
+                    graphName = string
                 } else {
                     print("not a valid UTF-8 sequence")
+                    graphName = "Untitled"
                 }
                 data = Array(data.dropFirst(50))
                 
@@ -664,6 +708,10 @@ class DocumentDataStructures: NSObject {
                 for i in 0..<Int(EdgeCount) {
                     parseEdge(data: &data)
                 }
+                
+                let tmpGraph = connectGraphElements()
+                allGroups.append(tmpGraph)
+                graphNames.append(graphName)
             }
             
 
@@ -671,8 +719,11 @@ class DocumentDataStructures: NSObject {
         } else {
             Log?.Print(log: "A megnyitni kívánt fájl nem Pro Synth kompatibilis, vagy sérült.", detailed: .Low)
             print("A megnyitni kívánt fájl nem Pro Synth kompatibilis, vagy sérült.")
+            return nil
         }
         
+        
+        return (allGroups, graphNames)
     }
     
     

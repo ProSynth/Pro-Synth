@@ -93,7 +93,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func addEdgeFromMenu(_ sender: NSMenuItem) {
         NotificationCenter.default.post(name: Notification.Name("hotKeyEdge"), object: self)
     }
-    var welcomeWindowController : NSWindowController?
+    
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
@@ -105,6 +105,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             alert.addButton(withTitle: "OK")
             alert.runModal()
         }
+        NotificationCenter.default.post(name: Notification.Name("closeFirstWindow"), object: self)
         
         let welcomeScreen = NSStoryboard(name: "welcomeScreen", bundle: nil)
         welcomeWindowController = welcomeScreen.instantiateController(withIdentifier: "welcomeScreenWindowController") as? NSWindowController

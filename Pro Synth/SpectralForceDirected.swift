@@ -30,6 +30,7 @@ class SpectralForceDirected: NSObject {
     init(groups: [GraphElement]) {
         self.groups = groups
         super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.pause), name: Notification.Name("pauseSynth"), object: nil)
     }
     
     
@@ -40,6 +41,7 @@ class SpectralForceDirected: NSObject {
     let PLUS_INF_FCE: Float                 = 1000000000
     let NOMAXDELAYROUNDS: UInt              = 1000000000            // Never used
     var argV: Bool                          = false
+    var isPaused: Bool                      = false
     
     var cpuusage            = [Int]()
     var maxusage : Int  = 1
@@ -729,8 +731,10 @@ class SpectralForceDirected: NSObject {
         Log?.Print(log: "## \(fixed)/\(tofix) done.", detailed: .Normal)
         list = ord
         var sortedops = ops.sorted(by: { $0.type > $1.type })
-        while list.count != 0 {
+        while list.count != 0 && !isPaused {
             // sort list, descending order operations by mobility (difference) or by latency if difference = 0
+            
+            
             for i in 1..<list.count {
                 for j in stride(from: list.count-1, through: i, by: -1) {
                     if ((list[j-1].alap - list[j-1].asap) > (list[j].alap - list[j].asap)) {
@@ -1068,6 +1072,8 @@ class SpectralForceDirected: NSObject {
     }
     
     func DoProcess(schedule: SchedulingElement, p: Bool, s: Bool, d: Bool, spect: Bool = true) ->  ScheduleResults {
+        isPaused = false
+        
         self.restartTime = schedule.restartTime
         self.latencytime = schedule.latency
         if self.restartTime > self.latencytime
@@ -1126,7 +1132,7 @@ class SpectralForceDirected: NSObject {
      */
     
     func RLScan(schedules: [SchedulingElement], p: Bool, s: Bool, d: Bool, spect: Bool = true) -> ([ScheduleResults]) {
-        
+        isPaused = false
         
         var ered: [ScheduleResults] = Array(repeatElement(ScheduleResults(name: "", graph: [], processorUsage: [0], latency: 0, restartTime: 0, allGroupsIndex: 0xFFFF) , count: schedules.count))
         
@@ -1162,6 +1168,10 @@ class SpectralForceDirected: NSObject {
         
         return ered
         
+    }
+    
+    func pause() {
+        isPaused = true
     }
     
 }

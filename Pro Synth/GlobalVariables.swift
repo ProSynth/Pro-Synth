@@ -149,6 +149,7 @@ var tmpGroupArray = [Group]()
 
 var Log: logWindow?
 var SchedRes: SchedulingResultViewController?
+var welcomeWindowController : NSWindowController?
 
 var SynthViewController: synthesisViewController?
 

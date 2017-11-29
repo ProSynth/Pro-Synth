@@ -739,7 +739,7 @@
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="Ckk-yw-fiv">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+                        <rect key="contentRect" x="-20" y="93" width="874" height="417"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <toolbar key="toolbar" implicitIdentifier="3F95D2AC-B9C6-4EDC-B47A-279C414905B1" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="9kq-mf-LLL">
                             <allowedToolbarItems>
@@ -850,7 +850,7 @@
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="E14AABBE-489B-4DE3-B989-05542193BB9D" label="Processor usage" paletteLabel="Processor usage" id="Zhi-1A-54o">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="28"/>
+                                    <size key="minSize" width="34" height="28"/>
                                     <size key="maxSize" width="38" height="28"/>
                                     <segmentedControl key="view" verticalHuggingPriority="750" id="q8e-0X-jIY">
                                         <rect key="frame" x="31" y="14" width="34" height="28"/>
@@ -866,13 +866,80 @@
                                         <action selector="openScheduleResult:" target="jGA-0Y-lOj" id="m6p-IN-23b"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="3FCE43FC-698A-42A2-9144-B8D44E1F0FB4" label="Custom View" paletteLabel="Custom View" tag="-1" id="HmA-Es-VeF">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="163" height="22"/>
+                                    <size key="maxSize" width="550" height="96"/>
+                                    <customView key="view" misplaced="YES" id="id5-jB-hAz">
+                                        <rect key="frame" x="0.0" y="14" width="550" height="25"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <subviews>
+                                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jdf-hO-Bgq">
+                                                <rect key="frame" x="1" y="1" width="548" height="22"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" drawsBackground="YES" id="QJk-ag-hyB">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="iQG-0B-vIZ">
+                                                <rect key="frame" x="7" y="4" width="16" height="16"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="16" id="LWu-jp-teG"/>
+                                                    <constraint firstAttribute="height" constant="16" id="WeT-bN-sUb"/>
+                                                </constraints>
+                                            </progressIndicator>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="iQG-0B-vIZ" firstAttribute="leading" secondItem="id5-jB-hAz" secondAttribute="leading" constant="7" id="9lX-A7-H1f"/>
+                                            <constraint firstItem="jdf-hO-Bgq" firstAttribute="top" secondItem="id5-jB-hAz" secondAttribute="top" constant="1" id="BSw-et-24d"/>
+                                            <constraint firstItem="jdf-hO-Bgq" firstAttribute="leading" secondItem="id5-jB-hAz" secondAttribute="leading" constant="1" id="Fg4-ZB-4n2"/>
+                                            <constraint firstAttribute="trailing" secondItem="jdf-hO-Bgq" secondAttribute="trailing" constant="1" id="PBd-Ib-dyd"/>
+                                            <constraint firstAttribute="bottom" secondItem="jdf-hO-Bgq" secondAttribute="bottom" constant="1" id="cYn-Ph-noI"/>
+                                            <constraint firstItem="iQG-0B-vIZ" firstAttribute="centerY" secondItem="jdf-hO-Bgq" secondAttribute="centerY" id="qHX-Ry-4hr"/>
+                                        </constraints>
+                                    </customView>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="4EABAC69-33F6-48B3-B6C7-1A656F47C837" label="Start" paletteLabel="Start" image="NSTouchBarPlay" id="gbi-j0-4Pq">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="50" height="19"/>
+                                    <size key="maxSize" width="50" height="28"/>
+                                    <button key="view" verticalHuggingPriority="750" id="icC-Yj-42f">
+                                        <rect key="frame" x="0.0" y="14" width="50" height="28"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSTouchBarPlay" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="i3V-Pl-DJo">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="start:" target="jGA-0Y-lOj" id="sko-up-ZCD"/>
+                                    </connections>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="934A44CC-D6F5-4731-B112-5A481D0F15BC" label="Pause" paletteLabel="Pause" image="NSTouchBarPause" id="gYE-cb-b1c">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="50" height="25"/>
+                                    <size key="maxSize" width="50" height="25"/>
+                                    <button key="view" verticalHuggingPriority="750" id="Pru-VD-UGX">
+                                        <rect key="frame" x="0.0" y="14" width="50" height="25"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSTouchBarPause" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="KEp-0W-8ah">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="pause:" target="jGA-0Y-lOj" id="jBu-xd-bsO"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="ysV-lQ-lZJ"/>
-                                <toolbarItem reference="xIg-uv-oUt"/>
-                                <toolbarItem reference="rMI-mh-5Ml"/>
+                                <toolbarItem reference="gYE-cb-b1c"/>
+                                <toolbarItem reference="gbi-j0-4Pq"/>
                                 <toolbarItem reference="ueF-Bx-BVU"/>
-                                <toolbarItem reference="F7T-PS-zGR"/>
+                                <toolbarItem reference="ysV-lQ-lZJ"/>
+                                <toolbarItem reference="HmA-Es-VeF"/>
                                 <toolbarItem reference="ueF-Bx-BVU"/>
                                 <toolbarItem reference="GDT-aJ-Xpg"/>
                                 <toolbarItem reference="Zhi-1A-54o"/>
@@ -886,14 +953,16 @@
                     </window>
                     <connections>
                         <outlet property="hideShowSidebar" destination="cBI-to-Wtz" id="izC-5m-j8x"/>
+                        <outlet property="projectName" destination="F7T-PS-zGR" id="6ji-U6-Y7n"/>
                         <outlet property="sidebars" destination="cBI-to-Wtz" id="1DE-aY-ItF"/>
                         <outlet property="start" destination="rMI-mh-5Ml" id="Ead-Vt-eqx"/>
+                        <outlet property="windowName" destination="BbO-PT-Sfm" id="wlw-Hl-UQ6"/>
                         <segue destination="lYi-tC-DBZ" kind="relationship" relationship="window.shadowedContentViewController" id="SiP-Rc-ne0"/>
                     </connections>
                 </windowController>
                 <customObject id="6f7-a7-6o1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="856" y="197"/>
+            <point key="canvasLocation" x="837" y="123.5"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="7fj-Iu-prH">
@@ -2211,7 +2280,7 @@
                                 </textFieldCell>
                             </textField>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ohW-lP-Pfl">
-                                <rect key="frame" x="16" y="227" width="231" height="5"/>
+                                <rect key="frame" x="16" y="227" width="231" height="4"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f6g-Ho-0q8">
@@ -2934,7 +3003,7 @@ Gw
                 </windowController>
                 <customObject id="dUR-T9-ZA4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1962" y="-551"/>
+            <point key="canvasLocation" x="2104" y="-575"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="j4k-7v-k5R">
@@ -2955,7 +3024,7 @@ Gw
                 </windowController>
                 <customObject id="v0p-eA-CzD" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2573" y="-734"/>
+            <point key="canvasLocation" x="2619" y="-575"/>
         </scene>
         <!--Scheduling Result View Controller-->
         <scene sceneID="XMz-HG-s85">
@@ -3082,7 +3151,7 @@ Gw
                 </viewController>
                 <customObject id="2Z9-OI-ilA" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2842" y="-94.5"/>
+            <point key="canvasLocation" x="2919" y="99"/>
         </scene>
         <!--Log Window-->
         <scene sceneID="Mlb-zR-bG2">
@@ -4261,5 +4330,7 @@ Gw
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
+        <image name="NSTouchBarPause" width="128" height="128"/>
+        <image name="NSTouchBarPlay" width="128" height="128"/>
     </resources>
 </document>

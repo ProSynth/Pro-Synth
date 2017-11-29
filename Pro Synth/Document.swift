@@ -17,6 +17,7 @@ class Document: NSDocument {
     override init() {
         super.init()
         // Add your subclass-specific initialization here.
+        NotificationCenter.default.addObserver(self, selector: #selector(self.closeFirstWindow), name: Notification.Name("closeFirstWindow"), object: nil)
     }
 
     override class func autosavesInPlace() -> Bool {
@@ -32,6 +33,7 @@ class Document: NSDocument {
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
         self.addWindowController(windowController)
+        welcomeWindowController?.close()
     }
 
     override func data(ofType typeName: String) throws -> Data {
@@ -52,32 +54,29 @@ class Document: NSDocument {
         // If you override either of these, you should also override -isEntireFileLoaded to return false if the contents are lazily loaded.
         fileData = [UInt8](data)
         
-        NotificationCenter.default.post(name: Notification.Name("readFile"), object: self)
-        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
+        self.addWindowController(windowController)
+        
+        welcomeWindowController?.close()
+        if fileData.count < 12 {
+            throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+        } else {
+            NotificationCenter.default.post(name: Notification.Name("readFile"), object: self)
+        }
+        
+        (windowControllers[0] as? WindowController)?.windowName.stringValue = self.displayName
+        //windowControllers[windowControllers.count-2].close()
+        /*print(windowControllers.count)
+        for i in 0..<windowControllers.count {
+            print(windowControllers[i].window?.title)
+        }*/
+    }
+    
+    func closeFirstWindow() {
+        windowControllers[0].close()
     }
 
- 
 }
 
-/*
- do {
- print("Getting the bytes of an instance")
- let _name : [UInt8] = [32, 32, 32, 32]
- 
- var sampleStruct = GroupData(groupID: 9, numberOfNodes: 12, maxTime: 3, loop: .Normal, loopCount: 200)
- 
- withUnsafeBytes(of: &sampleStruct) { bytes in
- for byte in bytes {
- print(byte)
- }
- }
- }
- 
- var str = "Pro Synth"
- var byteArray = [UInt8]()
- for char in str.utf8{
- byteArray += [char]
- }
- print(byteArray)
- */
 
