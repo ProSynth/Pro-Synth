@@ -19,6 +19,7 @@ class autoFill: NSViewController {
     @IBOutlet weak var countStepper: NSStepper!
     @IBOutlet weak var other: NSTextField!
     @IBOutlet weak var otherValue: NSTextField!
+    @IBOutlet weak var latencyErestart: NSButton!
     
 
   
@@ -28,11 +29,20 @@ class autoFill: NSViewController {
         count.integerValue = countStepper.integerValue
         countStepper.maxValue = 1000
         resolution.integerValue = 1
+        otherValue.isEnabled = false
     }
     
+    @IBAction func latencyErestart(_ sender: NSButton) {
+        if sender.state == NSOnState {
+            otherValue.isEnabled = false
+            otherValue.stringValue = ""
+        } else {
+            otherValue.isEnabled = true
+        }
+    }
     @IBAction func create(_ sender: Any) {
         
-        if from.integerValue > to.integerValue {
+        if (from.integerValue > to.integerValue) {
             let alert = NSAlert()
             alert.messageText = "Hiba!"
             alert.informativeText = "A kezdeti érték nagyobb, mint a végérték!"
@@ -42,13 +52,27 @@ class autoFill: NSViewController {
         }
         switch selected {
         case "restart time."?:
-            for i in 0..<count.integerValue {
-                schedulesArray.append(SchedulingElement(restartTime: (from.integerValue + (i * resolution.integerValue)), latency: otherValue.integerValue))
+            schedulesArray.removeAll()
+            if latencyErestart.state == NSOnState {
+                for i in 0..<count.integerValue {
+                    schedulesArray.append(SchedulingElement(restartTime: (from.integerValue + (i * resolution.integerValue)), latency: (from.integerValue + (i * resolution.integerValue))))
+                }
+            } else {
+                for i in 0..<count.integerValue {
+                    schedulesArray.append(SchedulingElement(restartTime: (from.integerValue + (i * resolution.integerValue)), latency: otherValue.integerValue))
+                }
             }
             break
         case "latency."?:
-            for i in 0..<count.integerValue {
-                schedulesArray.append(SchedulingElement(restartTime: otherValue.integerValue, latency: (from.integerValue + (i * resolution.integerValue))))
+            schedulesArray.removeAll()
+            if latencyErestart.state == NSOnState {
+                for i in 0..<count.integerValue {
+                    schedulesArray.append(SchedulingElement(restartTime: (from.integerValue + (i * resolution.integerValue)), latency: (from.integerValue + (i * resolution.integerValue))))
+                }
+            } else {
+                for i in 0..<count.integerValue {
+                    schedulesArray.append(SchedulingElement(restartTime: otherValue.integerValue, latency: (from.integerValue + (i * resolution.integerValue))))
+                }
             }
             break
         default:
@@ -67,9 +91,11 @@ class autoFill: NSViewController {
         switch selected {
         case "restart time."?:
             other.stringValue = "Latency"
+            otherValue.isEnabled = true
             break
         case "latency."?:
             other.stringValue = "Restart time"
+            otherValue.isEnabled = true
             break
         default:
             return

@@ -31,10 +31,10 @@ struct NodeData {
     var opTypeWeight: Int
     var spectrum: Double
     var startTime: Int
-    var type: IO
+    var type: Int
     var parentID: Int
     
-    init(nodeID: Int, weight: Int, numberOfConnectedEdge: Int, opTypeWeight: Int, spectrum: Double, startTime: Int, type: IO, parentID: Int) {
+    init(nodeID: Int, weight: Int, numberOfConnectedEdge: Int, opTypeWeight: Int, spectrum: Double, startTime: Int, type: Int, parentID: Int) {
         self.nodeID = nodeID
         self.weight = weight
         self.numberOfConnectedEdge = numberOfConnectedEdge
@@ -74,10 +74,10 @@ struct GroupData {
     var parentID: Int
     var numberOfNodes: Int
     var maxTime: Int
-    var loop: LoopType
+    var loop: Int
     var loopCount: Int
     
-    init(groupID: Int, numberOfNodes: Int, maxTime: Int, loop: LoopType, loopCount: Int, parentID: Int = 0xFFFFFFFF) {
+    init(groupID: Int, numberOfNodes: Int, maxTime: Int, loop: Int, loopCount: Int, parentID: Int = 0xFFFFFFFF) {
         self.groupID = groupID
         self.numberOfNodes = numberOfNodes
         self.maxTime = maxTime
@@ -91,13 +91,24 @@ struct GroupData {
 class DocumentDataStructures: NSObject {
     
     var groupID_Group = [Int : Group]()
-    var groupID_Parent = [Int : Int]()
+    var groupID_ParentID = [Int : Int]()
     var groups = [Group]()
+    
+    var nodeID_Node = [Int : Node]()
+    var nodeID_ParentID = [Int : Int]()
+    var nodes = [Node]()
+    
+    var edgeID_Edge = [Int : Edge]()
+    var edgeID_sNodeID = [Int : Int]()
+    var edgeID_dNodeID = [Int : Int]()
+    var edges = [Edge]()
     
     var GroupStack = [UInt8]()
     var NodeStack = [UInt8]()
     var EdgeStack = [UInt8]()
     var SchedResStack = [UInt8]()
+    
+    let defaultParent = Node(name: "", parent: nil, weight: 0, nodeOpType: nil, nodeID: 0xFFFFFFFE)
     
     var GroupCount: UInt16 = 0
     var NodeCount: UInt16 = 0
@@ -115,8 +126,21 @@ class DocumentDataStructures: NSObject {
         } else {
             parentID = (group.parent as! Group).groupID
         }
+        //Megnézzük a Loop typusát
+        var _loop: Int
+        switch group.loop {
+        case .None:
+            _loop = 0
+        case .ACI:
+            _loop = 1
+        case .Normal:
+            _loop = 2
+        default:
+            break
+        }
+        
         // Létrehozzuk a név nélküle csoport adatstruktúrát
-        var tmpGroupData = GroupData(groupID: group.groupID, numberOfNodes: group.numberOfNode, maxTime: group.maxTime, loop: group.loop, loopCount: group.loopCount!, parentID: parentID)
+        var tmpGroupData = GroupData(groupID: group.groupID, numberOfNodes: group.numberOfNode, maxTime: group.maxTime, loop: _loop, loopCount: group.loopCount!, parentID: parentID)
         // Létrehozzuk az 50 karakteres nevet, és feltöltjük a Groupstacket vele
         var ctr = 0
         for char in group.name.utf8{
@@ -150,8 +174,21 @@ class DocumentDataStructures: NSObject {
         } else {
             parentID = (node.parent as! Group).groupID
         }
+        
+        var IOtype: Int
+        switch node.type {
+        case .Normal:
+            IOtype = 0
+        case .Input:
+            IOtype = 1
+        case .Output:
+            IOtype = 2
+        default:
+            break
+        }
+        
         // Létrehozzuk a nevek nélküli csoport adatstruktúrát
-        var tmpNodeData = NodeData(nodeID: node.nodeID, weight: node.weight, numberOfConnectedEdge: node.numberOfConnectedEdge, opTypeWeight: (node.opType?.defaultWeight)!, spectrum: node.spectrum!, startTime: node.startTime!, type: node.type, parentID: parentID)
+        var tmpNodeData = NodeData(nodeID: node.nodeID, weight: node.weight, numberOfConnectedEdge: node.numberOfConnectedEdge, opTypeWeight: (node.opType?.defaultWeight)!, spectrum: node.spectrum!, startTime: node.startTime!, type: IOtype, parentID: parentID)
         // Létrehozzuk a 2x50 karakteres neveket, és feltöltjük vele a NodeStacket
         var ctr = 0
         for char in node.name.utf8{
@@ -360,6 +397,7 @@ class DocumentDataStructures: NSObject {
             name = string
         } else {
             print("not a valid UTF-8 sequence")
+            name = "Undefined"
         }
         data = Array(data.dropFirst(50))
         
@@ -393,7 +431,7 @@ class DocumentDataStructures: NSObject {
         default:
             break
         }
-        var tmpGroup = Group(name: name, parent: nil, maxGroupTime: maxTime, groupID: groupID, loop: _loop)
+        let tmpGroup = Group(name: name, parent: nil, maxGroupTime: maxTime, groupID: groupID, loop: _loop)
         if loopCount == 0 {
             tmpGroup.loopCount = nil
         } else {
@@ -402,7 +440,7 @@ class DocumentDataStructures: NSObject {
         
         // Group hozzáadása a groupID : Group szótárhoz
         groupID_Group[groupID] = tmpGroup
-        groupID_Parent[groupID] = parentID
+        groupID_ParentID[groupID] = parentID
         
         // Group hozzáadása az udeiglenes tömbhöz?
         groups.append(tmpGroup)
@@ -410,18 +448,24 @@ class DocumentDataStructures: NSObject {
     
     func parseNode(data: inout [UInt8]) {
         // A Node nevének leszedése
+        var name: String!
         if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
             print(string)
+            name = string
         } else {
             print("not a valid UTF-8 sequence")
+            name = "Undefined"
         }
         data = Array(data.dropFirst(50))
         
         // A Node típus nevének a leszedése
+        var typeName: String!
         if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
             print(string)
+            typeName = string
         } else {
             print("not a valid UTF-8 sequence")
+            typeName = "Undefined"
         }
         data = Array(data.dropFirst(50))
         
@@ -449,29 +493,69 @@ class DocumentDataStructures: NSObject {
         let parentID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
         data = Array(data.dropFirst(8))
         
-        // Node létrehozása
+        var _type: IO!
+        switch type {
+        case 0:
+            _type = .Normal
+        case 1:
+            _type = .Input
+        case 2:
+            _type = .Output
+        default:
+            break
+        }
         
         // Node típus felvétele a globális tömbbe
+        var tmpNodeOpType: nodeOpType!
+        if nodeOpTypeArray.contains(where: {
+            if ($0 ).name == typeName {
+                tmpNodeOpType = $0
+                return true
+            } else {
+                return false
+            }
+            
+        }) {
+            
+        } else {
+            tmpNodeOpType = nodeOpType(name: typeName, defaultWeight: opTypeWeight)
+            nodeOpTypeArray.append(tmpNodeOpType)
+        }
+        
+        // Node létrehozása
+        let tmpNode = Node(name: name, parent: nil, weight: weight, nodeOpType: tmpNodeOpType, nodeID: nodeID)
+        tmpNode.spectrum = Double(spectrum)
+        tmpNode.startTime = startTime
+        tmpNode.type = _type
         
         // Node hozzáadása a NodeID : Node szótárhoz
+        nodeID_Node[nodeID] = tmpNode
+        nodeID_ParentID[nodeID] = parentID
         
         // Node hozzáadása az ideiglenes tömbhöz
+        nodes.append(tmpNode)
     }
     
     func parseEdge(data: inout [UInt8]) {
         // Az Edge nevének leszedése
+        var name: String!
         if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
             print(string)
+            name = string
         } else {
             print("not a valid UTF-8 sequence")
+            name = "Undefined"
         }
         data = Array(data.dropFirst(50))
         
         // Az Edge típus nevének a leszedése
+        var dataTypeName: String!
         if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
             print(string)
+            dataTypeName = string
         } else {
             print("not a valid UTF-8 sequence")
+            dataTypeName = "Undefined"
         }
         data = Array(data.dropFirst(50))
         
@@ -490,13 +574,34 @@ class DocumentDataStructures: NSObject {
         let parentDNodeID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
         data = Array(data.dropFirst(8))
         
-        // Edge létrehozása
-        
         // Edge típus felvétele a globális tömbbe
+        var tmpEdgeDataType: edgeDataType!
+        if edgeDataTypeArray.contains(where: {
+            if ($0 ).name == dataTypeName {
+                tmpEdgeDataType = $0
+                return true
+            } else {
+                return false
+            }
+            
+        }) {
+            
+        } else {
+            tmpEdgeDataType = edgeDataType(name: dataTypeName, defaultWeight: typeWeight)
+            edgeDataTypeArray.append(tmpEdgeDataType)
+        }
         
-        // Edge hozzáadása a NodeID : Node szótárhoz
+        // Edge létrehozása
+        let tmpEdge = Edge(name: name, weight: weight, parentNode1: defaultParent, parentNode2: defaultParent, dataType: tmpEdgeDataType)
+        tmpEdge.edgeID = edgeID
+        
+        // Edge hozzáadása a EdgeID : Edge szótárhoz
+        edgeID_Edge[edgeID] = tmpEdge
+        edgeID_sNodeID[edgeID] = parentSNodeID
+        edgeID_dNodeID[edgeID] = parentDNodeID
         
         // Edge hozzáadása az ideiglenes tömbhöz
+        edges.append(tmpEdge)
     }
     
     func fromFile(dataC: [UInt8]) {

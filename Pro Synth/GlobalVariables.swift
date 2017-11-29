@@ -23,9 +23,9 @@ enum NodeType {
     case none
 }
 enum IO: Int {
-    case Normal
-    case Input
-    case Output
+    case Normal         = 0
+    case Input          = 1
+    case Output         = 2
 }
 
 enum LoopType: Int {
@@ -105,7 +105,7 @@ struct edgeAttributes {
     }
 }
 
-class edgeDataType {
+struct edgeDataType {
     
     var name : String
     var defaultWeight : Int

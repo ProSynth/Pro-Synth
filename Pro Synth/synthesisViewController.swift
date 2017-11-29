@@ -269,6 +269,7 @@ class synthesisViewController: NSViewController {
 
     
     func AutofillPaste() {
+        Schedules.removeAll()
         Schedules = schedulesArray
         SpectFDirMultipleSchedSelector.removeAllItems()
         for i in 0..<Schedules.count {
@@ -284,7 +285,13 @@ class synthesisViewController: NSViewController {
             SpectFDirMultipleSchedSelector.removeItem(at: i)
             SpectFDirMultipleSchedSelector.insertItem(withTitle: Schedules[i].name, at: i)
         }
-        SchedulingElement.stindex -= 1
+        SchedulingElement.stindex = Schedules.count
+        
+        if Schedules.count < 2 {
+            SpectFDirAddRemoveSynth.setEnabled(false, forSegment: 1)
+        } else {
+            SpectFDirAddRemoveSynth.setEnabled(true, forSegment: 1)
+        }
     }
     
     @IBAction func AddRemoveScheduling(_ sender: NSSegmentedControl) {
@@ -333,7 +340,7 @@ class synthesisViewController: NSViewController {
          */
     }
     
-
+    
 }
 
 

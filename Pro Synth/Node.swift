@@ -54,7 +54,7 @@ class Node: GraphElement {
                 Node.currentNodeID = nodeID
             }
         }
-        self.opType = nodeOpType!
+        self.opType = nodeOpType
         self.weight = weight
         super.init(name: name, parent: parent)
     }
