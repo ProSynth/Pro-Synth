@@ -25,6 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if addEdgeMenuEnabled == true {
             addEdgeFromMenu.isEnabled = true
         }
+        
     }
 
     @IBAction func importGraph(_ sender: NSMenuItem) {
@@ -95,6 +96,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var welcomeWindowController : NSWindowController?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        
+        let screenRect: CGRect = NSScreen.main()!.frame
+        if screenRect.width < 1280 && screenRect.height < 1024 {
+            let alert = NSAlert()
+            alert.messageText = "Warning"
+            alert.informativeText = "The minimum resolution for Pro Synth is 1280x1024"
+            alert.addButton(withTitle: "OK")
+            alert.runModal()
+        }
         
         let welcomeScreen = NSStoryboard(name: "welcomeScreen", bundle: nil)
         welcomeWindowController = welcomeScreen.instantiateController(withIdentifier: "welcomeScreenWindowController") as? NSWindowController
