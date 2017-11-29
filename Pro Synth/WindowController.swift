@@ -13,6 +13,8 @@ class WindowController: NSWindowController {
     @IBOutlet weak var sidebars: NSSegmentedControl!
     @IBOutlet weak var windowName: NSTextFieldCell!
     
+    @IBOutlet weak var projektInfo: NSTextField!
+    @IBOutlet weak var progressBar: NSProgressIndicator!
     
     var projName: String = "Untitled Project"
     var logWindowController: NSWindowController?
@@ -40,8 +42,8 @@ class WindowController: NSWindowController {
         }
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
         window?.titleVisibility = .hidden
-
-        windowName.stringValue = projName
+        progressBar.isHidden = true
+        projektInfo.stringValue = projName
     }
 
     @IBAction func hideShowSidebar(_ sender: NSSegmentedControl) {
@@ -60,11 +62,14 @@ class WindowController: NSWindowController {
     }
     
     @IBAction func start(_ sender: NSToolbarItem) {
+        progressBar.isHidden = false
+        progressBar.startAnimation(self)
         NotificationCenter.default.post(name: Notification.Name("startSynth"), object: self)
     }
     
     @IBAction func pause(_ sender: Any) {
         NotificationCenter.default.post(name: Notification.Name("pauseSynth"), object: self)
+        progressBar.isHidden = true
     }
     
     

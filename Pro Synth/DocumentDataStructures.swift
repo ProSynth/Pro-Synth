@@ -38,12 +38,12 @@ struct NodeData {
         self.nodeID = nodeID
         self.weight = weight
         self.numberOfConnectedEdge = numberOfConnectedEdge
-        //self.opTypeName = Array(repeatElement(32, count: 50))
+        //self.opTypeName = Array(repeatElement(32, count: 100))
         self.opTypeWeight = opTypeWeight
         self.spectrum = spectrum
         self.startTime = startTime
         self.type = type
-        //self.name = Array(repeatElement(32, count: 50))
+        //self.name = Array(repeatElement(32, count: 100))
         self.parentID = parentID
     }
 }
@@ -63,8 +63,8 @@ struct EdgeData {
         self.typeWeight = typeWeight
         self.parentSNodeID = parentSNodeID
         self.parentDNodeID = parentDNodeID
-        //self.name = Array(repeatElement(32, count: 50))
-        //self.typeName = Array(repeatElement(32, count: 50))
+        //self.name = Array(repeatElement(32, count: 100))
+        //self.typeName = Array(repeatElement(32, count: 100))
     }
 }
 
@@ -84,7 +84,7 @@ struct GroupData {
         self.loop = loop
         self.loopCount = loopCount
         self.parentID = parentID
-        //self.name = Array(repeatElement(32, count: 50))
+        //self.name = Array(repeatElement(32, count: 100))
     }
 }
 
@@ -141,13 +141,13 @@ class DocumentDataStructures: NSObject {
         
         // Létrehozzuk a név nélküle csoport adatstruktúrát
         var tmpGroupData = GroupData(groupID: group.groupID, numberOfNodes: group.numberOfNode, maxTime: group.maxTime, loop: _loop, loopCount: group.loopCount!, parentID: parentID)
-        // Létrehozzuk az 50 karakteres nevet, és feltöltjük a Groupstacket vele
+        // Létrehozzuk az 100 karakteres nevet, és feltöltjük a Groupstacket vele
         var ctr = 0
         for char in group.name.utf8{
             GroupStack += [char]
             ctr += 1
         }
-        while ctr < 50 {
+        while ctr < 100 {
             GroupStack.append(32)
             ctr += 1
         }
@@ -189,13 +189,13 @@ class DocumentDataStructures: NSObject {
         
         // Létrehozzuk a nevek nélküli csoport adatstruktúrát
         var tmpNodeData = NodeData(nodeID: node.nodeID, weight: node.weight, numberOfConnectedEdge: node.numberOfConnectedEdge, opTypeWeight: (node.opType?.defaultWeight)!, spectrum: node.spectrum!, startTime: node.startTime!, type: IOtype, parentID: parentID)
-        // Létrehozzuk a 2x50 karakteres neveket, és feltöltjük vele a NodeStacket
+        // Létrehozzuk a 2x100 karakteres neveket, és feltöltjük vele a NodeStacket
         var ctr = 0
         for char in node.name.utf8{
             NodeStack += [char]
             ctr += 1
         }
-        while ctr < 50 {
+        while ctr < 100 {
             NodeStack.append(32)
             ctr += 1
         }
@@ -204,7 +204,7 @@ class DocumentDataStructures: NSObject {
             NodeStack += [char]
             ctr += 1
         }
-        while ctr < 50 {
+        while ctr < 100 {
             NodeStack.append(32)
             ctr += 1
         }
@@ -218,13 +218,13 @@ class DocumentDataStructures: NSObject {
     
     func addEdgeToStack(edge: Edge) {
         var tmpEdgeData = EdgeData(edgeID: edge.edgeID, weight: edge.weight, typeWeight: edge.type.defaultWeight, parentSNodeID: edge.parentsNode.nodeID, parentDNodeID: edge.parentdNode.nodeID)
-        // Létrehozzuk a 2x50 karakteres neveket, és feltöltjük vele a NodeStacket
+        // Létrehozzuk a 2x100 karakteres neveket, és feltöltjük vele a NodeStacket
         var ctr = 0
         for char in edge.name.utf8{
             EdgeStack += [char]
             ctr += 1
         }
-        while ctr < 50 {
+        while ctr < 100 {
             EdgeStack.append(32)
             ctr += 1
         }
@@ -233,7 +233,7 @@ class DocumentDataStructures: NSObject {
             EdgeStack += [char]
             ctr += 1
         }
-        while ctr < 50 {
+        while ctr < 100 {
             EdgeStack.append(32)
             ctr += 1
         }
@@ -305,7 +305,7 @@ class DocumentDataStructures: NSObject {
                     ctr += 1
                 }
             }
-            while ctr < 50 {
+            while ctr < 100 {
                 stackBytes.append(32)
                 ctr += 1
             }
@@ -315,7 +315,7 @@ class DocumentDataStructures: NSObject {
                 stackBytes += [char]
                 ctr += 1
             }
-            while ctr < 50 {
+            while ctr < 100 {
                 stackBytes.append(32)
                 ctr += 1
             }
@@ -385,21 +385,21 @@ class DocumentDataStructures: NSObject {
         
         stackBytes.append(contentsOf: SchedResStack)
         isReady = true
-        print(stackBytes)
+        //print(stackBytes)
     }
     
     //MARK: - Olvasás
     
     func parseGroup(data: inout [UInt8]) {
         var name: String!
-        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
-            print(string)
+        if let string = String(data: Data(bytes: Array(data[0..<100])), encoding: .utf8) {
+            //print(string)
             name = string
         } else {
             print("not a valid UTF-8 sequence")
             name = "Undefined"
         }
-        data = Array(data.dropFirst(50))
+        data = Array(data.dropFirst(100))
         
         let groupID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
         data = Array(data.dropFirst(8))
@@ -449,25 +449,25 @@ class DocumentDataStructures: NSObject {
     func parseNode(data: inout [UInt8]) {
         // A Node nevének leszedése
         var name: String!
-        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
-            print(string)
+        if let string = String(data: Data(bytes: Array(data[0..<100])), encoding: .utf8) {
+            //print(string)
             name = string
         } else {
             print("not a valid UTF-8 sequence")
             name = "Undefined"
         }
-        data = Array(data.dropFirst(50))
+        data = Array(data.dropFirst(100))
         
         // A Node típus nevének a leszedése
         var typeName: String!
-        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
-            print(string)
+        if let string = String(data: Data(bytes: Array(data[0..<100])), encoding: .utf8) {
+            //print(string)
             typeName = string
         } else {
             print("not a valid UTF-8 sequence")
             typeName = "Undefined"
         }
-        data = Array(data.dropFirst(50))
+        data = Array(data.dropFirst(100))
         
         let nodeID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
         data = Array(data.dropFirst(8))
@@ -539,25 +539,25 @@ class DocumentDataStructures: NSObject {
     func parseEdge(data: inout [UInt8]) {
         // Az Edge nevének leszedése
         var name: String!
-        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
-            print(string)
+        if let string = String(data: Data(bytes: Array(data[0..<100])), encoding: .utf8) {
+            //print(string)
             name = string
         } else {
             print("not a valid UTF-8 sequence")
             name = "Undefined"
         }
-        data = Array(data.dropFirst(50))
+        data = Array(data.dropFirst(100))
         
         // Az Edge típus nevének a leszedése
         var dataTypeName: String!
-        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
-            print(string)
+        if let string = String(data: Data(bytes: Array(data[0..<100])), encoding: .utf8) {
+            //print(string)
             dataTypeName = string
         } else {
-            print("not a valid UTF-8 sequence")
+            //print("not a valid UTF-8 sequence")
             dataTypeName = "Undefined"
         }
-        data = Array(data.dropFirst(50))
+        data = Array(data.dropFirst(100))
         
         let edgeID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
         data = Array(data.dropFirst(8))
@@ -670,19 +670,19 @@ class DocumentDataStructures: NSObject {
             for i in 0..<allGroupsCount {
                 // Felvesszük a nevét
                 var graphName: String!
-                if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
-                    print(string)
+                if let string = String(data: Data(bytes: Array(data[0..<100])), encoding: .utf8) {
+                    //print(string)
                     graphName = string
                 } else {
                     print("not a valid UTF-8 sequence")
                     graphName = "Untitled"
                 }
-                data = Array(data.dropFirst(50))
+                data = Array(data.dropFirst(100))
                 
                 // Lekérdezzük, hogy hány csoportja van
                 let GroupCount = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
                 data = Array(data.dropFirst(2))
-                print("A gráfok összáma\(GroupCount)")
+                //print("A gráfok összáma\(GroupCount)")
                 
                 // Összeszedjük és példányosítjuk az összes csoportot
                 for i in 0..<Int(GroupCount) {
@@ -712,8 +712,47 @@ class DocumentDataStructures: NSObject {
                 let tmpGraph = connectGraphElements()
                 allGroups.append(tmpGraph)
                 graphNames.append(graphName)
+                
+                groupID_Group.removeAll()
+                groupID_ParentID.removeAll()
+                groups.removeAll()
+                
+                nodeID_Node.removeAll()
+                nodeID_ParentID.removeAll()
+                nodes.removeAll()
+                
+                edgeID_Edge.removeAll()
+                edgeID_dNodeID.removeAll()
+                edgeID_sNodeID.removeAll()
+                edges.removeAll()
             }
             
+            // Megnézzük, hogy összesen hány ütemezés van a fájlban
+            let schedulesCount = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
+            data = Array(data.dropFirst(2))
+            print("Az ütemezések összáma: \(schedulesCount)")
+            Log?.Print(log: "Az ütemezések összáma: \(schedulesCount)", detailed: .High)
+            
+            for i in 0..<schedulesCount {
+                var procUsage = [Int]()
+                let scheduleIndex = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
+                data = Array(data.dropFirst(8))
+                
+                let latency = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+                data = Array(data.dropFirst(8))
+                
+                let restartTime = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+                data = Array(data.dropFirst(8))
+                
+                for i in 0..<latency {
+                    let usage = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+                    data = Array(data.dropFirst(8))
+                    
+                    procUsage.append(usage)
+                }
+                
+                //persScheduleResults.append(ScheduleResults(name: graphNames[Int(scheduleIndex)], graph: allGroups[Int(scheduleIndex)], processorUsage: procUsage, latency: latency, restartTime: restartTime, allGroupsIndex: scheduleIndex))
+            }
 
             
         } else {

@@ -314,6 +314,7 @@ class graphViewController: NSViewController {
         
         noGraph.isHidden = true
         self.selectedGroups.removeAll()                  // Hogy nem  importáljunk egy fába többet
+        var currNodeID: Int = Node.currentNodeID
         
         DispatchQueue.global(qos: .userInteractive).async {
             //var tmp = [GraphElement]()
@@ -418,12 +419,12 @@ class graphViewController: NSViewController {
                                 nodeGroupDictionary[tmpnodeID] = nodeGroupID
                                 //let index = groups.index(of: )
                                 let index = self.selectedGroups.index(where: { ($0 as! Group).groupID == nodeGroupID})!
-                                
+                                /*
                                 for i in 0..<nodeOpTypeArray.count {
                                     if (nodeOpTypeArray[i].name == propArray2[1]) {
                                         break
                                     }
-                                }
+                                }*/
                                 var tmpNodeOpType: nodeOpType!
                                 if nodeOpTypeArray.contains(where: {
                                     if ($0 ).name == propArray2[1] {
@@ -437,7 +438,9 @@ class graphViewController: NSViewController {
                                     
                                 } else {
                                     tmpNodeOpType = nodeOpType(name: propArray2[1], defaultWeight: nodeWeight)
+                                    objc_sync_enter(nodeOpTypeArray)
                                     nodeOpTypeArray.append(tmpNodeOpType)
+                                    objc_sync_exit(nodeOpTypeArray)
                                 }
                                 output[tmpnodeID] = true
                                 input[tmpnodeID] = true
@@ -453,8 +456,8 @@ class graphViewController: NSViewController {
                                 
                             }
                         } else if stringArray[1] == "->" {
-                            edgeNode1ID = Int(stringArray[0])!
-                            edgeNode2ID = Int(stringArray[2])!
+                            edgeNode1ID = Int(stringArray[0])! + currNodeID
+                            edgeNode2ID = Int(stringArray[2])! + currNodeID
                             if let propArray = dataRow[element].range(of: "(?<=\")[^\"]+", options: .regularExpression) {
                                 let groupMax = dataRow[element].substring(with: propArray)
                                 let propArray2 = groupMax.components(separatedBy: ":")
@@ -702,6 +705,7 @@ extension graphViewController: StartSynthDelegate {
         guard nil != result else {
             print("A Dekompozíció nem végződött el")
             Log?.Print(log: "## WNCut Decomposer: A dekompozíció közben hiba lépett fel!", detailed: .Low)
+            (self.view.window?.windowController as! WindowController).progressBar.isHidden = true
             return (0, 0, 0)
         }
         let disjunkGroups = (result?.count)!
@@ -737,9 +741,10 @@ extension graphViewController: StartSynthDelegate {
                 self.selectedGroups = result!
             }
 
-
+            (self.view.window?.windowController as! WindowController).progressBar.isHidden = true
         }
         Log?.Print(log: "## WNCut Decomposer: A dekompozíció sikeresen befejeződött.", detailed: .Normal)
+        
         return (disjunkGroups, numOfNodes, sumEdge)
     }
     
@@ -764,8 +769,10 @@ extension graphViewController: StartSynthDelegate {
                 result.allGroupsIndex = UInt16(self.selectGraph.indexOfSelectedItem)
                 SchedRes?.tableData.append(result)
                 persScheduleResults.append(result)
+                (self.view.window?.windowController as! WindowController).progressBar.isHidden = true
             }
             let maxproc = result.processorUsage.max()
+            
             return [maxproc!]
         } else {
             var result = SpectralForce.RLScan(schedules: schedules, p: p, s: s, d: d, spect: useSpectrum)
@@ -785,8 +792,10 @@ extension graphViewController: StartSynthDelegate {
                 }
                 self.selectedGroups = self.allGroups.last!
                 self.selectGraph.selectItem(at: self.allGroups.count-1)
+                (self.view.window?.windowController as! WindowController).progressBar.isHidden = true
             }
             Log?.Print(log: "## Spectral Force Directed Ütemező: Az ütemezés elkészült.", detailed: .Normal)
+            
             return maxprocs
         }
         
@@ -801,6 +810,7 @@ extension graphViewController: StartSynthDelegate {
         guard nil != rscuResult else {
             print("A Hurokkibontás nem végződött el")
             Log?.Print(log: "## RSCU Hurokkibontó: A hurokkibontás közben hiba lépett fel!", detailed: .Low)
+            (self.view.window?.windowController as! WindowController).progressBar.isHidden = true
             return (0, 0, 0)
         }
         var maxWeight: Int = (rscuResult![0] as! Node).weight
@@ -831,9 +841,10 @@ extension graphViewController: StartSynthDelegate {
             } else {
                 self.selectedGroups = rscuResult!
             }
-            
+            (self.view.window?.windowController as! WindowController).progressBar.isHidden = true
         }
         Log?.Print(log: "## RSCU Hurokkibontó: A hurokkibontás befejeződött", detailed: .Normal)
+        
         return (recursionDepth, Count, maxWeight)
     }
 

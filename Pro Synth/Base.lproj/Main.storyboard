@@ -953,7 +953,9 @@
                     </window>
                     <connections>
                         <outlet property="hideShowSidebar" destination="cBI-to-Wtz" id="izC-5m-j8x"/>
+                        <outlet property="progressBar" destination="iQG-0B-vIZ" id="HlW-GQ-Gq2"/>
                         <outlet property="projectName" destination="F7T-PS-zGR" id="6ji-U6-Y7n"/>
+                        <outlet property="projektInfo" destination="jdf-hO-Bgq" id="ZGJ-Hg-mdf"/>
                         <outlet property="sidebars" destination="cBI-to-Wtz" id="1DE-aY-ItF"/>
                         <outlet property="start" destination="rMI-mh-5Ml" id="Ead-Vt-eqx"/>
                         <outlet property="windowName" destination="BbO-PT-Sfm" id="wlw-Hl-UQ6"/>

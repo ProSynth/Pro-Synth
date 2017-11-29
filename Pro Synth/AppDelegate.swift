@@ -27,8 +27,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
     }
-
-    @IBAction func importGraph(_ sender: NSMenuItem) {
+    
+    func importGraphF() {
         let myFiledialog = NSOpenPanel()
         myFiledialog.prompt = "Import graph"
         //myFiledialog.worksWhenModal = true
@@ -44,6 +44,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 print("nothing chosen")
             }
         })
+    }
+
+    @IBAction func importGraph(_ sender: NSMenuItem) {
+        importGraphF()
     }
 
     @IBAction func importXMLGraph(_ sender: NSMenuItem) {

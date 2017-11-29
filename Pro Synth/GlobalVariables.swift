@@ -155,6 +155,7 @@ var SynthViewController: synthesisViewController?
 
 var fileData: [UInt8]!
 
+var doc: Document!
 
 /* WNCut globális változói */
 

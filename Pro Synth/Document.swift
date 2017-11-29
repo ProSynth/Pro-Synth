@@ -18,6 +18,8 @@ class Document: NSDocument {
         super.init()
         // Add your subclass-specific initialization here.
         NotificationCenter.default.addObserver(self, selector: #selector(self.closeFirstWindow), name: Notification.Name("closeFirstWindow"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.makeWindowControllers), name: Notification.Name("newWindow"), object: nil)
+        doc = self
     }
 
     override class func autosavesInPlace() -> Bool {
@@ -44,6 +46,7 @@ class Document: NSDocument {
             
         }
         isReady = false
+        (windowControllers[0] as? WindowController)?.projektInfo.stringValue = self.displayName
         return Data(bytes: stackBytes)
         throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
     }
@@ -65,7 +68,7 @@ class Document: NSDocument {
             NotificationCenter.default.post(name: Notification.Name("readFile"), object: self)
         }
         
-        (windowControllers[0] as? WindowController)?.windowName.stringValue = self.displayName
+        (windowControllers[0] as? WindowController)?.projektInfo.stringValue = self.displayName
         //windowControllers[windowControllers.count-2].close()
         /*print(windowControllers.count)
         for i in 0..<windowControllers.count {

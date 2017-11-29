@@ -27,6 +27,18 @@ class welcomeScreenViewController: NSViewController, NSCollectionViewDataSource,
     @IBOutlet weak var welcomeCollectionView: NSCollectionView!
     @IBOutlet weak var noRecent: NSTextField!
     
+    @IBAction func newDoc(_ sender: Any) {
+        //NotificationCenter.default.post(name: Notification.Name("newWindow"), object: self)
+        doc.makeWindowControllers()
+        doc.windowControllers.last?.showWindow(sender)
+    }
+    
+    @IBAction func importGraph(_ sender: Any) {
+        doc.makeWindowControllers()
+        doc.windowControllers.last?.showWindow(sender)
+        let appDelegate = NSApplication.shared().delegate as! AppDelegate
+        appDelegate.importGraphF()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

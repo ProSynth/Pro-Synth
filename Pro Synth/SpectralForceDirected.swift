@@ -1042,10 +1042,10 @@ class SpectralForceDirected: NSObject {
                     let parent1 = (groups[i].children[j].children[k] as! Edge).parentsNode
                     let parent2 = (groups[i].children[j].children[k] as! Edge).parentdNode
                     
-                    
+                    objc_sync_enter(Matrix)
                     Matrix[parent2.nodeID*sizeOfMatrix + parent1.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
                     Matrix[parent1.nodeID*sizeOfMatrix + parent2.nodeID] = (-1*(Double((groups[i].children[j].children[k] as! Edge).weight)))
-                    
+                    objc_sync_exit(Matrix)
                     // Mi van, ha két pont között több él is van?
                 }
             }
