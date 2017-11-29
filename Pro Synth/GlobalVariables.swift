@@ -22,16 +22,16 @@ enum NodeType {
     case mul
     case none
 }
-enum IO {
+enum IO: Int {
     case Normal
     case Input
     case Output
 }
 
-enum LoopType {
-    case None
-    case ACI
-    case Normal
+enum LoopType: Int {
+    case None           = 0
+    case ACI            = 1
+    case Normal         = 2
 }
 
 enum SynthType {

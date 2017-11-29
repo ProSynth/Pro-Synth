@@ -118,6 +118,7 @@ class graphViewController: NSViewController {
         var allGroupsNames = [String]()
         for i in 0..<allGroups.count {
             allGroupsNames.append(selectGraph.itemTitle(at: i))
+            
         }
         let saveData = DocumentDataStructures()
         saveData.toFile(allGroups: allGroups, allGroupsNames: allGroupsNames)

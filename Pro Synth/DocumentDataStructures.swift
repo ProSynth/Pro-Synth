@@ -90,6 +90,10 @@ struct GroupData {
 
 class DocumentDataStructures: NSObject {
     
+    var groupID_Group = [Int : Group]()
+    var groupID_Parent = [Int : Int]()
+    var groups = [Group]()
+    
     var GroupStack = [UInt8]()
     var NodeStack = [UInt8]()
     var EdgeStack = [UInt8]()
@@ -282,52 +286,37 @@ class DocumentDataStructures: NSObject {
             findGraphElement(groups: allGroups[i], isRoot: true)
             
             // Csoportok száma
-            ctr = 0
             var tmpGroupCount = GroupCount
             print("(A csoportok száma:\(tmpGroupCount))")
             withUnsafeBytes(of: &tmpGroupCount) { bytes in
                 for byte in bytes {
                     stackBytes.append(byte)
-                    ctr += 1
+                    
                 }
-            }
-            while ctr < 50 {
-                stackBytes.append(32)
-                ctr += 1
             }
             stackBytes.append(contentsOf: GroupStack)
             GroupStack.removeAll()
             GroupCount = 0
             
             // Nodeok száma
-            ctr = 0
             var tmpNodeCount = NodeCount
             withUnsafeBytes(of: &tmpNodeCount) { bytes in
                 for byte in bytes {
                     stackBytes.append(byte)
-                    ctr += 1
+                   
                 }
-            }
-            while ctr < 50 {
-                stackBytes.append(32)
-                ctr += 1
             }
             stackBytes.append(contentsOf: NodeStack)
             NodeStack.removeAll()
             NodeCount = 0
             
-            // Csoportok száma
-            ctr = 0
+            // Élek száma
             var tmpEdgeCount = EdgeCount
             withUnsafeBytes(of: &tmpEdgeCount) { bytes in
                 for byte in bytes {
                     stackBytes.append(byte)
-                    ctr += 1
+                    
                 }
-            }
-            while ctr < 50 {
-                stackBytes.append(32)
-                ctr += 1
             }
             stackBytes.append(contentsOf: EdgeStack)
             EdgeStack.removeAll()
@@ -365,20 +354,149 @@ class DocumentDataStructures: NSObject {
     //MARK: - Olvasás
     
     func parseGroup(data: inout [UInt8]) {
+        var name: String!
+        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
+            print(string)
+            name = string
+        } else {
+            print("not a valid UTF-8 sequence")
+        }
+        data = Array(data.dropFirst(50))
+        
+        let groupID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let parentID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let numberOfNodes = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let maxTime = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let loop = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let loopCount = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        // Group létrehozása
+        var _loop: LoopType!
+        switch loop {
+        case 0:
+            _loop = .None
+        case 1:
+            _loop = .ACI
+        case 2:
+            _loop = .Normal
+        default:
+            break
+        }
+        var tmpGroup = Group(name: name, parent: nil, maxGroupTime: maxTime, groupID: groupID, loop: _loop)
+        if loopCount == 0 {
+            tmpGroup.loopCount = nil
+        } else {
+            tmpGroup.loopCount = loopCount
+        }
+        
+        // Group hozzáadása a groupID : Group szótárhoz
+        groupID_Group[groupID] = tmpGroup
+        groupID_Parent[groupID] = parentID
+        
+        // Group hozzáadása az udeiglenes tömbhöz?
+        groups.append(tmpGroup)
+    }
+    
+    func parseNode(data: inout [UInt8]) {
+        // A Node nevének leszedése
         if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
             print(string)
         } else {
             print("not a valid UTF-8 sequence")
         }
         data = Array(data.dropFirst(50))
-    }
-    
-    func parseNode(data: inout [UInt8]) {
-        //TODO
+        
+        // A Node típus nevének a leszedése
+        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
+            print(string)
+        } else {
+            print("not a valid UTF-8 sequence")
+        }
+        data = Array(data.dropFirst(50))
+        
+        let nodeID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let weight = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let numberOfConnectedEdge = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let opTypeWeight = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let spectrum = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let startTime = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let type = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let parentID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        // Node létrehozása
+        
+        // Node típus felvétele a globális tömbbe
+        
+        // Node hozzáadása a NodeID : Node szótárhoz
+        
+        // Node hozzáadása az ideiglenes tömbhöz
     }
     
     func parseEdge(data: inout [UInt8]) {
-        //TODO
+        // Az Edge nevének leszedése
+        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
+            print(string)
+        } else {
+            print("not a valid UTF-8 sequence")
+        }
+        data = Array(data.dropFirst(50))
+        
+        // Az Edge típus nevének a leszedése
+        if let string = String(data: Data(bytes: Array(data[0..<50])), encoding: .utf8) {
+            print(string)
+        } else {
+            print("not a valid UTF-8 sequence")
+        }
+        data = Array(data.dropFirst(50))
+        
+        let edgeID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let weight = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let typeWeight = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let parentSNodeID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        let parentDNodeID = Int(littleEndian: Data(bytes: Array(data[0..<8])).withUnsafeBytes { $0.pointee })
+        data = Array(data.dropFirst(8))
+        
+        // Edge létrehozása
+        
+        // Edge típus felvétele a globális tömbbe
+        
+        // Edge hozzáadása a NodeID : Node szótárhoz
+        
+        // Edge hozzáadása az ideiglenes tömbhöz
     }
     
     func fromFile(dataC: [UInt8]) {
@@ -435,7 +553,7 @@ class DocumentDataStructures: NSObject {
                 // Lekérdezzük, hogy hány éle van
                 let EdgeCount = UInt16(littleEndian: Data(bytes: Array(data[0..<2])).withUnsafeBytes { $0.pointee })
                 data = Array(data.dropFirst(2))
-                print("A gráfok összáma\(EdgeCount)")
+                print("A gráfok élszáma\(EdgeCount)")
                 
                 // Összeszedjük és példányosítjuk az összes élt
                 for i in 0..<Int(EdgeCount) {
