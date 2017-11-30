@@ -218,9 +218,10 @@ class synthesisViewController: NSViewController {
             let synthName = SynthName.title
             let segments: Int = RSCUTaskSplitTextField.integerValue
             let save = (RSCUSave.state == NSOnState ? true : false)
+            let selected = RSCUDecomposingToolSelector.titleOfSelectedItem
             DispatchQueue.global(qos: .userInteractive).async {
                 var type: RSCUDecType!
-                switch self.RSCUDecomposingToolSelector.titleOfSelectedItem {
+                switch selected {
                 case "Fast WNCut"?:
                     type = RSCUDecType.FastWNCut
                     break
