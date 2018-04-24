@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="system font weights other than Regular or Bold" minToolsVersion="7.0"/>
@@ -93,7 +93,7 @@
                                         </menuItem>
                                         <menuItem title="Save Synthesis" keyEquivalent="s" id="pxx-59-PXV">
                                             <connections>
-                                                <action selector="saveDocument:" target="Ady-hI-5gd" id="teZ-XB-qJY"/>
+                                                <action selector="SaveSynthesis:" target="Voe-Tx-rLC" id="qIL-Be-8WS"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Save As…" keyEquivalent="S" id="Bw7-FT-i3A">
@@ -1224,6 +1224,17 @@
                                             <action selector="deleteGroup:" target="OD2-ug-yoK" id="8jo-68-k1w"/>
                                         </connections>
                                     </button>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Nap-jd-IlS">
+                                        <rect key="frame" x="241" y="2" width="23" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSTouchBarFolderMoveToTemplate" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="SCz-lV-zX8">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="saveNodeStart:" target="OD2-ug-yoK" id="EH3-i9-yb6"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="LmU-JU-Wct" firstAttribute="leading" secondItem="pKJ-J3-9XL" secondAttribute="leading" constant="8" id="02X-cC-yWj"/>
@@ -2282,7 +2293,7 @@
                                 </textFieldCell>
                             </textField>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ohW-lP-Pfl">
-                                <rect key="frame" x="16" y="227" width="231" height="4"/>
+                                <rect key="frame" x="16" y="227" width="231" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f6g-Ho-0q8">
@@ -3120,6 +3131,17 @@ Gw
                                     <action selector="save:" target="omg-nQ-UaN" id="Vk1-A9-QEk"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wOV-LX-0Gb">
+                                <rect key="frame" x="530" y="-5" width="129" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Save Data" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="VNS-Hz-7Sh">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="saveData:" target="omg-nQ-UaN" id="pMe-3k-6hD"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="mIb-AK-BoW" firstAttribute="top" secondItem="bgP-HY-5Qy" secondAttribute="bottom" constant="24" id="5B5-Sa-PO1"/>
@@ -3153,7 +3175,7 @@ Gw
                 </viewController>
                 <customObject id="2Z9-OI-ilA" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2919" y="99"/>
+            <point key="canvasLocation" x="2919" y="98.5"/>
         </scene>
         <!--Log Window-->
         <scene sceneID="Mlb-zR-bG2">
@@ -3191,7 +3213,7 @@ Gw
                                 </scroller>
                             </scrollView>
                             <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bBQ-z4-IgF">
-                                <rect key="frame" x="603" y="-1" width="269" height="24"/>
+                                <rect key="frame" x="604" y="-1" width="268" height="24"/>
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="ev5-em-Hw0">
                                     <font key="font" metaFont="system"/>
                                     <segments>
@@ -3215,7 +3237,7 @@ Gw
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="R1S-rp-vJo">
-                                <rect key="frame" x="544" y="4" width="55" height="17"/>
+                                <rect key="frame" x="545" y="4" width="55" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Detailed" id="QBx-6W-YVO">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -4332,7 +4354,8 @@ Gw
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="NSStopProgressFreestandingTemplate" width="11" height="11"/>
-        <image name="NSTouchBarPause" width="128" height="128"/>
-        <image name="NSTouchBarPlay" width="128" height="128"/>
+        <image name="NSTouchBarFolderMoveToTemplate" width="22" height="30"/>
+        <image name="NSTouchBarPause" width="11" height="30"/>
+        <image name="NSTouchBarPlay" width="14" height="30"/>
     </resources>
 </document>

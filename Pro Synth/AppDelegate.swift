@@ -83,6 +83,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
     }
     
+    @IBAction func SaveSynthesis(_ sender: Any) {
+        print("Fájl mentése")
+        let myFiledialog = NSSavePanel()
+        myFiledialog.prompt = "Save Synthesis"
+        myFiledialog.allowedFileTypes = ["sth"]
+        
+        myFiledialog.beginSheetModal(for: NSApplication.shared().mainWindow!, completionHandler: { num in
+            if num == NSModalResponseOK {
+                exportGraphPath = myFiledialog.url
+                NotificationCenter.default.post(name: Notification.Name("saveSynthesisMethod"), object: self)
+            } else {
+                print("nothing chosen")
+            }
+        })
+    }
     
     @IBAction func addNodeFromMenu(_ sender: NSMenuItem) {
         NotificationCenter.default.post(name: Notification.Name("hotKeyNode"), object: self)

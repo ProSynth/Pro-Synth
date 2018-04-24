@@ -113,7 +113,55 @@ class SchedulingResultViewController: NSViewController {
             }
         }
     }
-    
+    // Grafikon adatok mentése
+    @IBAction func saveData(_ sender: Any) {
+        let myFiledialog = NSSavePanel()
+        myFiledialog.prompt = "Save"
+        myFiledialog.allowedFileTypes = ["txt"]
+        
+        myFiledialog.beginSheetModal(for: NSApplication.shared().mainWindow!, completionHandler: { num in
+            if num == NSModalResponseOK {
+                exportGraphPath = myFiledialog.url
+                //NotificationCenter.default.post(name: Notification.Name("saveSynthesisMethod"), object: self)
+                
+                
+                var text = ""
+                for i in 0..<self.tableData.count
+                {
+                    for j in 0..<self.tableData[i].processorUsage.count
+                    {
+                        
+                        text += String(j)
+                        text += "   "
+                        
+                        
+                        text += String((self.tableData[i].processorUsage[j]))
+                        
+
+                        text += "\n"
+                    }
+                    
+                }
+                
+                if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                    
+                    //let fileURL = dir.appendingPathComponent(file)
+                    
+                    //writing
+                    do {
+                        try text.write(to: exportGraphPath!, atomically: false, encoding: .utf8)
+                    }
+                    catch {/* error handling here */}
+                    
+                    
+                }
+                
+                
+            } else {
+                print("nothing chosen")
+            }
+        })
+    }
     override open func viewWillAppear()
     {
         self.lineChartView.animate(xAxisDuration: 0.0, yAxisDuration: 1.0)

@@ -41,6 +41,7 @@ class Document: NSDocument {
     override func data(ofType typeName: String) throws -> Data {
         // Insert code here to write your document to data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning nil.
         // You can also choose to override fileWrapperOfType:error:, writeToURL:ofType:error:, or writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
+        /*
        NotificationCenter.default.post(name: Notification.Name("saveFile"), object: self)
         while !isReady {
             
@@ -48,6 +49,7 @@ class Document: NSDocument {
         isReady = false
         (windowControllers[0] as? WindowController)?.projektInfo.stringValue = self.displayName
         return Data(bytes: stackBytes)
+ */
         throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
     }
 

@@ -312,7 +312,6 @@
 			isa = PBXGroup;
 			children = (
 				2BFE8A4C1FB2780B00EDA589 /* SpectralForceDirectedScheduler */,
-				2BFE8A4B1FB277F600EDA589 /* RSCU_LoopUnroller */,
 				2BFE8A481FB2766D00EDA589 /* WNCutDecomposer */,
 				7B1B75571F8F88AB004973F2 /* SpectralMaker */,
 				3F89FE101F74627300F7B623 /* GlobalVariables.swift */,
@@ -408,6 +407,7 @@
 		7B1B75571F8F88AB004973F2 /* SpectralMaker */ = {
 			isa = PBXGroup;
 			children = (
+				2BFE8A4B1FB277F600EDA589 /* RSCU_LoopUnroller */,
 				7B1B75581F8F88E8004973F2 /* WNCut.swift */,
 			);
 			name = SpectralMaker;

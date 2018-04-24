@@ -84,6 +84,7 @@ class graphViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.importMethod), name: Notification.Name("importGraphMethod"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.importXMLMethod), name: Notification.Name("importXMLGraphMethod"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.exportGraphMethod), name: Notification.Name("exportGraphMethod"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.saveSynthesis), name: Notification.Name("saveSynthesisMethod"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.read), name: Notification.Name("readFile"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.save), name: Notification.Name("saveFile"), object: nil)
@@ -588,6 +589,82 @@ class graphViewController: NSViewController {
             
             
         
+
+    }
+    
+    func saveSynthesis() {
+        print("Mentés folyamatban...")
+        print("A mentés helye: \(exportGraphPath)")
+        
+    }
+    @IBAction func saveNodeStart(_ sender: Any) {
+        print("Pontok kezdésének mentése")
+        let myFiledialog = NSSavePanel()
+        myFiledialog.prompt = "Save"
+        myFiledialog.allowedFileTypes = ["txt"]
+        
+        myFiledialog.beginSheetModal(for: NSApplication.shared().mainWindow!, completionHandler: { num in
+            if num == NSModalResponseOK {
+                exportGraphPath = myFiledialog.url
+                //NotificationCenter.default.post(name: Notification.Name("saveSynthesisMethod"), object: self)
+                
+                
+                var text = ""
+                for i in 0..<self.selectedGroups.count
+                {
+                    for j in 0..<self.selectedGroups[i].children.count
+                    {
+                        text += String((self.selectedGroups[i].children[j] as! Node).nodeID)
+                        text += "   "
+                        text += "\(self.selectedGroups[i].children[j].getName())"
+                        text += "   "
+                        text += String((self.selectedGroups[i].children[j] as! Node).getWeight())
+                        
+                        if( (self.selectedGroups[i].children[j] as! Node).startTime != nil )
+                        {
+                            text += "   "
+                            text += String((self.selectedGroups[i].children[j] as! Node).startTime!)
+                        }
+                        else
+                        {
+                            text += "   "
+                            text += "-"
+                        }
+                        
+                        if( (self.selectedGroups[i].children[j] as! Node).spectrum != nil )
+                        {
+                            text += "   "
+                            text += String((self.selectedGroups[i].children[j] as! Node).spectrum!)
+                        }
+                        else
+                        {
+                            text += "   "
+                            text += "-"
+                        }
+                        
+                        text += "\n"
+                    }
+
+                }
+                
+                if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                    
+                    //let fileURL = dir.appendingPathComponent(file)
+                    
+                    //writing
+                    do {
+                        try text.write(to: exportGraphPath!, atomically: false, encoding: .utf8)
+                    }
+                    catch {/* error handling here */}
+                    
+                    
+                }
+                
+                
+            } else {
+                print("nothing chosen")
+            }
+        })
 
     }
     
